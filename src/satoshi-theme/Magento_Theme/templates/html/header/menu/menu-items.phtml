@@ -153,7 +153,7 @@ if (!$menuItems) {
                             'title': `<?= $menuItem['name'] ?>`,
                             'url': '<?= $menuItem['url'] ?>',
                             'breadcrumbs': <?= $escaper->escapeHtmlAttr(json_encode($breadcrumbs)) ?>,
-                            'img': '<?= $menuItem['image'] ?>',
+                            'img': '<?= $menuItem['image'] ?? '' ?>',
                             'description': `<?= $escaper->escapeUrl($menuItem['description'] ?? '') ?>`,
                         }"
                         class="focus-visible:focus-ring group flex min-h-11 items-center justify-between py-1"

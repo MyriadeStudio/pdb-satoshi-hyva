@@ -13,7 +13,7 @@ use Magento\Framework\Escaper;
 /** @var SwitcherUrlProvider $switcherUrlProvider */
 $switcherUrlProvider = $viewModels->require(SwitcherUrlProvider::class);
 
-if (count($block->getGroups()) > 1):
+if (!empty($block->getGroups()) && count($block->getGroups()) > 1):
     $currentGroupId = $block->getCurrentGroupId();
     $id = 'switcher-store';
     $currentLabel = '';

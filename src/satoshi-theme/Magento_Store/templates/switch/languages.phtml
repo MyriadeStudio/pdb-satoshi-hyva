@@ -14,7 +14,7 @@ use Magento\Framework\Escaper;
 /** @var SwitcherUrlProvider $switcherUrlProvider */
 $switcherUrlProvider = $viewModels->require(SwitcherUrlProvider::class);
 
-if (count($block->getStores()) > 1):
+if (!empty($block->getStores()) && count($block->getStores()) > 1):
     $id = $block->getIdModifier() ? '-' . $block->getIdModifier() : '';
     $currentStoreId = $block->getCurrentStoreId();
     $currentStoreCode = $block->getCurrentStoreCode();
