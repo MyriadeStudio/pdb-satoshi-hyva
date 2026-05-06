@@ -22,7 +22,7 @@ $block->setData('cache_tags', $blockCacheViewModel->collectBlockChildrenCacheTag
     aria-label="<?= __('Open menu') ?>"
     :aria-controls="$store.main.isMobile ? 'menu' : 'menu-desktop'"
     :aria-expanded="$store.main.isMobile ? $store.popup.currentPopup === 'menu' : $store.resizable.isVisible('menu-desktop')"
-    class="contrast-border md:button--filled-secondary button icon-button icon-button--size-lg md:w-auto md:gap-3 md:px-4  "
+    class="contrast-border md:button--filled-surface button icon-button icon-button--size-lg md:w-auto md:gap-3 md:px-4  "
     :class="{'hidden': !$store.main.isMobile && $store.resizable.isVisible('menu-desktop')}"
     tabindex="2"
 >

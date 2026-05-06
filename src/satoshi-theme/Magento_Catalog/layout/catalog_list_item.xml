@@ -7,5 +7,6 @@
                 <argument name="n_of_large_card" xsi:type="number">5</argument>
             </arguments>
         </referenceBlock>
+
     </body>
 </page>

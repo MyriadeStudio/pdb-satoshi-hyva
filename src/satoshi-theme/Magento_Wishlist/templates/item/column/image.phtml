@@ -22,7 +22,7 @@ $imageUrl = $block->getImage($block->getProductForThumbnail($item), 'wishlist_th
     x-element-transition-trigger
 >
     <img
-        class="mix-blend-darken object-center object-cover h-full w-full"
+        class="mix-blend-darken object-center object-contain h-full w-full"
         src="<?= $escaper->escapeUrl($imageUrl) ?>"
         alt="<?= $escaper->escapeHtmlAttr($product->getName()) ?>"
         loading="lazy"

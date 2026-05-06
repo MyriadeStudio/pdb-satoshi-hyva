@@ -76,7 +76,7 @@ $newPasswordFailed = !empty($errorMessage['current_password']) || !empty($errorM
             </div>
         <?php endif; ?>
 
-        <div class="bg-bg-400 p-5 rounded-xl">
+        <div class="card mb-5">
             <?= $block->getBlockHtml('formkey') ?>
             <div class="space-y-3">
                 <?= $block->getLayout()->createBlock(Name::class)->setObject($block->getCustomer())->toHtml() ?>
@@ -155,7 +155,7 @@ $newPasswordFailed = !empty($errorMessage['current_password']) || !empty($errorM
                         value="<?= $escaper->escapeHtmlAttr($block->getCustomer()->getEmail()) ?>"
                         title="<?= $escaper->escapeHtmlAttr(__('Email')) ?>"
                         placeholder="<?= $escaper->escapeHtmlAttr(__('Your email')) ?>"
-                        class="input__field input__field--outline h-auto bg-bg-500 px-5 py-2.5"
+                        class="input__field input__field--outline h-auto px-5 py-2.5"
                     />
                 </div>
                 <?php if (!empty($errorMessage['email'])): ?>
@@ -178,7 +178,7 @@ $newPasswordFailed = !empty($errorMessage['current_password']) || !empty($errorM
                 </label>
                 <div>
                     <input type="password"
-                           class="input__field input__field--outline h-auto bg-bg-500 px-5 py-2.5"
+                           class="input__field input__field--outline h-auto px-5 py-2.5"
                            name="current_password"
                            id="current-password"
                            data-input="current-password"
@@ -204,7 +204,7 @@ $newPasswordFailed = !empty($errorMessage['current_password']) || !empty($errorM
                     </label>
                     <div>
                         <input type="password"
-                               class="input__field input__field--outline h-auto bg-bg-500 px-5 py-2.5"
+                               class="input__field input__field--outline h-auto px-5 py-2.5"
                                name="password"
                                id="password"
                                placeholder="<?= $escaper->escapeHtmlAttr(__('New password')) ?>"
@@ -239,7 +239,7 @@ $newPasswordFailed = !empty($errorMessage['current_password']) || !empty($errorM
                     </label>
                     <div>
                         <input type="password"
-                               class="input__field input__field--outline h-auto bg-bg-500 px-5 py-2.5"
+                               class="input__field input__field--outline h-auto px-5 py-2.5"
                                name="password_confirmation" id="password-confirmation"
                                placeholder="<?= $escaper->escapeHtml(__('Confirm new password')) ?>"
                                data-validate='{"equalTo": "password"}'

@@ -31,7 +31,7 @@ $hyvaicons = $viewModels->require(SvgIcons::class);
                         class="text-text-500 text-lg font-bold leading-6 mr-3"
                     ><?= $escaper->escapeHtml(__('My wish list')) ?></strong><span class="font-medium leading-5 capitalize" x-html="wishlistCountLabel"></span>
                 </h2>
-                <ul class="flex flex-col gap-5 mb-5 p-5 rounded-xl bg-bg-400" aria-labelledby="wishlist-sidebar">
+                <ul class="flex flex-col gap-5 mb-5 p-5 card" aria-labelledby="wishlist-sidebar">
                     <template x-for="product in wishlistItems">
                         <li class="flex items-start">
                             <a
@@ -45,7 +45,7 @@ $hyvaicons = $viewModels->require(SvgIcons::class);
                                     :src="product.image.src"
                                     alt=""
                                     loading="lazy"
-                                    class="mix-blend-darken object-center max-h-full object-cover h-full w-full"
+                                    class="mix-blend-darken object-center max-h-full object-contain h-full w-full"
                                 >
                             </a>
                             <div class="w-[calc(100%-102px)]">

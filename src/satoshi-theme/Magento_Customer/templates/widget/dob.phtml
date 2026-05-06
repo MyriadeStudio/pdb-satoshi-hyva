@@ -42,7 +42,7 @@ $addressViewModel = $viewModels->require(AddressViewModel::class);
                @keydown="onInputKeydown($event)"
                @paste="$event.preventDefault()"
                autocomplete="off"
-               class="input__field input__field--outline h-auto bg-bg-500 px-5 py-2.5 cursor-pointer"
+               class="input__field input__field--outline h-auto px-5 py-2.5 cursor-pointer"
                placeholder="<?= $escaper->escapeHtmlAttr($block->getStoreLabel('dob')) ?>"
         >
 

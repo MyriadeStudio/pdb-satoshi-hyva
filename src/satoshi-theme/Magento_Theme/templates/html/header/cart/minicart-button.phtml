@@ -26,7 +26,7 @@ $cartTotals = $cart->getSerializedCartTotals();
         $store.cart.setProductCartErrorMessage(`<?= $escaper->escapeHtmlAttr($block->getProductCartErrorMessage()) ?>`)
     }"
     id="cart-button"
-    class="contrast-border md:button--filled-secondary button ghost-primary icon-button icon-button--size-lg col-start-5"
+    class="contrast-border md:button--filled-surface button ghost-primary icon-button icon-button--size-lg col-start-5"
     x-a11y-trap-element="$store.transition.isPreviewActive && !$store.resizable.isVisible()"
     @click="!isCartVisible ? $store.cart.showCart() : $store.cart.hideCart()"
     type="button"

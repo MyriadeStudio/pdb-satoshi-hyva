@@ -22,12 +22,6 @@ $hyvaicons = $viewModels->require(SvgIcons::class);
 ?>
 
 <div
-    class="z-[37] bg-primary-800 py-3 text-sm font-semibold text-text-on-primary-bg text-center"
->
-    <?= __('This is a demo store made by <a href="https://scandiweb.com/" tabindex="1" class="hover:underline">Scandiweb</a>') ?>
-</div>
-
-<div
     x-data
     x-intersect:enter="$store.main.isHeaderShadowVisible = false"
     x-intersect:leave="$store.main.isHeaderShadowVisible = true"
@@ -62,7 +56,7 @@ $hyvaicons = $viewModels->require(SvgIcons::class);
     <div class="content-wrapper col-start-1 m-auto grid w-full grid-cols-header items-center rounded-md bg-bg-500 py-3 md:flex md:bg-transparent md:px-3"
          x-data="{n:0}"
     >
-        <div class="transition-all md:flex"
+        <div class="transition-all md:flex z-[999]"
              :class="{'md:drop-shadow-lg': $store.main.isHeaderShadowVisible}"
         >
             <?=

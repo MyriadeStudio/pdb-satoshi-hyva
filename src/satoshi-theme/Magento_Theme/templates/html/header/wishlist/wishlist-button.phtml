@@ -18,7 +18,7 @@ $wishlistItemsCount = $wishlist->getWishlistItemsQty();
 ?>
 
 <button
-  class="contrast-border md:button--filled-secondary button ghost-primary icon-button icon-button--size-lg"
+  class="contrast-border md:button--filled-surface button ghost-primary icon-button icon-button--size-lg"
   x-a11y-trap-element="$store.transition.isPreviewActive && !$store.resizable.isVisible()"
   @click="(e) => $store.wishlist.handleWishlistButtonClick(e, isWishlistVisible)"
   type="button"

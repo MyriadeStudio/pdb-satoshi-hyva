@@ -1,0 +1,118 @@
+<?php
+
+use Hyva\Theme\Model\ViewModelRegistry;
+use Hyva\Theme\ViewModel\Navigation;
+use Hyva\Theme\ViewModel\SvgIcons;
+use Magento\Framework\Escaper;
+use Satoshi\Theme\Block\Template;
+use Magento\Cms\Block\BlockByIdentifier as CmsBlock;
+
+/** @var Escaper $escaper */
+/** @var ViewModelRegistry $viewModels */
+/** @var Template $template */
+/** @var Template $block */
+
+/** @var Navigation $viewModelNavigation */
+$viewModelNavigation = $viewModels->require(Navigation::class, $block);
+
+/** @var SvgIcons $hyvaicons */
+$hyvaicons = $viewModels->require(SvgIcons::class);
+
+$id = $block->getData('id');
+$title = $block->getData('title');
+$path = $block->getData('path');
+$cmsBlockHtml = $block->getData('cmsBlockHtml');
+$breadcrumbs = $block->getData('breadcrumbs') ?? [];
+$url = $block->getData('url');
+$level = $block->getData('level') ?? 1;
+
+?>
+<div
+    class="menu__level"
+    :class="{
+        'menu__level--current': history[history.length - 1] === '<?= $id ?>',
+        'menu__level--visible': history.includes('<?= $id ?>'),
+        'md:w-[50vw]': history.includes('<?= $id ?>'),
+        'w-100': history.includes('<?= $id ?>'),
+        'menu__level--same-depth': <?= $level ?> <= delayedLevel,
+        'hidden': !$store.main.isMobile && !$store.resizable.isVisible('menu-desktop'),
+    }"
+    :inert="!history.includes('<?= $id ?>')"
+    data-menu-level="<?= $id ?>"
+
+>
+    <div class="menu__header">
+        <div class="menu__header-container p-2">
+
+            <button
+                @click="history.pop()"
+                type="button"
+                aria-label="<?= __('Go to back to previous menu page') ?>"
+                class="menu__back-button py-3 motion-reduce:max-md:animate-none"
+                :class="{
+                    'menu__back-button--visible max-md:animate-slideIconIn motion-reduce:translate-x-0': history.length !== 1,
+                    'max-md:animate-slideIconOut motion-reduce:-translate-x-full': history.length == 1
+                }"
+                :tabindex="history.length === 1 ? -1 : 0"
+                :aria-hidden="history.length === 1"
+            >
+                <?= $hyvaicons->renderHtml('chevron-left'); ?>
+            </button>
+
+            <h2
+                class="menu__heading py-3 motion-reduce:max-md:animate-none"
+                style="--translate-width: 52px;"
+                :class="{
+                    'menu__heading--root': '<?= $id ?>' === 'all',
+                    'max-md:w-[calc(100%-var(--translate-width))]': '<?= $id ?>' !== 'all',
+                    'max-md:animate-slideTitleIn motion-reduce:translate-x-[--translate-width]': history.length !== 1,
+                    'max-md:animate-slideTitleOut motion-reduce:translate-x-0': history.length == 1
+                }"
+                x-show="$store.main.isMobile || '<?= $id ?>' !== 'all'"
+            >
+                <?= $title ?>
+            </h2>
+
+            <div id="menu-actions-<?= $id ?>" class="md:mt-[6px] md:flex-none md:flex-row"></div>
+        </div>
+        <hr class="divider -mx-5 md:hidden">
+    </div>
+
+    <ul role="list" class="menu__links">
+        <li><?= $cmsBlockHtml ?></li>
+    </ul>
+
+    <div class="h-20 md:hidden"></div>
+    <?php if ($url && $id !== 'all'): ?>
+        <template
+            x-portal="$store.main.isMobile ? document.getElementById('popup-fixed-content-portal') : document.getElementById('menu-actions-<?= $id ?>')"
+        >
+            <div
+                class="bg-bg-500 px-4 pb-2 transition-colors duration-200 md:bg-transparent md:hover:text-primary-600"
+                x-transition.opacity
+                x-show="$store.main.isMobile ? history[history.length - 1] === '<?= $id ?>' && !getIsSearchActive() : history.includes('<?= $id ?>')"
+                role="link"
+            >
+                <a
+                    x-element-transition-trigger
+                    :class="$store.main.isMobile ? 'button button--filled-primary w-full': 'flex items-center'"
+                    href="<?= $url ?>"
+                >
+                    <template x-if="$store.main.isMobile">
+                        <span><?= __('View All') ?> <span class="lowercase"><?= $title ?></span></span>
+                    </template>
+                    <template x-if="!$store.main.isMobile">
+                        <span class="flex items-center">
+                            <span class='border-b-1 border-current'>
+                                <?= __('View all') ?>
+                            </span>
+                            <span class='ps-2'>
+                                <?= $hyvaicons->renderHtml('menu-view-all'); ?>
+                            </span>
+                        </span>
+                    </template>
+                </a>
+            </div>
+        </template>
+    <?php endif; ?>
+</div>

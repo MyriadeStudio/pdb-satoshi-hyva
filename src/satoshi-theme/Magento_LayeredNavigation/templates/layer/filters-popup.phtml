@@ -92,7 +92,7 @@ $sorter = $block->getData('sorter') ?? [];
                         <button
                             type="button"
                             class="flex min-h-10 items-center justify-between py-1"
-                            @click="isTopLevel = false; currentName='<?= $escaper->escapeJs($filter->getName()) ?>'"
+                            @click="isTopLevel = false; currentName='<?= $escaper->escapeJs(__($filter->getName())) ?>'"
                         >
                             <p class="grow text-left">
                                 <?= $escaper->escapeHtml($filter->getName()) ?>
@@ -136,9 +136,11 @@ $sorter = $block->getData('sorter') ?? [];
                         </div>
                     </div>
                 </fieldset>
+
                 <?php foreach ($filters as $filter): ?>
+                    <?php if ($filter->getItemsCount()): ?>
                     <fieldset class="flex-1 md:border-t md:border-bg-600 md:py-5"
-                              x-show="currentName == '<?= $escaper->escapeJs($filter->getName()) ?>'">
+                              x-show="currentName == '<?= $escaper->escapeJs(__($filter->getName())) ?>'">
                         <div
                             id="filter-<?= $escaper->escapeHtmlAttr($filter->getName()) ?>"
                             key="filter-<?= $escaper->escapeHtmlAttr($filter->getName()) ?>"
@@ -146,6 +148,7 @@ $sorter = $block->getData('sorter') ?? [];
                             <?= $renderer->setFilterTitle($filter->getName())->render($filter) ?>
                         </div>
                     </fieldset>
+                    <?php endif; ?>
                 <?php endforeach; ?>
             </div>
 

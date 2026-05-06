@@ -5,6 +5,7 @@ use Hyva\Theme\ViewModel\Navigation;
 use Hyva\Theme\ViewModel\SvgIcons;
 use Magento\Framework\Escaper;
 use Satoshi\Theme\Block\Template;
+use Magento\Cms\Block\BlockByIdentifier as CmsBlock;
 
 /** @var Escaper $escaper */
 /** @var ViewModelRegistry $viewModels */
@@ -99,8 +100,15 @@ if (!$menuItems) {
     <ul role="list" class="menu__links">
         <?php $index = 0; ?>
         <?php foreach ($menuItems as $k => $menuItem): ?>
+            <?php $menuId = 'desktop-menu-' . str_replace('-node', '', $menuItem['id']) ?>
+            <?php
+                $cmsBlockHtml = $this->getLayout()
+                    ->createBlock(CmsBlock::class)
+                    ->setIdentifier($menuId)
+                    ->toHtml();
+            ?>
             <li>
-                <?php if (count($menuItem['childData'])): ?>
+                <?php if (!empty($menuItem['childData']) || !empty($cmsBlockHtml)): ?>
                     <button
                         <?php if ($index === 0): ?>
                             x-a11y-trap-target.initial="$store.resizable.isVisible('menu-desktop') && !$store.main.isMobile && history.length > 0 && history[history.length - 1] === '<?= $id ?>'"
@@ -120,6 +128,8 @@ if (!$menuItems) {
                             <?= $hyvaicons->renderHtml('chevron-right'); ?>
                         </span>
                     </button>
+
+                    <?php if (!empty($menuItem['childData'])): ?>
                     <template x-portal="document.getElementById('menu-sections')">
                         <?=
                         $template
@@ -140,6 +150,30 @@ if (!$menuItems) {
                             ->render('Magento_Theme::html/header/menu/menu-items.phtml');
                         ?>
                     </template>
+                    <?php endif; ?>
+
+                    <?php if (!empty($cmsBlockHtml)): ?>
+                        <template x-portal="document.getElementById('menu-sections')">
+                            <?=
+                            $template
+                                ->setData([
+                                    'cmsBlockHtml' => $cmsBlockHtml,
+                                    'level' => $level + 1,
+                                    'title' => $menuItem['name'],
+                                    'path' => $path . ',' . $menuItem['id'],
+                                    'id' => $menuItem['id'],
+                                    'url' => $menuItem['url'],
+                                    'breadcrumbs' => [
+                                        ...$breadcrumbs, [
+                                            'title' => $menuItem['name'],
+                                            'url' => $menuItem['url']
+                                        ]
+                                    ]
+                                ])
+                                ->render('Magento_Theme::html/header/menu/menu-block-cms.phtml');
+                            ?>
+                        </template>
+                    <?php endif; ?>
                 <?php else: ?>
                     <a
                         <?php if ($index === 0): ?>

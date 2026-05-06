@@ -3,9 +3,11 @@
 declare(strict_types=1);
 
 use Hyva\Theme\Model\ViewModelRegistry;
+use Hyva\Theme\ViewModel\ProductCompare;
 use Hyva\Theme\ViewModel\ProductListItem;
 use Hyva\Theme\ViewModel\ProductPage;
 use Hyva\Theme\ViewModel\SvgIcons;
+use Hyva\Theme\ViewModel\Wishlist;
 use Magento\Catalog\Block\Product\AbstractProduct;
 use Magento\Catalog\Helper\Image;
 use Magento\Catalog\ViewModel\Product\OptionsData as ProductOptionsData;
@@ -21,9 +23,13 @@ use Satoshi\Theme\Block\Template;
 /** @var ProductPage $productViewModel */
 /** @var ProductOptionsData $productOptionsViewmodel */
 /** @var ListItem $listItemViewModel */
+/** @var Wishlist $wishlistViewModel */
+/** @var ProductCompare $compareViewModel */
 $productViewModel = $viewModels->require(ProductPage::class);
 $productOptionsViewmodel = $viewModels->require(ProductOptionsData::class);
 $listItemViewModel = $viewModels->require(ListItem::class);
+$wishlistViewModel = $viewModels->require(Wishlist::class);
+$compareViewModel = $viewModels->require(ProductCompare::class);
 
 /** @var AbstractProduct $block */
 /** @var Magento\Catalog\Model\Product $product */
@@ -42,11 +48,14 @@ $index = $block->getData('index');
 $isLarge = $nthLarge && !(($index + 1) % $nthLarge);
 
 // Add a setting allowing merchants to choose between cover or contain ?
-$fitType = 'cover';
+$fitType = 'contain';
 $isContain = $fitType === 'contain';
 
 $isSearch = $block->getData('is_search_card');
 $isAlpineTemplate = $block->getData('is_alpine_template');
+
+$showAddToWishlist = $wishlistViewModel->isEnabled();
+$showAddToCompare = $compareViewModel->showInProductList();
 
 /** @var SvgIcons $hyvaicons */
 $hyvaicons = $viewModels->require(SvgIcons::class);
@@ -100,7 +109,7 @@ if ($product) {
 
         <!-- Product Article -->
         <article
-            class="contrast-border z-10 flex h-full w-full flex-col items-stretch justify-start overflow-hidden rounded-xl text-start"
+            class="relative contrast-border z-10 flex h-full w-full flex-col items-stretch justify-start overflow-hidden rounded-xl text-start group"
             x-data="ProductPage()"
             <?php if ($product): ?>
                 x-init="
@@ -113,6 +122,45 @@ if ($product) {
                 "
             <?php endif ?>
         >
+            <div class="
+                    absolute right-2 bottom-2 top-auto left-auto z-30
+                    flex gap-2
+
+                    opacity-100
+                    pointer-events-auto
+                    translate-y-0
+
+
+                    lg:opacity-0
+                    lg:translate-y-5
+                    lg:pointer-events-none
+                    lg:transition-all
+                    lg:duration-300
+                    lg:ease-out
+                    lg:group-hover:opacity-100
+                    lg:group-hover:translate-y-0
+                    lg:group-hover:pointer-events-auto
+
+                ">
+                <?php if ($showAddToWishlist && $blockWishlist = $block->getChildBlock('wishlist')): ?>
+                    <?= $blockWishlist->setData('product', $product)->toHtml() ?>
+                <?php endif; ?>
+                <?php if ($showAddToCompare): ?>
+                <button x-data="initCompareOnProductList()"
+                        x-defer="intersect"
+                        @click.prevent="addToCompare(<?= (int)$productId ?>)"
+                        aria-label="<?= $escaper->escapeHtmlAttr(__('Add to Compare') . ' ' . $productName) ?>"
+                        type="button"
+                        class="btn p-2 rounded-full"
+                        data-addto="compare"
+                >
+                    <?= $lucideIcons->scaleHtml('', 20, 20, ['aria-hidden' => 'true']) ?>
+                </button>
+                <?php endif; ?>
+                <?php if ($addToBlock = $block->getChildBlock('addto')): ?>
+                    <?= $addToBlock->setProduct($product)->getChildHtml() ?>
+                <?php endif; ?>
+            </div>
             <!-- this image is needed to avoid blink in preview on desktop as there, the select variant is shown, not featured image -->
             <img
                 width="0"

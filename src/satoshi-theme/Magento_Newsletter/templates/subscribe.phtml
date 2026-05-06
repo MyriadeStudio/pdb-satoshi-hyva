@@ -26,7 +26,7 @@ $isWrapped = $block->getData('wrapped') == 'true';
 ?>
 
 <div
-    class="md:max-w-screen-sm mx-auto flex flex-col items-stretch gap-5 rounded-md border-1 border-transparent px-5 py-6 md:min-w-[35%] md:gap-4 md:p-7 h-fit <?= $isWrapped ? 'bg-secondary-500 md:bg-bg-600' : '' ?>">
+    class="md:max-w-screen-sm mx-auto flex flex-col items-stretch gap-5 rounded-md border-1 border-transparent px-5 py-6 md:min-w-[35%] md:gap-4 md:p-7 h-fit <?= $isWrapped ? 'card' : '' ?>">
     <h2 class="text-lg"><?= $escaper->escapeHtml($title) ?></h2>
     <?php if (!empty($subtitle)): ?>
         <p class="text-text-500"><?= $escaper->escapeHtml($subtitle) ?></p>
@@ -58,7 +58,7 @@ $isWrapped = $block->getData('wrapped') == 'true';
                 id="newsletter-subscribe"
                 type="email"
                 name="email"
-                class="input__field input__field--outline bg-bg-500 md:px-5 md:py-4"
+                class="input__field input__field--outline md:px-5 md:py-4"
                 :class="{
                     'border-error': displayErrorMessage
                 }"

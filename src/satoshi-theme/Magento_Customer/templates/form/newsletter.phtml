@@ -24,7 +24,8 @@ $hyvaicons = $viewModels->require(SvgIcons::class);
         <h2 class="text-text-500 text-lg font-bold mb-5">
             <?= $escaper->escapeHtml(__('Subscription Option')) ?>
         </h2>
-        <div class="mb-5">
+
+        <div class="card mb-5">
             <?= $block->getBlockHtml('formkey') ?>
             <label class="flex items-center gap-3 mt-5 mb-3 mx-4" for="subscription">
                 <input
@@ -60,8 +61,8 @@ $hyvaicons = $viewModels->require(SvgIcons::class);
                 '<?= $escaper->escapeHtml(__('Save')) ?>'"><?= $escaper->escapeHtml(__('Save')) ?></span>
             </button>
             <a class="button button--ghost-primary"
-               :href="$store.main.getBackURL('<?= $escaper->escapeJs($block->getUrl('customer/account')) ?>')"
-               x-element-transition-trigger
+            :href="$store.main.getBackURL('<?= $escaper->escapeJs($block->getUrl('customer/account')) ?>')"
+            x-element-transition-trigger
             >
                 <?= $escaper->escapeHtml(__('Go back')) ?>
             </a>

@@ -1,6 +1,7 @@
 <div
     class="pagebuilder-content-type pagebuilder-products"
     data-bind="event: { mouseover: onMouseOver, mouseout: onMouseOut }, mouseoverBubble: false"
+    style="min-height: 150px;"
 >
     <div
         attr="data.main.attributes"
@@ -11,7 +12,7 @@
             afterRender="onAfterRender"
             class="rendered-content"
             html="widgetUnsanitizedHtml"
-        ></div>
+        >Collage</div>
     </div>
     <render args="getOptions().template"></render>
 </div>
