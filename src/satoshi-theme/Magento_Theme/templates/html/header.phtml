@@ -72,7 +72,7 @@ $hyvaicons = $viewModels->require(SvgIcons::class);
             ?>
         </div>
 
-        <div class="col-start-3 flex items-center justify-center md:hidden mix-blend-difference">
+        <div class="col-start-3 flex items-center justify-center md:hidden mix-blend-multiply">
             <a href="<?= $escaper->escapeUrl($block->getUrl('')) ?>"
                x-element-transition-trigger
                class="rounded-sm px-3 py-2 text-xl font-semibold"
@@ -141,7 +141,7 @@ $hyvaicons = $viewModels->require(SvgIcons::class);
     <div id="end-of-header"></div>
 </header>
 
-<div class="pointer-events-none sticky top-[88px] z-30 h-[1px] max-md:hidden mix-blend-difference contrast-50"
+<div class="pointer-events-none sticky top-[88px] z-30 h-[1px] max-md:hidden mix-blend-multiply"
      :style="`opacity: ${$store.main.opacityOnZoom}`"
 >
     <div
