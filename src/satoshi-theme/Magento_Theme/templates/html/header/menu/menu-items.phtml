@@ -2,6 +2,7 @@
 
 use Hyva\Theme\Model\ViewModelRegistry;
 use Hyva\Theme\ViewModel\Navigation;
+use Hyva\Theme\ViewModel\StoreConfig;
 use Hyva\Theme\ViewModel\SvgIcons;
 use Magento\Framework\Escaper;
 use Satoshi\Theme\Block\Template;
@@ -29,6 +30,20 @@ if (!$menuItems) {
     $menuItems = $viewModelNavigation->getNavigation(4);
     $block->setData('cache_tags', $viewModelNavigation->getIdentities());
 }
+
+// @OVERRIDE START — Pdb_Menu : au niveau racine, si pdb_menu/general/enabled=1,
+// le menu est piloté par le bloc CMS nav_main_menu (widgets Pdb\Menu MenuItem)
+// rendu en markup natif Satoshi via le template widget surchargé pour ce thème.
+// Sinon, comportement natif (arbre catégories) inchangé.
+$pdbMenuEnabled = false;
+$pdbMenuBlockId = 'nav_main_menu';
+if ($id === 'all') {
+    /** @var StoreConfig $storeConfig */
+    $storeConfig = $viewModels->require(StoreConfig::class);
+    $pdbMenuEnabled = (bool) $storeConfig->getStoreConfig('pdb_menu/general/enabled');
+    $pdbMenuBlockId = (string) ($storeConfig->getStoreConfig('pdb_menu/general/cms_block_identifier') ?: 'nav_main_menu');
+}
+// @OVERRIDE END
 
 ?>
 <div
@@ -98,6 +113,14 @@ if (!$menuItems) {
     </div>
 
     <ul role="list" class="menu__links">
+        <?php /* @OVERRIDE START — Pdb_Menu : bloc CMS nav_main_menu au lieu de l'arbre catégories */ ?>
+        <?php if ($pdbMenuEnabled): ?>
+            <?= /* @noEscape */ $this->getLayout()
+                ->createBlock(CmsBlock::class)
+                ->setData('identifier', $pdbMenuBlockId)
+                ->toHtml() ?>
+        <?php else: ?>
+        <?php /* @OVERRIDE END */ ?>
         <?php $index = 0; ?>
         <?php foreach ($menuItems as $k => $menuItem): ?>
             <?php $menuId = 'desktop-menu-' . str_replace('-node', '', $menuItem['id']) ?>
@@ -205,6 +228,9 @@ if (!$menuItems) {
             </li>
             <?php $index++; ?>
         <?php endforeach; ?>
+        <?php /* @OVERRIDE START — Pdb_Menu : fermeture du if ($pdbMenuEnabled) */ ?>
+        <?php endif; ?>
+        <?php /* @OVERRIDE END */ ?>
     </ul>
 
     <div class="h-20 md:hidden"></div>

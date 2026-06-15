@@ -1,0 +1,121 @@
+<?php
+/**
+ * Pdb_Menu MenuItem widget — variante SATOSHI.
+ *
+ * Surcharge, au niveau du thème Satoshi/hyva uniquement, le template par défaut
+ * du module (app/code/Pdb/Menu/view/frontend/templates/widget/menu-item.phtml).
+ * Le thème Pdb2026/default continue d'utiliser le template du module.
+ *
+ * Au lieu du markup Hyvä (top-bar plat .pdb-menu-list + panneau .pdb-submenu),
+ * chaque item est rendu avec le markup NATIF Satoshi :
+ *  - item avec submenu  -> <button class="menu__link"> qui pousse un niveau dans
+ *    la pile Alpine `history` (setHistory), + un sous-niveau rendu via le
+ *    template natif `menu-block-cms.phtml` (bloc CMS submenu = mega-menu),
+ *    porté dans #menu-sections comme les niveaux catégories natifs.
+ *  - item avec link (sans submenu) -> <a> feuille (style natif Satoshi).
+ *
+ * Contexte : ce template est rendu par le bloc widget Pdb\Menu\Block\Widget\MenuItem,
+ * lui-même rendu par le bloc CMS nav_main_menu, lui-même injecté par
+ * menu-items.phtml (niveau racine `all`) quand pdb_menu/general/enabled=1.
+ * La variable $template (Satoshi\Theme\Block\Template) est injectée dans tous les
+ * templates par Satoshi\Theme\Plugin\TemplateEngine\SharedVariablesPlugin.
+ */
+declare(strict_types=1);
+
+use Hyva\Theme\Model\ViewModelRegistry;
+use Hyva\Theme\ViewModel\SvgIcons;
+use Magento\Cms\Block\BlockByIdentifier as CmsBlock;
+
+/** @var \Pdb\Menu\Block\Widget\MenuItem $block */
+/** @var ViewModelRegistry $viewModels */
+/** @var \Satoshi\Theme\Block\Template $template */
+
+$escaper = $block->getEscaper();
+
+/** @var SvgIcons $hyvaicons */
+$hyvaicons = $viewModels->require(SvgIcons::class);
+
+$title          = (string) $block->getData('title');
+$icon           = (string) $block->getData('icon');
+$link           = (string) $block->getData('link');
+$isExternal     = (bool)   $block->getData('is_external_link');
+$submenuBlockId = (string) $block->getData('submenu');
+
+$hasSubmenu = $submenuBlockId !== '';
+$hasLink    = $link !== '';
+
+// Id du niveau Satoshi (doit être identique entre le bouton (setHistory) et le
+// data-menu-level du sous-niveau). L'identifiant du bloc submenu est unique.
+$levelId = $submenuBlockId !== '' ? $submenuBlockId : 'pdb-' . md5($title . '|' . $link);
+
+// Classes communes (alignées sur menu-items.phtml natif).
+$linkLabelClass = 'link max-w-full truncate border-transparent transition-colors '
+    . 'md:group-hover:border-b-1 md:group-hover:border-current md:group-hover:text-primary-600';
+?>
+<li>
+    <?php if ($hasSubmenu): ?>
+        <button
+            class="menu__link group"
+            @click="setHistory(['all', '<?= $escaper->escapeHtmlAttr($levelId) ?>'])"
+            :class="{ 'menu__link--active': history.includes('<?= $escaper->escapeHtmlAttr($levelId) ?>') }"
+            role="button"
+            :aria-expanded="history.includes('<?= $escaper->escapeHtmlAttr($levelId) ?>')"
+        >
+            <?php if ($icon !== ''): ?>
+                <i class="<?= $escaper->escapeHtmlAttr($icon) ?>" aria-hidden="true"></i>
+            <?php endif; ?>
+            <span class="<?= /* @noEscape */ $linkLabelClass ?>">
+                <?= $escaper->escapeHtml($title) ?>
+            </span>
+            <span class="text-xl transition-[color,transform] md:group-hover:-translate-x-3 md:group-hover:text-primary-600">
+                <?= $hyvaicons->renderHtml('chevron-right'); ?>
+            </span>
+        </button>
+
+        <template x-portal="document.getElementById('menu-sections')">
+            <?php
+            $submenuHtml = $block->getLayout()
+                ->createBlock(CmsBlock::class)
+                ->setData('identifier', $submenuBlockId)
+                ->toHtml();
+            ?>
+            <?= /* @noEscape */ $template
+                ->setData([
+                    'cmsBlockHtml' => $submenuHtml,
+                    'level' => 2,
+                    'title' => $title,
+                    'path' => 'all',
+                    'id' => $levelId,
+                    'url' => '',
+                    'breadcrumbs' => [
+                        ['title' => $title, 'url' => ''],
+                    ],
+                ])
+                ->render('Magento_Theme::html/header/menu/menu-block-cms.phtml');
+            ?>
+        </template>
+    <?php elseif ($hasLink): ?>
+        <a
+            href="<?= $escaper->escapeUrl($link) ?>"
+            role="link"
+            <?= $isExternal ? 'target="_blank" rel="noopener"' : '' ?>
+            class="focus-visible:focus-ring group flex min-h-11 items-center justify-between py-1"
+        >
+            <?php if ($icon !== ''): ?>
+                <i class="<?= $escaper->escapeHtmlAttr($icon) ?>" aria-hidden="true"></i>
+            <?php endif; ?>
+            <span class="<?= /* @noEscape */ $linkLabelClass ?>">
+                <?= $escaper->escapeHtml($title) ?>
+            </span>
+        </a>
+    <?php else: ?>
+        <span class="group flex min-h-11 items-center py-1">
+            <?php if ($icon !== ''): ?>
+                <i class="<?= $escaper->escapeHtmlAttr($icon) ?>" aria-hidden="true"></i>
+            <?php endif; ?>
+            <span class="<?= /* @noEscape */ $linkLabelClass ?>">
+                <?= $escaper->escapeHtml($title) ?>
+            </span>
+        </span>
+    <?php endif; ?>
+</li>
