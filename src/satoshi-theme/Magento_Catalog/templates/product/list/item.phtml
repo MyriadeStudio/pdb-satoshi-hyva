@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Hyva\Theme\Model\ViewModelRegistry;
+use Hyva\Theme\ViewModel\LucideIcons;
 use Hyva\Theme\ViewModel\ProductCompare;
 use Hyva\Theme\ViewModel\ProductListItem;
 use Hyva\Theme\ViewModel\ProductPage;
@@ -64,6 +65,8 @@ $showAddToCompare = $compareViewModel->showInProductList();
 
 /** @var SvgIcons $hyvaicons */
 $hyvaicons = $viewModels->require(SvgIcons::class);
+// @OVERRIDE — $lucideIcons utilisé plus bas (icône "scale" du bouton comparer) mais non requis ici
+$lucideIcons = $viewModels->require(LucideIcons::class);
 $productListItemViewModel = $viewModels->require(ProductListItem::class);
 
 if ($product) {
