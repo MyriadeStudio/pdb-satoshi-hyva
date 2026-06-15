@@ -19,6 +19,7 @@ $class = match($page_type) {
 
 <!-- main-content -->
 <main id="MainContent"
+      x-data
       class="content-for-layout focus-none flex h-full origin-top flex-col transition-transform duration-500 will-change-transform motion-reduce:transition-none"
       :class="{
             'is-transition': $store['transition'].isAnimating
