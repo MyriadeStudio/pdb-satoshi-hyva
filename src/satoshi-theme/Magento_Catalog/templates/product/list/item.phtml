@@ -34,6 +34,11 @@ $compareViewModel = $viewModels->require(ProductCompare::class);
 /** @var AbstractProduct $block */
 /** @var Magento\Catalog\Model\Product $product */
 $product = $block->getData('product');
+// @OVERRIDE START — $productId / $productName utilisés plus bas (compare, aria-label)
+// mais non définis dans ce template Satoshi (le parent Hyvä les définit) → Warning.
+$productId = $product ? (int) $product->getId() : 0;
+$productName = $product ? (string) $product->getName() : '';
+// @OVERRIDE END
 $imageUrl = $this->helper(Image::class)->init($product, 'product_page_image_medium')
     ->getUrl();
 $placeholderImageUrl = $this->helper(Image::class)->getDefaultPlaceholderUrl('image');
