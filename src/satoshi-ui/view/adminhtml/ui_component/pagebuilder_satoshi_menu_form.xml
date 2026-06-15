@@ -136,11 +136,12 @@
                         </item>
                     </argument>
                     <settings>
-                        <validation>
-                            <rule name="validate-url" xsi:type="boolean">true</rule>
-                        </validation>
+                        <!-- @OVERRIDE START : la règle native validate-url exige un protocole (http://, https://,
+                             ftp://) et rejette les chemins relatifs. On la retire pour autoriser aussi bien une URL
+                             absolue qu'un chemin relatif (ex. /info-contact). Le champ n'est pas required. -->
                         <dataType>text</dataType>
                         <label translate="true">URL</label>
+                        <!-- @OVERRIDE END -->
                     </settings>
                 </field>
 
