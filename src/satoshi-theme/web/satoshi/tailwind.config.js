@@ -46,7 +46,8 @@ module.exports = hyvaModules.mergeTailwindConfig({
           DEFAULT: "var(--color-bg)",
           alt: "var(--color-bg-alt)",
           // fond/bordure neutre légèrement plus foncé que le fond de page (panneaux creusés, séparateurs)
-          sunken: "var(--color-bg-sunken)",
+          // fallback sur --color-bg pour rétro-compatibilité (token non émis : ancien module, cache non vidé…)
+          sunken: "var(--color-bg-sunken, var(--color-bg))",
         },
         fg: {
           DEFAULT: "var(--color-fg)",
