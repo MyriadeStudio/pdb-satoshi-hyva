@@ -56,8 +56,8 @@ mutation createProductReviewMutation(
 
 ?>
 <div class="mx-auto content-wrapper mt-8">
-    <div class="flex flex-col items-center py-7 md:py-8 px-5 md:px-12 rounded-xl bg-secondary-500">
-        <div class="mb-4 text-2xl text-text-500">
+    <div class="flex flex-col items-center py-7 md:py-8 px-5 md:px-12 rounded-xl bg-bg-sunken">
+        <div class="mb-4 text-2xl text-fg">
             <?= $escaper->escapeHtml(__('Write Your Own Review')) ?>
         </div>
         <?php if ($block->getAllowWriteReviewFlag()): ?>
@@ -133,7 +133,7 @@ mutation createProductReviewMutation(
                                                         @click="clickedRatingId = <?= (int)$iterator ?> || 0"
                                                     >
                                                         <label
-                                                            class="rating-<?= (int)$iterator ?> m-0 cursor-pointer text-secondary-600"
+                                                            class="rating-<?= (int)$iterator ?> m-0 cursor-pointer text-fg-secondary"
                                                             for="<?= $escaper->escapeHtmlAttr($rating->getRatingCode() . '_' . $option->getValue()) ?>"
                                                             id="<?= $escaper->escapeHtmlAttr($rating->getRatingCode() . '_' . $option->getValue()) ?>_label"
                                                         >
@@ -152,7 +152,7 @@ mutation createProductReviewMutation(
                                                             />
                                                             <span
                                                                 class="peer-focus:[&>svg]:focus-ring"
-                                                                :class="<?= (int)$iterator ?> <= clickedRatingId ? 'text-primary-500' : 'text-secondary-700'"
+                                                                :class="<?= (int)$iterator ?> <= clickedRatingId ? 'text-primary' : 'text-fg-secondary'"
                                                             >
                                                                 <?= $hyvaicons->renderHtml('star', 'text-xl') ?>
                                                             </span>
@@ -180,7 +180,7 @@ mutation createProductReviewMutation(
                             <label for="nickname_field" class="sr-only tracking-widest">
                                 <span><?= $escaper->escapeHtml(__('Nickname')) ?></span>
                             </label>
-                            <input class="input__field input__field--outline bg-bg-500 px-5 py-4"
+                            <input class="input__field input__field--outline bg-bg px-5 py-4"
                                    required
                                    placeholder="<?= $escaper->escapeHtmlAttr(__('Nickname') . '*') ?>" type="text"
                                    name="nickname" id="nickname_field"/>
@@ -190,7 +190,7 @@ mutation createProductReviewMutation(
                                 <span><?= $escaper->escapeHtml(__('Summary')) ?></span>
                             </label>
                             <div>
-                                <input class="input__field input__field--outline bg-bg-500 px-5 py-4"
+                                <input class="input__field input__field--outline bg-bg px-5 py-4"
                                        required
                                        placeholder="<?= $escaper->escapeHtml(__('Summary') . '*') ?>" type="text"
                                        name="title"
@@ -207,7 +207,7 @@ mutation createProductReviewMutation(
                                 placeholder="<?= $escaper->escapeHtml(__('Review') . '*') ?>" name="detail"
                                 id="review_field" cols="5"
                                 rows="5"
-                                class="input__field input__field--outline flex h-36 resize-none bg-bg-500 px-5 py-2.5"
+                                class="input__field input__field--outline flex h-36 resize-none bg-bg px-5 py-2.5"
                             ></textarea>
                             </div>
                         </div>
@@ -224,7 +224,7 @@ mutation createProductReviewMutation(
                     type="submit"
                     class="button button--filled-primary w-full my-4"
                     :class="{
-                            '!bg-primary-100': isLoading
+                            '!bg-primary-lighter': isLoading
                         }"
                 >
                     <span>

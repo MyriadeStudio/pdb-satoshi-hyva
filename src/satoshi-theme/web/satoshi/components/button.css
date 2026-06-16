@@ -18,47 +18,47 @@
   
     &--filled {
       &-primary {
-        @apply bg-primary-800 text-text-on-primary-bg;
+        @apply bg-primary text-on-primary-bg;
   
         &:not(.button--disabled) {
-          @apply md:hover:bg-primary-700;
+          @apply md:hover:bg-primary-lighter;
         }
       }
   
       &-secondary {
-        @apply bg-bg-400 text-primary-600;
+        @apply bg-bg text-primary-darker;
   
         &:not(.button--disabled) {
-          @apply md:hover:bg-bg-600;
+          @apply md:hover:bg-bg-sunken;
         }
       }
     }
   
     &--outline {
       &-primary {
-        @apply border-1 border-solid border-primary-600 bg-transparent text-primary-600;
+        @apply border-1 border-solid border-primary-darker bg-transparent text-primary-darker;
   
         &:not(.button--disabled) {
-          @apply md:hover:border-primary-700 md:hover:bg-primary-700 md:hover:text-bg-500;
+          @apply md:hover:border-primary-lighter md:hover:bg-primary-lighter md:hover:text-on-image;
         }
       }
   
       &-secondary {
-        @apply border-1 border-solid border-text-700 bg-transparent;
+        @apply border-1 border-solid border-fg-secondary bg-transparent;
   
         &:not(.button--disabled) {
-          @apply md:hover:border-primary-500 md:hover:bg-bg-400 md:hover:text-primary-500 md:active:bg-bg-100;
+          @apply md:hover:border-primary md:hover:bg-bg md:hover:text-primary md:active:bg-bg;
   
           &.group-hoverable {
-            @apply md:group-hover:border-primary-500 md:group-hover:bg-bg-400 md:group-hover:text-primary-500 md:group-active:bg-bg-100;
+            @apply md:group-hover:border-primary md:group-hover:bg-bg md:group-hover:text-primary md:group-active:bg-bg;
           }
         }
   
         &.selected {
-          @apply border-current text-primary-600;
+          @apply border-current text-primary-darker;
   
           &:not(.button--disabled) {
-            @apply md:hover:bg-primary-50 md:active:bg-primary-100;
+            @apply md:hover:bg-primary-lighter md:active:bg-primary-lighter;
           }
         }
       }
@@ -66,18 +66,18 @@
   
     &--ghost {
       &-primary {
-        @apply bg-transparent text-primary-500;
+        @apply bg-transparent text-primary;
   
         &:not(.button--disabled) {
-          @apply md:hover:bg-bg-600;
+          @apply md:hover:bg-bg-sunken;
         }
       }
   
       &-secondary {
-        @apply bg-transparent text-secondary-600;
+        @apply bg-transparent text-fg-secondary;
   
         &:not(.button--disabled) {
-          @apply md:hover:bg-secondary-500;
+          @apply md:hover:bg-bg-sunken;
         }
       }
     }

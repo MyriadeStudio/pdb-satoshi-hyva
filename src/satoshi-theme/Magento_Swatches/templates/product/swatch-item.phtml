@@ -35,7 +35,7 @@ $hyvaicons = $viewModels->require(SvgIcons::class);
         <span
             class="inline-flex h-5"
             :class="{
-                'w-5 rounded-xs border border-secondary-700': !isTextSwatch(<?= (int)$attributeId ?>, item.id),
+                'w-5 rounded-xs border border-bg-sunken': !isTextSwatch(<?= (int)$attributeId ?>, item.id),
             }"
             :style="getSwatchBackgroundStyle(<?= (int)$attributeId ?>, item.id, false)"
         >
@@ -54,10 +54,10 @@ $hyvaicons = $viewModels->require(SvgIcons::class);
     <template x-if="optionIsEnabled(<?= (int)$attributeId ?>, item.id)">
         <label
             :for="`attribute-option-<?= (int)$productId ?>-${item.id}-<?= $isPopup ? 'mobile' : 'desktop' ?>`"
-            class="button button--size-sm select-none transition-all ease-in-out relative bg-bg-500 has-[input:focus]:focus-ring"
+            class="button button--size-sm select-none transition-all ease-in-out relative bg-bg has-[input:focus]:focus-ring"
             :class="{
                 'button--outline-primary button--disabled': !optionIsActive(<?= (int)$attributeId ?>, item.id),
-                'button--outline-primary border-2 bg-bg-700': selectedValues[<?= (int)$attributeId ?>] === item.id,
+                'button--outline-primary border-2 bg-bg-sunken': selectedValues[<?= (int)$attributeId ?>] === item.id,
                 'button--outline-secondary': selectedValues[<?= (int)$attributeId ?>] !== item.id,
             }"
             aria-label="getSwatchText(<?= (int)$attributeId ?>, item.id)"
@@ -108,18 +108,18 @@ $hyvaicons = $viewModels->require(SvgIcons::class);
                          :class="{ '!opacity-100': !isTextSwatch(<?= (int)$attributeId ?>, item.id) && !optionIsActive(<?= (int)$attributeId ?>, item.id) }">
                         <div class="relative w-full h-full">
                             <div
-                                class="absolute top-1/2 left-1/2 w-3/4 h-0.5 bg-bg-400 transform -translate-x-1/2 -translate-y-1/2 rotate-45 rounded-full"></div>
+                                class="absolute top-1/2 left-1/2 w-3/4 h-0.5 bg-bg transform -translate-x-1/2 -translate-y-1/2 rotate-45 rounded-full"></div>
                             <div
-                                class="absolute top-1/2 left-1/2 w-3/4 h-0.5 bg-bg-400 transform -translate-x-1/2 -translate-y-1/2 -rotate-45 rounded-full"></div>
+                                class="absolute top-1/2 left-1/2 w-3/4 h-0.5 bg-bg transform -translate-x-1/2 -translate-y-1/2 -rotate-45 rounded-full"></div>
                         </div>
                     </div>
                     <span
-                        class="absolute flex size-full items-center justify-center text-lg text-primary-500 opacity-0"
+                        class="absolute flex size-full items-center justify-center text-lg text-primary opacity-0"
                         :class="{
                             '!opacity-100': selectedValues[<?= (int)$attributeId ?>] === item.id,
                         }"
                     >
-                        <?= $hyvaicons->renderHtml('checkmark', 'stroke-bg-400 stroke-1 drop-shadow-lg') ?>
+                        <?= $hyvaicons->renderHtml('checkmark', 'stroke-bg stroke-1 drop-shadow-lg') ?>
                     </span>
                 </div>
             </template>

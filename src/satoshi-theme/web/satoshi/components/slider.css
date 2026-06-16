@@ -24,7 +24,7 @@
     }
   
     &__header {
-      @apply mx-auto flex items-center justify-between text-text-500;
+      @apply mx-auto flex items-center justify-between text-fg;
     }
   
     &__title {
@@ -138,7 +138,7 @@
           background: linear-gradient(
               90deg,
               transparent 0%,
-              var(--color-background-500) calc(
+              var(--color-bg) calc(
                 (var(--slide-max-width) - var(--content-wrapper-padding-x) -
                 (var(--slide-gap) * (var(--slide-count) - 1))) / var(--slide-count) * 2 / 3
               )
@@ -154,7 +154,7 @@
           background: linear-gradient(
               270deg,
               transparent 0%,
-              var(--color-background-500) calc(
+              var(--color-bg) calc(
                 (var(--slide-max-width) - var(--content-wrapper-padding-x) -
                 (var(--slide-gap) * (var(--slide-count) - 1))) / var(--slide-count) * 2 / 3
               )

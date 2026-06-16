@@ -63,7 +63,7 @@ $hideOnMobile = in_array($pageType, $mobilePageTypes, true);
                             </div>
                         </div>
                     </template>
-                    <div role="listitem" class="breadcrumb text-text-500"
+                    <div role="listitem" class="breadcrumb text-fg"
                          x-text="$store['transition'].pageData?.title"></div>
                 </div>
             </template>
@@ -106,7 +106,7 @@ $hideOnMobile = in_array($pageType, $mobilePageTypes, true);
                             </div>
                         </div>
                     </template>
-                    <div role="listitem" class="breadcrumb text-text-500"
+                    <div role="listitem" class="breadcrumb text-fg"
                          x-text="$store['transition'].pageData?.title"></div>
                 </div>
             </template>
@@ -126,7 +126,7 @@ $hideOnMobile = in_array($pageType, $mobilePageTypes, true);
 
                     <div
                         role="listitem"
-                        class="breadcrumb text-text-500"
+                        class="breadcrumb text-fg"
                         x-text="hyva.strf('<?= __("Search results for: %0") ?>', `'${$store['transition'].pageData?.search ?? ''}'`)"
                     ></div>
                 </div>
@@ -153,7 +153,7 @@ $hideOnMobile = in_array($pageType, $mobilePageTypes, true);
                         <?= $hyvaicons->renderHtml('breadcrumb-chevron'); ?>
                     </div>
                 <?php elseif (!empty($crumbInfo['last'])): ?>
-                    <div role="listitem" class="breadcrumb text-text-500">
+                    <div role="listitem" class="breadcrumb text-fg">
                         <?= $escaper->escapeHtml($crumbInfo['label']) ?>
                     </div>
                 <?php endif; ?>

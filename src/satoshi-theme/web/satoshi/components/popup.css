@@ -65,7 +65,7 @@
       }
   
       &__content-top {
-        @apply pointer-events-none relative top-full z-10 h-full rounded-t-md bg-bg-500 transition-transform duration-500 motion-reduce:transition-none;
+        @apply pointer-events-none relative top-full z-10 h-full rounded-t-md bg-bg transition-transform duration-500 motion-reduce:transition-none;
   
         transform: translateY(calc(var(--popup-max-height) * -1 - 8px));
   
@@ -107,7 +107,7 @@
       }
   
       &__bottom {
-        @apply absolute bottom-0 left-0 right-0 z-10 w-full rounded-b-md bg-bg-500 pb-4;
+        @apply absolute bottom-0 left-0 right-0 z-10 w-full rounded-b-md bg-bg pb-4;
       }
     }
   }

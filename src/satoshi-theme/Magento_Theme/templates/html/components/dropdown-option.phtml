@@ -20,7 +20,7 @@ $url = $block->getData('url');
   <a
     tabindex="0"
     data-value="<?= $escaper->escapeHtmlAttr($value) ?>"
-    class="flex cursor-pointer justify-between p-3 text-text-500<?= $isActive ? ' bg-bg-600 text-primary-600 md:cursor-not-allowed' : ' md:hover:text-primary-600' ?> gap-x-6 text-nowrap rounded-xs"
+    class="flex cursor-pointer justify-between p-3 text-fg<?= $isActive ? ' bg-bg-sunken text-primary-darker md:cursor-not-allowed' : ' md:hover:text-primary-darker' ?> gap-x-6 text-nowrap rounded-xs"
     <?php if ($url): ?>
     href="<?= $escaper->escapeUrl($url) ?>"
     <?php endif; ?>

@@ -7,7 +7,7 @@
   }
   
   .price {
-    @apply text-primary-600;
+    @apply text-primary-darker;
   
     .old-price & {
       @apply text-inherit line-through;

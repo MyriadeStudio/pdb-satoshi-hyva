@@ -65,7 +65,7 @@ if ($id === 'all') {
                     <button
                         @click="$store.resizable.hideAll();"
                         type="button"
-                        class="button icon-button icon-button--size-lg h-auto w-auto gap-3 pl-2 pr-[10px] py-3 text-primary-500 hover:bg-bg-600"
+                        class="button icon-button icon-button--size-lg h-auto w-auto gap-3 pl-2 pr-[10px] py-3 text-primary hover:bg-bg-sunken"
                         aria-label="<?= __('Close menu') ?>"
                         aria-controls="menu-desktop"
                         :aria-expanded="$store.resizable.isVisible('menu-desktop')"
@@ -144,10 +144,10 @@ if ($id === 'all') {
                         role="button"
                         :aria-expanded="history.includes('<?= $menuItem['id'] ?>')"
                     >
-                        <span class="link max-w-full truncate border-transparent transition-colors md:group-hover:border-b-1 md:group-hover:border-current md:group-hover:text-primary-600">
+                        <span class="link max-w-full truncate border-transparent transition-colors md:group-hover:border-b-1 md:group-hover:border-current md:group-hover:text-primary-darker">
                             <?= $menuItem['name'] ?>
                         </span>
-                        <span class="text-xl transition-[color,transform] md:group-hover:-translate-x-3 md:group-hover:text-primary-600">
+                        <span class="text-xl transition-[color,transform] md:group-hover:-translate-x-3 md:group-hover:text-primary-darker">
                             <?= $hyvaicons->renderHtml('chevron-right'); ?>
                         </span>
                     </button>
@@ -215,11 +215,11 @@ if ($id === 'all') {
                         }"
                         class="focus-visible:focus-ring group flex min-h-11 items-center justify-between py-1"
                         :class="{
-                            'text-primary-500 font-semibold': history.includes('<?= $menuItem['id'] ?>')
+                            'text-primary font-semibold': history.includes('<?= $menuItem['id'] ?>')
                         }"
                     >
                         <span
-                            class="link max-w-full truncate border-transparent transition-colors md:group-hover:border-b-1 md:group-hover:border-current md:group-hover:text-primary-600"
+                            class="link max-w-full truncate border-transparent transition-colors md:group-hover:border-b-1 md:group-hover:border-current md:group-hover:text-primary-darker"
                         >
                             <?= $menuItem['name'] ?>
                         </span>
@@ -239,7 +239,7 @@ if ($id === 'all') {
             x-portal="$store.main.isMobile ? document.getElementById('popup-fixed-content-portal') : document.getElementById('menu-actions-<?= $id ?>')"
         >
             <div
-                class="bg-bg-500 px-4 pb-2 transition-colors duration-200 md:bg-transparent md:hover:text-primary-600"
+                class="bg-bg px-4 pb-2 transition-colors duration-200 md:bg-transparent md:hover:text-primary-darker"
                 x-transition.opacity
                 x-show="$store.main.isMobile ? history[history.length - 1] === '<?= $id ?>' && !getIsSearchActive() : history.includes('<?= $id ?>')"
                 role="link"

@@ -68,7 +68,7 @@ $hyvaicons = $viewModels->require(SvgIcons::class);
                 <button type="button"
                         @click="<?= /** @noEscape */
                         $confirmation->getShowJs() ?>.then(ok => ok && $refs.form.submit())">
-                    <?= $hyvaicons->renderHtml('trash', 'text-xl text-primary-700'); ?>
+                    <?= $hyvaicons->renderHtml('trash', 'text-xl text-primary-lighter'); ?>
                 </button>
                 <?= /** @noEscape */ $confirmation ?>
             </form>

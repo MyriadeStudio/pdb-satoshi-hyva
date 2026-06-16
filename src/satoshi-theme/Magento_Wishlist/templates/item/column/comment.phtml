@@ -25,7 +25,7 @@ $wishlistHelper = $this->helper(WishlistHelper::class);
         placeholder="<?= $escaper->escapeHtmlAttr(__('Comment text')) ?>"
         name="description[<?= $escaper->escapeHtmlAttr($item->getWishlistItemId()) ?>]"
         title="<?= $escaper->escapeHtmlAttr(__('Comment')) ?>"
-        class="input__field input__field--outline block h-[60px] px-5 py-2.5 border-bg-600 placeholder:text-border-color resize-none mt-[6px]"
+        class="input__field input__field--outline block h-[60px] px-5 py-2.5 border-bg-sunken placeholder:text-border-color resize-none mt-[6px]"
         <?= $item->getProduct()->isSaleable() ? '' : 'disabled' ?>
     ><?= ($escaper->escapeHtml($item->getDescription())) ?></textarea>
 </div>

@@ -34,7 +34,7 @@ $isProductList = $block->getIsProductList();
     <?php endif ?>
     <?php if ($lastPage > 1): ?>
         <span class="font-medium leading-5 mt-4">
-            <span class="text-primary-600">
+            <span class="text-primary-darker">
                 <?= $escaper->escapeHtml($localeFormatter->formatNumber($lastItemNumber)) ?>
             </span>
             <?= $escaper->escapeHtml('/ ' . $localeFormatter->formatNumber($totalItemsNumber)) ?>

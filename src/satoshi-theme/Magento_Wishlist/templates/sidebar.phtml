@@ -28,7 +28,7 @@ $hyvaicons = $viewModels->require(SvgIcons::class);
             <div class="mt-8">
                 <h2 class="mb-5" id="wishlist-sidebar">
                     <strong
-                        class="text-text-500 text-lg font-bold leading-6 mr-3"
+                        class="text-fg text-lg font-bold leading-6 mr-3"
                     ><?= $escaper->escapeHtml(__('My wish list')) ?></strong><span class="font-medium leading-5 capitalize" x-html="wishlistCountLabel"></span>
                 </h2>
                 <ul class="flex flex-col gap-5 mb-5 p-5 card" aria-labelledby="wishlist-sidebar">
@@ -49,7 +49,7 @@ $hyvaicons = $viewModels->require(SvgIcons::class);
                                 >
                             </a>
                             <div class="w-[calc(100%-102px)]">
-                                <strong class="block text-text-500 leading-5 font-bold mb-1 overflow-hidden text-ellipsis text-nowrap">
+                                <strong class="block text-fg leading-5 font-bold mb-1 overflow-hidden text-ellipsis text-nowrap">
                                     <a
                                         :href="product.product_url"
                                         x-element-transition-trigger
@@ -57,7 +57,7 @@ $hyvaicons = $viewModels->require(SvgIcons::class);
                                         x-html="product.product_name"
                                     ></a>
                                 </strong>
-                                <div class="font-normal mb-4 [&_.price]:text-text-400" x-html="product.product_price"></div>
+                                <div class="font-normal mb-4 [&_.price]:text-fg" x-html="product.product_price"></div>
                                 <template x-if="product.product_is_saleable_and_visible">
                                     <div>
                                         <template x-if="!product.product_has_required_options">
@@ -96,7 +96,7 @@ $hyvaicons = $viewModels->require(SvgIcons::class);
                 <a
                     href="<?= $escaper->escapeUrl($block->getUrl('wishlist')) ?>"
                     aria-label="<?= $escaper->escapeHtmlAttr(__('Go to Wish List page')); ?>"
-                    class="button button--outline-primary bg-bg-400 max-md:w-full"
+                    class="button button--outline-primary bg-bg max-md:w-full"
                     x-element-transition-trigger
                 >
                     <?= $escaper->escapeHtml(__('Go to wish list')); ?>

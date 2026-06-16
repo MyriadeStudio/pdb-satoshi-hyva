@@ -19,7 +19,7 @@ $url = $block->getData('url');
     <span class="mb-2 block md:mb-3 max-md:font-semibold"><?= __('Share') ?></span>
 
     <button
-      class="border-text-text-500 rounded-sm border p-3 md:hidden"
+      class="border-text-fg rounded-sm border p-3 md:hidden"
       @click.prevent="$store.popup.hidePopup('<?= $id ?>')" type="button"
     >
       <?= $hyvaicons->renderHtml('close') ?>
@@ -30,7 +30,7 @@ $url = $block->getData('url');
     <label for="url_<?= $id ?>" class="sr-only tracking-widest"><?= __('Share') ?></label>
     <input
       type="text"
-      class="input__field input__field--outline h-auto bg-bg-500 px-5 py-2.5"
+      class="input__field input__field--outline h-auto bg-bg px-5 py-2.5"
       id="url_<?= $id ?>"
       value="<?= $url ?>"
       placeholder="<?= __('Share') ?>"

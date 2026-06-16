@@ -47,7 +47,7 @@ $code = $attribute->getAttributeCode();
                value="<?= $escaper->escapeHtml($block->getAttributeValue($attribute, 'from')) ?>"
                id="<?= $escaper->escapeHtmlAttr($code) ?>"
                title="<?= $escaper->escapeHtml($block->getAttributeLabel($attribute)) ?>"
-               class="input__field input__field--outline h-auto bg-bg-500 px-5 py-2.5"
+               class="input__field input__field--outline h-auto bg-bg px-5 py-2.5"
                type="<?= /** @noEscape */
                $htmlInputType ?>"
                placeholder="<?= $escaper->escapeHtmlAttr(__('From')) ?>"
@@ -78,7 +78,7 @@ $code = $attribute->getAttributeCode();
                value="<?= $escaper->escapeHtml($block->getAttributeValue($attribute, 'to')) ?>"
                id="<?= $escaper->escapeHtmlAttr($code) ?>_to"
                title="<?= $escaper->escapeHtml($block->getAttributeLabel($attribute)) ?>"
-               class="input__field input__field--outline h-auto bg-bg-500 px-5 py-2.5"
+               class="input__field input__field--outline h-auto bg-bg px-5 py-2.5"
                type="<?= /** @noEscape */
                $htmlInputType ?>"
                maxlength="<?= $escaper->escapeHtmlAttr($maxQueryLength) ?>"

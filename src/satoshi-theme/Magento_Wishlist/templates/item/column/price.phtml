@@ -12,7 +12,7 @@ $shouldRenderQtyInput = $item->canHaveQty() && $product->isVisibleInSiteVisibili
 
 <div
     class="
-        flex justify-between items-center mb-5 [&_.price-box_.price]:text-text-500 [&_.price-box_.price]:text-lg [&_.price-box_.price]:font-bold
+        flex justify-between items-center mb-5 [&_.price-box_.price]:text-fg [&_.price-box_.price]:text-lg [&_.price-box_.price]:font-bold
         <?= $shouldRenderQtyInput ? '[&_.product-details-tooltip]:-translate-x-[60%]' : '[&_.product-details-tooltip]:-translate-x-full' ?>
     "
 >
@@ -39,7 +39,7 @@ $shouldRenderQtyInput = $item->canHaveQty() && $product->isVisibleInSiteVisibili
             name="qty[<?= $escaper->escapeHtmlAttr($item->getId()) ?>]"
             value="<?= /* @noEscape */
             $block->getAddToCartQty($item) * 1 ?>"
-            class="input__field input__field--outline px-5 py-2.5 border-bg-600 placeholder:text-border-color w-20"
+            class="input__field input__field--outline px-5 py-2.5 border-bg-sunken placeholder:text-border-color w-20"
             <?= $product->isSaleable() ? '' : 'disabled' ?>
         >
     <?php endif; ?>

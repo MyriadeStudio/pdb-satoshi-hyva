@@ -24,7 +24,7 @@ $block->setCacheKey('footer_currency_' . $currencyViewModel->getCurrentCurrencyC
 <template x-portal="document.getElementById('footer-portal')">
     <div class="contents">
         <footer
-            class="footer rounded-t-2xl md:bg-secondary-400"
+            class="footer rounded-t-2xl md:bg-surface"
             x-cloak
             :class="{ 'hidden': $store.main.isMobile && '<?= $block->getIsHomePage() ?>' !== '1' }"
         >

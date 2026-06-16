@@ -2,104 +2,10 @@
 use Pdb\ThemeHyva\Helper\CssVars;
 
 $helper = $this->helper(CssVars::class);
+// Couleur d'accent utilisée par la barre de progression ci-dessous.
+// Les nuanciers couleur ne sont plus générés ici : Satoshi consomme désormais
+// les tokens sémantiques émis par Pdb_ThemeHyva (css-vars.phtml).
 $primaryColor = $helper->getColorPrimary();
-$secondaryColor = $helper->getColorSecondary();
-$bgColor = $helper->getColorBg();
-$fgColor = $helper->getColorFg();
-$surfaceColor = $helper->getColorSurface();
-
-$scale = [
-    50  => 45,
-    100 => 30,
-    400 => 10,
-    500 => 0,
-    600 => -8,
-    700 => 8,
-    800 => 0,
-];
-
-/*
---color-primary-50: #7e7e7e;
---color-primary-100: #4b4b4b;
---color-primary-400: #252525;
---color-primary-500: #181818;
---color-primary-600: #0b0b0b;
---color-primary-700: #3F3F3F;
-*/
-$cssColorPrimary = '';
-foreach ($scale as $key => $lightness) {
-    $cssColorPrimary .= "--color-primary-$key: "
-        . $helper->adjustLightness($primaryColor, $lightness)
-        . ";\n";
-}
-
-/*
---color-background-50: #ffffff;
---color-background-100: #ffffff;
---color-background-400: #ffffff;
---color-background-500: #f9f9f9;
---color-background-600: #efefef;
---color-background-700: #e6e6e6;
-*/
-$scale = [
-    50  => 0,
-    100 => 0,
-    400 => 0,
-    500 => 0,
-    600 => -10,
-    700 => -15,
-];
-$cssBgColor = '';
-foreach ($scale as $key => $lightness) {
-    $cssBgColor .= "--color-background-$key: "
-        . $helper->adjustLightness($bgColor, $lightness)
-        . ";\n";
-}
-/*
---color-text-50: #000000;
---color-text-100: #0f0f0f;
---color-text-400: #353535;
---color-text-500: #424242;
---color-text-600: #4f4f4f;
---color-text-700: #5c5c5c;
-*/
-
-$scale = [
-    50  => 0,
-    100 => 5,
-    400 => 10,
-    500 => 15,
-    600 => 20,
-    700 => 25,
-];
-$cssFgColor = '';
-foreach ($scale as $key => $lightness) {
-    $cssFgColor .= "--color-text-$key: "
-        . $helper->adjustLightness($fgColor, $lightness)
-        . ";\n";
-}
-/*
---color-secondary-50: #ffffff;
---color-secondary-100: #ffffff;
---color-secondary-400: #ffffff;
---color-secondary-500: #f5f5f5;
---color-secondary-600: #e8e8e8;
---color-secondary-700: #dcdcdc;
-*/
-$scale = [
-    50  => 0,
-    100 => 5,
-    400 => 10,
-    500 => 15,
-    600 => 20,
-    700 => 25,
-];
-$cssSecondaryColor = '';
-foreach ($scale as $key => $lightness) {
-    $cssSecondaryColor .= "--color-secondary-$key: "
-        . $helper->adjustLightness($secondaryColor, $lightness)
-        . ";\n";
-}
 ?>
 <style>
     @font-face {
@@ -136,41 +42,11 @@ foreach ($scale as $key => $lightness) {
 
         --fade-in-bg: #FDFDFD;
 
-        <?= $cssColorPrimary ?>
-        <?= $cssBgColor ?>
-        <?= $cssFgColor ?>
-        <?= $cssSecondaryColor ?>
+        /* Couleurs : tokens sémantiques émis par Pdb_ThemeHyva (view/base/templates/css/css-vars.phtml) */
 
-        /* On dark bg, lighter color is lighter */
-        /* On light bg, lighter color is darker */
-
-        /* bg_is_darker: false; */
         --color-overlay: #18181833;
         --color-overlay-dark: #18181866;
         --header-shadow: 0 10px 8px rgb(0 0 0 / 0.04);
-    }
-
-    /* On dark bg, lighter color should become even lighter */
-    /* On light bg, lighter color should become darker */
-
-    @media (prefers-contrast: more) {
-        :root {
-
-            /* bg_is_darker: false; */
-            --color-text-50: #000000;
-            --color-text-100: #000000;
-            --color-text-400: #1c1c1c;
-            --color-text-500: #292929;
-            --color-text-600: #353535;
-            --color-text-700: #424242;
-
-            --color-primary-50: #000000;
-            --color-primary-100: #000000;
-            --color-primary-400: #000000;
-            --color-primary-500: #000000;
-            --color-primary-600: #0b0b0b;
-            --color-primary-700: #181818;
-        }
     }
 
     *,

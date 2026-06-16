@@ -3,10 +3,10 @@
     @apply mb-4 flex cursor-pointer items-center;
   
     &__control {
-      @apply flex-none inline-flex h-6 w-6 items-center justify-center rounded-full border border-solid border-text-400 text-md text-bg-500 transition-colors duration-200;
+      @apply flex-none inline-flex h-6 w-6 items-center justify-center rounded-full border border-solid border-fg text-md text-on-image transition-colors duration-200;
   
       .radio:hover & {
-        @apply md:border-primary-500 md:bg-bg-400;
+        @apply md:border-primary md:bg-bg;
       }
     }
   
@@ -14,7 +14,7 @@
       @apply ml-5;
   
       .radio:hover & {
-        @apply md:text-primary-500;
+        @apply md:text-primary;
       }
     }
   
@@ -29,7 +29,7 @@
       }
   
       &[checked] + .radio__control {
-        @apply border-primary-500 bg-primary-500;
+        @apply border-primary bg-primary;
   
         &::before {
           @apply h-1/2 w-1/2 rounded-full bg-current content-[''];
@@ -37,7 +37,7 @@
       }
   
       &[checked] ~ .radio__label {
-        @apply font-semibold text-primary-500;
+        @apply font-semibold text-primary;
       }
     }
   }

@@ -42,7 +42,7 @@
           transition: opacity 300ms 400ms;
   
           &:not(:first-child) {
-            @apply border-bg-600 border-l-1;
+            @apply border-bg-sunken border-l-1;
           }
         }
       }
@@ -55,10 +55,10 @@
     }
   
     &__header {
-      @apply bg-bg-500 sticky top-[42px] z-10 flex flex-col gap-3 px-3 pt-6;
+      @apply bg-bg sticky top-[42px] z-10 flex flex-col gap-3 px-3 pt-6;
   
       @screen md {
-        @apply from-bg-500 top-0 rounded-t-md bg-transparent bg-gradient-to-b from-70% p-5 pb-4 pl-4;
+        @apply from-bg top-0 rounded-t-md bg-transparent bg-gradient-to-b from-70% p-5 pb-4 pl-4;
       }
     }
   
@@ -85,7 +85,7 @@
     }
   
     &__heading {
-      @apply truncate translate-x-[52px] text-lg text-text-500 transition-transform duration-300;
+      @apply truncate translate-x-[52px] text-lg text-fg transition-transform duration-300;
   
       @screen md {
         @apply flex-1 translate-x-0 text-md;
@@ -112,7 +112,7 @@
       @apply focus-visible:focus-ring flex min-h-11	w-full items-center justify-between py-1;
   
       &--active {
-        @apply font-bold text-primary-500;
+        @apply font-bold text-primary;
       }
     }
   }

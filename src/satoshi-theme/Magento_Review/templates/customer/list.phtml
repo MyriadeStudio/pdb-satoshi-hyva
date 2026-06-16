@@ -50,7 +50,7 @@ $hyvaicons = $viewModels->require(SvgIcons::class);
     <template x-if="reviews && reviews.length">
         <div>
             <template x-for="(review, index) in reviews" :key="index">
-                <div class="mb-5 card p-5 rounded-xl bg-bg-400">
+                <div class="mb-5 card p-5 rounded-xl bg-bg">
                     <div class="flex gap-5 lg:gap-5 flex-row mb-3">
                         <div class="flex-shrink-0 h-20 w-16 md:h-40 md:w-32 rounded-xl overflow-hidden bg-[--fade-in-bg]">
                             <img :src="review.product && review.product.image && review.product.image.url"
@@ -80,16 +80,16 @@ $hyvaicons = $viewModels->require(SvgIcons::class);
                                         <template x-for="i in <?= $escaper->escapeJs($ratingSteps) ?>">
                                             <div>
                                                 <template x-if="i <= item.value">
-                                                    <?= $hyvaicons->renderHtml('star', 'text-primary-500 text-xl'); ?>
+                                                    <?= $hyvaicons->renderHtml('star', 'text-primary text-xl'); ?>
                                                 </template>
                                                 <template x-if="i > item.value">
-                                                    <?= $hyvaicons->renderHtml('star', 'text-secondary-700 text-xl'); ?>
+                                                    <?= $hyvaicons->renderHtml('star', 'text-fg-secondary text-xl'); ?>
                                                 </template>
                                             </div>
                                         </template>
                                     </div>
                                     <div>
-                                        <p x-text="Number(item.value).toFixed(1)" class="text-primary-600"></p>
+                                        <p x-text="Number(item.value).toFixed(1)" class="text-primary-darker"></p>
                                     </div>
                                 </div>
                             </template>

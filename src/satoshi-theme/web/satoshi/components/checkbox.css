@@ -15,7 +15,7 @@
       &:checked + {
         .radio__control,
         .checkbox__control {
-          @apply border-primary-500 bg-primary-500;
+          @apply border-primary bg-primary;
   
           svg {
             @apply scale-100 transform opacity-100;
@@ -28,17 +28,17 @@
       &:checked ~ {
         .radio__label,
         .checkbox__label {
-          @apply font-semibold text-primary-500;
+          @apply font-semibold text-primary;
         }
   
         .checkbox__swatch {
-          @apply border-primary-500;
+          @apply border-primary;
         }
       }
     }
   
     &__control {
-      @apply inline-flex h-6 w-6 mr-5 cursor-pointer items-center justify-center rounded-xs border border-solid border-text-400 text-md text-bg-500 transition-colors duration-200;
+      @apply inline-flex h-6 w-6 mr-5 cursor-pointer items-center justify-center rounded-xs border border-solid border-fg text-md text-on-image transition-colors duration-200;
   
       svg {
         @apply scale-50 stroke-current stroke-2 opacity-0 transition-transform duration-200;
@@ -48,7 +48,7 @@
       }
   
       .checkbox:hover & {
-        @apply md:bg-bg-400 md:text-primary-500;
+        @apply md:bg-bg md:text-primary;
       }
     }
   
@@ -56,7 +56,7 @@
       @apply cursor-pointer transition-colors duration-200;
   
       .checkbox:hover & {
-        @apply md:text-primary-500;
+        @apply md:text-primary;
       }
     }
   
@@ -64,7 +64,7 @@
       @apply w-6 h-6 mr-5 p-1 rounded border border-gray-300 transition-colors duration-200;
   
       .checkbox:hover & {
-        @apply md:border-primary-500;
+        @apply md:border-primary;
       }
     }
   }

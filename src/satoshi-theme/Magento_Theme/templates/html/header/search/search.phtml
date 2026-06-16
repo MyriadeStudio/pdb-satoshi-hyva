@@ -16,10 +16,10 @@ $hyvaicons = $viewModels->require(SvgIcons::class);
 
 <div>
     <form
-        class="fixed left-0 z-20 w-full rounded-t-md bg-bg-500 px-5 md:sticky md:w-[--search-width] md:border-b-1 md:border-transparent md:bg-transparent md:px-2 md:pt-0 md:transition-all md:delay-150 md:duration-300 max-md:top-0 max-md:pb-3 max-md:pt-[18px]"
+        class="fixed left-0 z-20 w-full rounded-t-md bg-bg px-5 md:sticky md:w-[--search-width] md:border-b-1 md:border-transparent md:bg-transparent md:px-2 md:pt-0 md:transition-all md:delay-150 md:duration-300 max-md:top-0 max-md:pb-3 max-md:pt-[18px]"
         role="search"
         :class="{
-            'md:bg-bg-500 md:border-bg-600': getIsSearchActive(),
+            'md:bg-bg md:border-bg-sunken': getIsSearchActive(),
             'md:bg-transparent md:border-transparent': !getIsSearchActive(),
             'md:max-w-24': !$store.resizable.isVisible('search-desktop')
         }"
@@ -37,7 +37,7 @@ $hyvaicons = $viewModels->require(SvgIcons::class);
             <input
                 type="search"
                 placeholder="<?= __('Search') ?>"
-                class="input__field input__field--filled hover:bg-transparent border-none focus-visible:input__field--outline md:input__field--ghost md:focus-visible:input__field--ghost pr-11 placeholder:text-text-500 md:order-2 md:px-2 md:placeholder:text-fg md:focus-visible:border-transparent md:focus-visible:shadow-none md:focus-visible:outline-0"
+                class="input__field input__field--filled hover:bg-transparent border-none focus-visible:input__field--outline md:input__field--ghost md:focus-visible:input__field--ghost pr-11 placeholder:text-fg md:order-2 md:px-2 md:placeholder:text-fg md:focus-visible:border-transparent md:focus-visible:shadow-none md:focus-visible:outline-0"
                 x-model="searchTermInput"
                 @input.debounce.500ms="setSearchTerm"
                 name="q"
@@ -55,7 +55,7 @@ $hyvaicons = $viewModels->require(SvgIcons::class);
                 x-a11y-trap-target.start="getIsSearchActive()"
             >
             <div
-                class="max-md:icon-button--size-md md:button md:icon-button md:icon-button--size-lg md:order-1 md:text-fg max-md:pointer-events-none max-md:absolute max-md:right-0 max-md:top-0 max-md:z-10 max-md:flex max-md:items-center max-md:justify-center max-md:px-0 max-md:text-lg max-md:text-text-500"
+                class="max-md:icon-button--size-md md:button md:icon-button md:icon-button--size-lg md:order-1 md:text-fg max-md:pointer-events-none max-md:absolute max-md:right-0 max-md:top-0 max-md:z-10 max-md:flex max-md:items-center max-md:justify-center max-md:px-0 max-md:text-lg max-md:text-fg"
                 x-show="!$store.main.isMobile || !searchTerm"
                 :class="{
                     'md:hidden': !$store.resizable.isVisible('search-desktop')
@@ -65,7 +65,7 @@ $hyvaicons = $viewModels->require(SvgIcons::class);
             </div>
             <button
                 type="button"
-                class="icon-button--size-md absolute bottom-0 right-0 top-0 z-10 m-auto flex items-center justify-center px-0 text-xxl text-text-500"
+                class="icon-button--size-md absolute bottom-0 right-0 top-0 z-10 m-auto flex items-center justify-center px-0 text-xxl text-fg"
                 aria-label="<?= __('Clear search') ?>"
                 x-show="!!searchTerm"
                 @click="resetSearchTerm"
@@ -83,7 +83,7 @@ $hyvaicons = $viewModels->require(SvgIcons::class);
         x-show="getIsSearchActive()"
         class="
             flex flex-col gap-3 overflow-x-hidden pt-2 transition-opacity duration-0 md:inset-x-0 md:top-full
-            md:max-h-[calc(100dvh-125px)] md:rounded-t-none md:pt-0 md:duration-300 md:rounded-none md:bg-bg-400
+            md:max-h-[calc(100dvh-125px)] md:rounded-t-none md:pt-0 md:duration-300 md:rounded-none md:bg-bg
         "
         x-transition:enter="md:delay-450"
         x-transition:enter-start="md:opacity-0"
@@ -101,7 +101,7 @@ $hyvaicons = $viewModels->require(SvgIcons::class);
             <?= $template->render('Magento_Theme::html/header/search/search-products.phtml') ?>
         </div>
         <div
-            class="transition-opacity duration-300 md:sticky md:bottom-0 md:z-10 md:w-full md:rounded-b-md md:bg-bg-500"
+            class="transition-opacity duration-300 md:sticky md:bottom-0 md:z-10 md:w-full md:rounded-b-md md:bg-bg"
             id="search-actions"
             x-show="!isLoading"
             x-transition.opacity

@@ -26,11 +26,12 @@ module.exports = hyvaModules.mergeTailwindConfig({
       },
       boxShadow: {
         outline: "0 0 0 3px rgba(66, 153, 225, 0.6)",
-        input: "0 0 0 1px var(--color-primary-500)",
+        input: "0 0 0 1px var(--color-primary)",
         error: "0 0 0 1px rgb(229, 62, 62)",
         fadeTop: "0px -10px 15px #00000010",
       },
       colors: {
+        // --- Utilitaires Satoshi (hors design-system PDB) ---
         placeholder: "#718096",
         "border-color": "#e2e8f0",
         shadow: "#00000033",
@@ -38,42 +39,47 @@ module.exports = hyvaModules.mergeTailwindConfig({
         "overlay-dark": "#18181866",
         "primary-bg": "#181818",
         "text-on-primary-bg": "#FFFFFF",
-        fg: "var(--color-fg)",
         error: "#B40C1C",
+
+        // --- Tokens sémantiques Pdb_ThemeHyva (BO → :root via default_head_blocks.xml) ---
         bg: {
-          50: "var(--color-background-50)",
-          100: "var(--color-background-100)",
-          400: "var(--color-background-400)",
-          500: "var(--color-background-500)",
-          600: "var(--color-background-600)",
-          700: "var(--color-background-700)",
+          DEFAULT: "var(--color-bg)",
+          alt: "var(--color-bg-alt)",
+          // fond/bordure neutre légèrement plus foncé que le fond de page (panneaux creusés, séparateurs)
+          sunken: "var(--color-bg-sunken)",
         },
-        // primary colors (must catch attention)
+        fg: {
+          DEFAULT: "var(--color-fg)",
+          alt: "var(--color-fg-alt)",
+          // texte discret/secondaire
+          secondary: "var(--color-fg-secondary)",
+        },
+        surface: {
+          DEFAULT: "var(--color-surface)",
+          hover: "var(--color-surface-hover)",
+        },
+        // primary = couleur d'accent (doit attirer l'attention)
         primary: {
-          50: "var(--color-primary-50)",
-          100: "var(--color-primary-100)",
-          400: "var(--color-primary-400)",
-          500: "var(--color-primary-500)",
-          600: "var(--color-primary-600)",
-          700: "var(--color-primary-700)",
-          800: "var(--color-primary-800)",
+          DEFAULT: "var(--color-primary)",
+          lighter: "var(--color-primary-lighter)",
+          darker: "var(--color-primary-darker)",
+          on: "var(--color-primary-on)",
+          hover: "var(--color-primary-hover)",
+          "hover-on": "var(--color-primary-hover-on)",
         },
-        // secondary colors (must not catch attention)
+        // secondary = accent secondaire (réservé à l'accentuation, PAS aux fonds neutres)
         secondary: {
-          50: "var(--color-secondary-50)",
-          100: "var(--color-secondary-100)",
-          400: "var(--color-secondary-400)",
-          500: "var(--color-secondary-500)",
-          600: "var(--color-secondary-600)",
-          700: "var(--color-secondary-700)",
+          DEFAULT: "var(--color-secondary)",
+          lighter: "var(--color-secondary-lighter)",
+          darker: "var(--color-secondary-darker)",
+          on: "var(--color-secondary-on)",
+          hover: "var(--color-secondary-hover)",
+          "hover-on": "var(--color-secondary-hover-on)",
         },
-        text: {
-          50: "var(--color-text-50)",
-          100: "var(--color-text-100)",
-          400: "var(--color-text-400)",
-          500: "var(--color-text-500)",
-          600: "var(--color-text-600)",
-          700: "var(--color-text-700)",
+        on: {
+          primary: "var(--color-primary-on)",
+          secondary: "var(--color-secondary-on)",
+          image: "var(--color-on-image)",
         },
       },
       borderWidth: {

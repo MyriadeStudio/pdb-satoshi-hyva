@@ -4,15 +4,15 @@
       @apply relative isolate flex w-full;
   
       &-label {
-        @apply absolute left-0 top-0 z-10 flex h-full w-16 items-center justify-start pl-5 text-md text-text-500;
+        @apply absolute left-0 top-0 z-10 flex h-full w-16 items-center justify-start pl-5 text-md text-fg;
       }
   
       &-field {
-        @apply w-full grow pl-16 pr-[calc(1rem+8px)] text-right text-text-500;
+        @apply w-full grow pl-16 pr-[calc(1rem+8px)] text-right text-fg;
       }
   
       &-suffix {
-        @apply absolute right-0 top-0 z-10 mr-3 flex h-full w-4 items-center justify-center text-md text-text-500;
+        @apply absolute right-0 top-0 z-10 mr-3 flex h-full w-4 items-center justify-center text-md text-fg;
       }
     }
   
@@ -35,10 +35,10 @@
     }
   
     &-track {
-      @apply absolute top-1/2 h-[1px] w-full -translate-y-1/2 rounded-sm bg-primary-100;
+      @apply absolute top-1/2 h-[1px] w-full -translate-y-1/2 rounded-sm bg-primary-lighter;
   
       &-filled {
-        @apply pointer-events-none absolute top-1/2 h-full -translate-y-1/2 bg-primary-500;
+        @apply pointer-events-none absolute top-1/2 h-full -translate-y-1/2 bg-primary;
   
         &.transitioning {
           @apply transition-all duration-300;
@@ -47,7 +47,7 @@
     }
   
     &-thumb {
-      @apply absolute top-1/2 h-8 w-8 -translate-y-1/2 touch-none select-none rounded-full border border-primary-500 bg-bg-500 transition-transform duration-200;
+      @apply absolute top-1/2 h-8 w-8 -translate-y-1/2 touch-none select-none rounded-full border border-primary bg-bg transition-transform duration-200;
   
       &_left {
         @apply left-0;
@@ -58,7 +58,7 @@
       }
   
       &.active {
-        @apply scale-[1.15] md:bg-bg-400;
+        @apply scale-[1.15] md:bg-bg;
       }
   
       &.transitioning {

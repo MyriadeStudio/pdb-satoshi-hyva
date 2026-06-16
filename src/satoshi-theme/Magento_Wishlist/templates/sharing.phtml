@@ -14,7 +14,7 @@ $successMessage = $block->getSuccessMessage();
 $errorMessage = $block->getErrorMessage();
 ?>
 <section class="w-full xl:w-1/2">
-    <h2 class="text-text-500 text-lg font-bold mb-5">
+    <h2 class="text-fg text-lg font-bold mb-5">
         <?= $escaper->escapeHtml(__('Sharing Information')) ?>
     </h2>
 
@@ -42,7 +42,7 @@ $errorMessage = $block->getErrorMessage();
 
         <?= $block->getBlockHtml('formkey') ?>
 
-        <div class="bg-bg-400 p-5 rounded-xl">
+        <div class="bg-bg p-5 rounded-xl">
             <div class="flex flex-col gap-3">
                 <div class="field field-reserved" :class="{ 'field-error': !isValid }">
                     <label class="sr-only tracking-widest" for="email_address">
@@ -51,7 +51,7 @@ $errorMessage = $block->getErrorMessage();
                     <div>
             <textarea id="email_address"
                       name="emails"
-                      class="input__field input__field--outline h-auto bg-bg-500 px-5 py-2.5 w-full block"
+                      class="input__field input__field--outline h-auto bg-bg px-5 py-2.5 w-full block"
                       rows="1"
                       placeholder="<?= $escaper->escapeHtml(__('Email addresses, separated by commas')) ?>"
                       @blur="validateForm()"
@@ -75,7 +75,7 @@ $errorMessage = $block->getErrorMessage();
                     <div>
             <textarea id="message"
                       name="message"
-                      class="input__field input__field--outline h-auto bg-bg-500 px-5 py-2.5 w-full block"
+                      class="input__field input__field--outline h-auto bg-bg px-5 py-2.5 w-full block"
                       rows="5"
                       maxlength="<?= (int)$block->getTextSharingLimit() ?>"
                       placeholder="<?= $escaper->escapeHtml(__('Message')) ?>"

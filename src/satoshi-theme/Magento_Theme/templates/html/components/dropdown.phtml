@@ -29,7 +29,7 @@ $hyvaicons = $viewModels->require(SvgIcons::class);
         id="<?= $id ?>-button"
         data-dropdown-toggle="<?= $id ?>"
         data-dropdown-placement="<?= $placement ?>"
-        class="bg-bg-500 inline-flex items-center justify-between gap-6 whitespace-nowrap rounded-sm border border-text-500 px-6 py-3"
+        class="bg-bg inline-flex items-center justify-between gap-6 whitespace-nowrap rounded-sm border border-fg px-6 py-3"
         type="button"
         :aria-expanded="isDropdownVisible"
         aria-controls="<?= $id ?>"
@@ -46,7 +46,7 @@ $hyvaicons = $viewModels->require(SvgIcons::class);
         x-cloak
         x-a11y-trap="isDropdownVisible"
         x-show="isDropdownVisible"
-        class="bg-bg-500 absolute left-1/2 z-10 hidden min-w-full -translate-x-1/2 transform rounded-sm border border-text-500 p-2
+        class="bg-bg absolute left-1/2 z-10 hidden min-w-full -translate-x-1/2 transform rounded-sm border border-fg p-2
             <?= $placement === 'top' ? 'bottom-full' : '' ?>
             <?= $placement === 'bottom' ? 'top-full' : '' ?>
             <?= $placement === 'right' ? 'left-full' : '' ?>

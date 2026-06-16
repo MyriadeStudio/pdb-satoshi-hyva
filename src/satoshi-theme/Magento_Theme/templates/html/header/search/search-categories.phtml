@@ -25,7 +25,7 @@ $categoryUrlSuffix = $breadcrumbsViewModel->getCategoryUrlSuffix();
         </div>
         <div class="flex flex-col gap-2">
             <p x-show="!isLoading && !categories.length && searchTerm">
-                <b class="font-semibold text-secondary-700"><?= __('Oops!') ?></b>
+                <b class="font-semibold text-fg-secondary"><?= __('Oops!') ?></b>
                 <?= __('We could not find any categories matching your search.') ?>
             </p>
 

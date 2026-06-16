@@ -21,7 +21,7 @@ $sorter = $block->getData('sorter');
 <div class="contents md:block md:px-2 md:pb-7 md:pt-2">
     <!-- Desktop header -->
     <div class="mb-5 hidden items-center justify-between md:flex">
-        <h2 class="text-text-500"><?= $escaper->escapeHtml(__('Selected filters')) ?></h2>
+        <h2 class="text-fg"><?= $escaper->escapeHtml(__('Selected filters')) ?></h2>
 
         <?php if ($block->getLayer()->getState()->getFilters()): ?>
             <a href="#" @click.prevent="clearAllFilters()" class="link link--primary">
@@ -52,7 +52,7 @@ $sorter = $block->getData('sorter');
                 ?>
                 <a
                     href="<?= $escaper->escapeUrl($filter->getRemoveUrl()) ?>"
-                    class="button button--outline-secondary button--size-sm shrink-0 max-md:h-[44px] max-md:text-base max-md:text-primary-600"
+                    class="button button--outline-secondary button--size-sm shrink-0 max-md:h-[44px] max-md:text-base max-md:text-primary-darker"
                     title="<?= $escaper->escapeHtmlAttr(__('Remove active %1 filter: %2', $filterName, $filterLabel)) ?>"
                     x-element-transition-trigger
                 >

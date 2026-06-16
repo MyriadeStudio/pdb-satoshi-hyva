@@ -53,7 +53,7 @@ $productName = $block->getProduct()->getName();
             <!-- pagination-content -->
             <?php foreach ($items as $review): ?>
                 <div itemscope itemprop="review" itemtype="http://schema.org/Review"
-                     class="border-b pb-4 my-4 border-container last:border-0 last:mb-0 mb-5 p-5 rounded-xl bg-bg-400">
+                     class="border-b pb-4 my-4 border-container last:border-0 last:mb-0 mb-5 p-5 rounded-xl bg-bg">
                     <?php if (count($review->getRatingVotes())): ?>
                         <div>
                             <?php foreach ($review->getRatingVotes() as $vote): ?>
@@ -99,17 +99,17 @@ $productName = $block->getProduct()->getName();
                                             <div class="flex">
                                                 <?php $i = 0; ?>
                                                 <?php while ($i < $starsFilled): ?>
-                                                    <?= $hyvaicons->renderHtml('star', 'text-xl text-primary-500') ?>
+                                                    <?= $hyvaicons->renderHtml('star', 'text-xl text-primary') ?>
                                                     <?php $i++; ?>
                                                 <?php endwhile; ?>
                                                 <?php $i = 0; ?>
                                                 <?php while ($i < $starsEmpty): ?>
-                                                    <?= $hyvaicons->renderHtml('star', 'text-xl text-secondary-700') ?>
+                                                    <?= $hyvaicons->renderHtml('star', 'text-xl text-fg-secondary') ?>
                                                     <?php $i++; ?>
                                                 <?php endwhile; ?>
                                             </div>
                                             <div>
-                                                <p class="text-primary-600"><?= $starsFilled ?>.0</p>
+                                                <p class="text-primary-darker"><?= $starsFilled ?>.0</p>
                                             </div>
                                         </div>
                                     </div>

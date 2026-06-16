@@ -25,12 +25,12 @@
   }
 
   .order-cell {
-    @apply whitespace-nowrap before:mb-2 before:flex-1 before:text-text-500 before:content-[attr(data-label)]  md:before:block max-md:mb-2 max-md:flex;
+    @apply whitespace-nowrap before:mb-2 before:flex-1 before:text-fg before:content-[attr(data-label)]  md:before:block max-md:mb-2 max-md:flex;
   }
 
   /* TODO: Move to template */
   .skip-to-content-link:focus-visible {
-    @apply not-sr-only fixed left-6 top-6 z-40 h-auto w-auto bg-bg-500 p-4 text-base font-semibold shadow-outline;
+    @apply not-sr-only fixed left-6 top-6 z-40 h-auto w-auto bg-bg p-4 text-base font-semibold shadow-outline;
     clip: auto;
   }
 }

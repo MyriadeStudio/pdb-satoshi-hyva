@@ -32,7 +32,7 @@ $commentErrorMessage = $block->getContactCommentErrorMessage();
 $emailErrorMessage = $block->getContactEmailErrorMessage();
 ?>
 <div class="content-wrapper mx-auto pb-12">
-    <h1 class="mb-7 text-center text-2xl font-semibold text-primary-500 md:mb-8">
+    <h1 class="mb-7 text-center text-2xl font-semibold text-primary md:mb-8">
         <?= $escaper->escapeHtml(__('Get in Touch')) ?>
     </h1>
 
@@ -95,7 +95,7 @@ $emailErrorMessage = $block->getContactEmailErrorMessage();
                             required
                             id="ContactForm-name"
                             placeholder="<?= $escaper->escapeHtmlAttr(__('Full name')) ?>"
-                            class="input__field input__field--outline h-auto bg-bg-500 px-5 py-2.5 <?php if ($nameErrorMessage): ?>border-error<?php else: ?>border-text-50<?php endif; ?>"
+                            class="input__field input__field--outline h-auto bg-bg px-5 py-2.5 <?php if ($nameErrorMessage): ?>border-error<?php else: ?>border-fg<?php endif; ?>"
                             value="<?= $escaper->escapeHtmlAttr(
                                 $contactHelper->getPostValue('name')
                                 ?: $contactHelper->getUserName()
@@ -126,7 +126,7 @@ $emailErrorMessage = $block->getContactEmailErrorMessage();
                             required
                             id="ContactForm-email"
                             placeholder="<?= $escaper->escapeHtmlAttr(__('Email address')) ?>"
-                            class="input__field input__field--outline h-auto bg-bg-500 px-5 py-2.5 <?php if ($emailErrorMessage): ?>border-error<?php else: ?>border-text-50<?php endif; ?>"
+                            class="input__field input__field--outline h-auto bg-bg px-5 py-2.5 <?php if ($emailErrorMessage): ?>border-error<?php else: ?>border-fg<?php endif; ?>"
                             value="<?= $escaper->escapeHtmlAttr(
                                 $contactHelper->getPostValue('email')
                                 ?: $contactHelper->getUserEmail()
@@ -158,7 +158,7 @@ $emailErrorMessage = $block->getContactEmailErrorMessage();
                             name="telephone"
                             id="ContactForm-phone"
                             placeholder="<?= $escaper->escapeHtmlAttr(__('Phone number')) ?>"
-                            class="input__field input__field--outline h-auto bg-bg-500 px-5 py-2.5"
+                            class="input__field input__field--outline h-auto bg-bg px-5 py-2.5"
                             value="<?= $escaper->escapeHtmlAttr(
                                 $contactHelper->getPostValue('telephone')
                             ) ?>"
@@ -174,7 +174,7 @@ $emailErrorMessage = $block->getContactEmailErrorMessage();
                         <textarea
                             rows="4"
                             id="ContactForm-body"
-                            class="input__field input__field--outline min-h-28 bg-bg-500 px-5 py-2.5 <?php if ($commentErrorMessage): ?>border-error<?php else: ?>border-text-50<?php endif; ?>"
+                            class="input__field input__field--outline min-h-28 bg-bg px-5 py-2.5 <?php if ($commentErrorMessage): ?>border-error<?php else: ?>border-fg<?php endif; ?>"
                             name="comment"
                             required
                             placeholder="<?= $escaper->escapeHtmlAttr(__('Comment')) ?>"

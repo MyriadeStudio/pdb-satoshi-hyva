@@ -16,7 +16,7 @@ $forCartPage = $block->getData('for_cart_page') ?? false;
 
 <button
         type="button"
-        class="button button--outline-secondary icon-button icon-button--size-sm bg-bg-500"
+        class="button button--outline-secondary icon-button icon-button--size-sm bg-bg"
         :aria-label="item.qty < 2 ? `<?= $escaper->escapeHtml(__('Remove from cart')) ?>` : `<?= $escaper->escapeHtml(__('Decrease quantity')) ?>`"
         @click.prevent.stop="$store.cart.decreaseQty(item.item_id);"
         @transitionend.stop
@@ -55,7 +55,7 @@ $forCartPage = $block->getData('for_cart_page') ?? false;
 >
 <button
         type="button"
-        class="button button--outline-secondary icon-button icon-button--size-sm bg-bg-500"
+        class="button button--outline-secondary icon-button icon-button--size-sm bg-bg"
         aria-label="<?= $escaper->escapeHtml(__('Increase')) ?>"
         @click.prevent.stop="$store.cart.increaseQty(item.item_id)"
         :aria-busy="$store.cart.isLoading"

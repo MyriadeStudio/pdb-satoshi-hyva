@@ -65,14 +65,14 @@ if (!$shoppingAssistanceViewModel->isLoginAsCustomerEnabled()) {
                 @keydown.escape="showTooltip = false"
                 aria-labelledby="assistance_allowed_checkbox_tooltip"
                 aria-disabled="true"
-                class="text-primary-500 h-full w-full"
+                class="text-primary h-full w-full"
         >
             <?= $hyvaicons->renderHtml('info') ?>
         </button>
         <div class="relative" x-cloak x-show="showTooltip">
             <div class="shadow-lg">
                 <div class="absolute top-0 left-0 z-10 w-64 -mt-6 text-sm leading-tight text-black transform
-                    -translate-x-full md:-translate-x-1/3 -translate-y-full bg-bg-400 rounded-lg shadow-lg p-4">
+                    -translate-x-full md:-translate-x-1/3 -translate-y-full bg-bg rounded-lg shadow-lg p-4">
                     <span class="subtitle text-base" id="assistance_allowed_checkbox_tooltip">
                         <?= $escaper->escapeHtml(__($shoppingAssistanceViewModel->getAssistanceCheckboxTooltip())) ?>
                     </span>

@@ -19,7 +19,7 @@ $isSearch = $block->getData('is_search') ?? false;
         $finalPrice = $product->getFinalPrice();
     ?>
     <?php if ($price > $finalPrice): ?>
-        <div class="card-product__badge-container z-10 rounded-[40px] bg-bg-500 px-3 text-sm <?= $class ?>" x-element-transition-skip='{"transformOrigin": "left bottom"}'>
+        <div class="card-product__badge-container z-10 rounded-[40px] bg-bg px-3 text-sm <?= $class ?>" x-element-transition-skip='{"transformOrigin": "left bottom"}'>
             <span class="font-semibold">
                 -<?= round((($price - $finalPrice) * 100.0) / $price) ?>% <?= $escaper->escapeHtml(__('OFF')) ?>
             </span>
@@ -38,7 +38,7 @@ $isSearch = $block->getData('is_search') ?? false;
                 <?php endif; ?>
             }
         "
-        class="card-product__badge-container z-10 rounded-[40px] bg-bg-500 px-3 text-sm <?= $class ?>"
+        class="card-product__badge-container z-10 rounded-[40px] bg-bg px-3 text-sm <?= $class ?>"
         x-show="regularPrice>finalPrice && regularPrice"
     >
         <span x-text="'-' + Math.round(((regularPrice - finalPrice) * 100.0) / regularPrice) + '% OFF'" class="font-semibold">

@@ -88,7 +88,7 @@ $level = $block->getData('level') ?? 1;
             x-portal="$store.main.isMobile ? document.getElementById('popup-fixed-content-portal') : document.getElementById('menu-actions-<?= $id ?>')"
         >
             <div
-                class="bg-bg-500 px-4 pb-2 transition-colors duration-200 md:bg-transparent md:hover:text-primary-600"
+                class="bg-bg px-4 pb-2 transition-colors duration-200 md:bg-transparent md:hover:text-primary-darker"
                 x-transition.opacity
                 x-show="$store.main.isMobile ? history[history.length - 1] === '<?= $id ?>' && !getIsSearchActive() : history.includes('<?= $id ?>')"
                 role="link"

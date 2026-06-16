@@ -40,13 +40,13 @@ if ($extraActionTitleBlocks = $block->getLayout()->getChildBlocks('order-list-ex
         <div class="mb-5 flex flex-col md:flex-row gap-4 md:justify-between md:items-center">
             <h2
                 id="recentOrders"
-                class="text-text-500 text-lg font-bold"
+                class="text-fg text-lg font-bold"
                 @focus="tabIndex = 0;"
                 @blur="tabIndex = -1"
                 :tabindex="tabIndex"
             ><?= $escaper->escapeHtml(__('Recent Orders')) ?></h2>
             <a
-                class="text-primary-500 hover:text-primary-700 transition-colors"
+                class="text-primary hover:text-primary-lighter transition-colors"
                 href="<?= $escaper->escapeUrl($block->getUrl('sales/order/history')) ?>"
                 aria-label="<?= $escaper->escapeHtmlAttr(__('View all orders')) ?>"
                 x-element-transition-trigger
@@ -56,9 +56,9 @@ if ($extraActionTitleBlocks = $block->getLayout()->getChildBlocks('order-list-ex
         <div class="space-y-5 break-words">
             <?= $block->getChildHtml() ?>
             <?php foreach ($orders as $order): ?>
-                <div class="bg-bg-400 grid lg:grid-cols-6 gap-4 p-5 rounded-xl">
+                <div class="bg-bg grid lg:grid-cols-6 gap-4 p-5 rounded-xl">
                     <div class="grid grid-cols-2 lg:flex lg:flex-col gap-2">
-                        <div class="text-text-500 text-[14px] font-bold">
+                        <div class="text-fg text-[14px] font-bold">
                             <?= $escaper->escapeHtml(__('Order')) ?>
                         </div>
                         <div id="order<?= $escaper->escapeHtmlAttr($order->getRealOrderId()) ?>">
@@ -67,7 +67,7 @@ if ($extraActionTitleBlocks = $block->getLayout()->getChildBlocks('order-list-ex
                     </div>
 
                     <div class="grid grid-cols-2 lg:flex lg:flex-col gap-2">
-                        <div class="text-text-500 text-[14px] font-bold">
+                        <div class="text-fg text-[14px] font-bold">
                             <?= $escaper->escapeHtml(__('Date')) ?>
                         </div>
                         <div>
@@ -90,7 +90,7 @@ if ($extraActionTitleBlocks = $block->getLayout()->getChildBlocks('order-list-ex
                     </div>
 
                     <div class="grid grid-cols-2 lg:flex lg:flex-col gap-2">
-                        <div class="text-text-500 text-[14px] font-bold">
+                        <div class="text-fg text-[14px] font-bold">
                             <?= $escaper->escapeHtml(__('Ship to')) ?>
                         </div>
                         <div>
@@ -99,7 +99,7 @@ if ($extraActionTitleBlocks = $block->getLayout()->getChildBlocks('order-list-ex
                     </div>
 
                     <div class="grid grid-cols-2 lg:flex lg:flex-col gap-2">
-                        <div class="text-text-500 text-[14px] font-bold">
+                        <div class="text-fg text-[14px] font-bold">
                             <?= $escaper->escapeHtml(__('Order total')) ?>
                         </div>
                         <div>
@@ -109,7 +109,7 @@ if ($extraActionTitleBlocks = $block->getLayout()->getChildBlocks('order-list-ex
                     </div>
 
                     <div class="grid grid-cols-2 lg:flex lg:flex-col gap-2">
-                        <div class="text-text-500 text-[14px] font-bold">
+                        <div class="text-fg text-[14px] font-bold">
                             <?= $escaper->escapeHtml(__('Status')) ?>
                         </div>
                         <div>
@@ -118,7 +118,7 @@ if ($extraActionTitleBlocks = $block->getLayout()->getChildBlocks('order-list-ex
                     </div>
 
                     <div class="grid grid-cols-2 lg:flex lg:flex-col md:items-end gap-2">
-                        <div class="text-text-500 text-[14px] font-bold">
+                        <div class="text-fg text-[14px] font-bold">
                             <?= $escaper->escapeHtml(__('View')) ?>
                             <?php if ($this->helper(Reorder::class)->isAllow()): ?>
                                 / <?= $escaper->escapeHtml(__('Reorder')) ?>
@@ -133,7 +133,7 @@ if ($extraActionTitleBlocks = $block->getLayout()->getChildBlocks('order-list-ex
                             <?php // The condition will always return 'true' in Magento Open Source ?>
                             <?php if ($order->getStatus() !== 'received'): ?>
                                 <a
-                                    class="text-primary-500 w-5 h-5"
+                                    class="text-primary w-5 h-5"
                                     title="<?= $escaper->escapeHtmlAttr(__('View Order')) ?>"
                                     href="<?= $escaper->escapeUrl($block->getViewUrl($order)) ?>"
                                     x-element-transition-trigger

@@ -36,7 +36,7 @@ if ($extraActionTitleBlocks = $block->getLayout()->getChildBlocks('order-list-ex
     <div data-content-wrapper>
         <!-- pagination-content -->
         <?php foreach ($orders as $order): ?>
-            <div class="overflow-x-auto mb-5 bg-bg-400 p-5 rounded-xl">
+            <div class="overflow-x-auto mb-5 bg-bg p-5 rounded-xl">
                 <?php
                 $date = $order->getCreatedAt();
                 $format = $block->getDateFormat() ?: \IntlDateFormatter::SHORT;
@@ -87,7 +87,7 @@ if ($extraActionTitleBlocks = $block->getLayout()->getChildBlocks('order-list-ex
                                     title="<?= $escaper->escapeHtmlAttr(__('View Order')) ?>"
                                     aria-label="<?= $escaper->escapeHtmlAttr(__('View order') . ' ' . ltrim($order->getRealOrderId(), '0')) ?>"
                             >
-                                <?= $hyvaicons->renderHtml('eye', 'text-xl text-primary-500') ?>
+                                <?= $hyvaicons->renderHtml('eye', 'text-xl text-primary') ?>
                             </a>
                             <?php if ($this->helper(\Magento\Sales\Helper\Reorder::class)->canReorder($order->getEntityId())): ?>
                                 <?php $formData = json_decode(
@@ -111,7 +111,7 @@ if ($extraActionTitleBlocks = $block->getLayout()->getChildBlocks('order-list-ex
                                             class="inline-block text-sm underline text-secondary-darker"
                                             aria-label="<?= $escaper->escapeHtmlAttr(__('Reorder') . ' ' . ltrim($order->getRealOrderId(), '0')) ?>"
                                     >
-                                        <?= $hyvaicons->renderHtml('refresh', 'text-xl text-primary-500') ?>
+                                        <?= $hyvaicons->renderHtml('refresh', 'text-xl text-primary') ?>
                                     </button>
                                 </form>
                             <?php endif ?>

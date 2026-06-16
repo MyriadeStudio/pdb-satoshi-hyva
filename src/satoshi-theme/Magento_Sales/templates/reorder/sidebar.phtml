@@ -31,10 +31,10 @@ if (! $customer->customerLoggedIn()) {
     id="recent-orders-sidebar"
 >
     <div class="card p-0">
-        <h2 class="text-text-500 text-lg font-bold p-4" id="block-reorder-heading">
+        <h2 class="text-fg text-lg font-bold p-4" id="block-reorder-heading">
             <?= $escaper->escapeHtml(__('Recently Ordered')) ?>
         </h2>
-        <div class="p-4 border-t border-bg-600">
+        <div class="p-4 border-t border-bg-sunken">
             <form method="post"
                 action="<?= $escaper->escapeUrl($block->getFormActionUrl()) ?>"
                 id="reorder-validate-detail"

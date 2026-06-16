@@ -21,7 +21,7 @@ use Satoshi\Theme\Block\Template;
         </div>
         <div class="min-h-11 md:min-h-0">
             <p x-show="!isLoading && !products.length && searchTerm.length >=3">
-                <b class="font-semibold text-secondary-700"><?= __('Oops!') ?></b>
+                <b class="font-semibold text-fg-secondary"><?= __('Oops!') ?></b>
                 <?= __('We could not find any products matching your search.') ?>
             </p>
             <p x-show="searchTerm.length < 3 && !isLoading">
@@ -51,10 +51,10 @@ use Satoshi\Theme\Block\Template;
     >
         <div
             x-show="$store.main.isMobile ? $store.popup.currentPopup === 'menu' && getIsSearchActive() && products.length : getIsSearchActive() && products.length"
-            class="relative bg-bg-500 px-4 pb-2 transition-opacity md:p-0 md:pt-1 md:mx-5 md:mb-5"
+            class="relative bg-bg px-4 pb-2 transition-opacity md:p-0 md:pt-1 md:mx-5 md:mb-5"
             :class="{ 'opacity-0': isLoading }"
         >
-            <div class="absolute -top-10 -mx-5 end-0 start-0 h-10 bg-gradient-to-t from-bg-500 to-transparent"></div>
+            <div class="absolute -top-10 -mx-5 end-0 start-0 h-10 bg-gradient-to-t from-bg to-transparent"></div>
             <a
                 class="button button--filled-primary w-full"
                 :href="getSearchUrl('/catalogsearch/result')"

@@ -43,8 +43,8 @@ foreach ($quotes as $quote) {
                 <div class="flex gap-2 text-xl mb-5">
                     $starsHtml
                 </div>
-                <div class="rte mb-5 text-lg text-text-500 md:text-2xl">{$quote['quote']}</div>
-                <span class="text-text-500">– {$quote['author_name']}</span>
+                <div class="rte mb-5 text-lg text-fg md:text-2xl">{$quote['quote']}</div>
+                <span class="text-fg">– {$quote['author_name']}</span>
             </div>
         </div>
     HTML;
@@ -52,11 +52,11 @@ foreach ($quotes as $quote) {
 ?>
 <div>
     <div
-        class="[[data-appearance='contained']_&]:rounded-md bg-secondary-500 px-7 py-8 md:p-12"
+        class="[[data-appearance='contained']_&]:rounded-md bg-bg-sunken px-7 py-8 md:p-12"
         x-data="Slider()"
     >
         <div class="mb-7 flex w-full items-center justify-between md:mb-8">
-            <h1 class="heading text-text-500">
+            <h1 class="heading text-fg">
                 <?= $escaper->escapeHtml($block->getData('heading')) ?>
             </h1>
             <?php if (count($quotes) > 1): ?>

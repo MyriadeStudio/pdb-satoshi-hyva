@@ -53,7 +53,7 @@ $addressViewModel = $viewModels->require(AddressViewModel::class);
         </div>
 
         <div
-            class="absolute left-0 top-0 p-3 mt-12 bg-bg-400 rounded-lg shadow z-10"
+            class="absolute left-0 top-0 p-3 mt-12 bg-bg rounded-lg shadow z-10"
             style="width: 21rem"
             x-cloak
             x-transition
@@ -64,7 +64,7 @@ $addressViewModel = $viewModels->require(AddressViewModel::class);
                 <div>
                     <select name="datepicker_month"
                             x-model="month"
-                            class="text-sm rounded border-secondary-400"
+                            class="text-sm rounded border-bg-sunken"
                     >
                         <template x-for="(monthName, index) in labels.monthNames">
                             <option :value="index" x-text="monthName"></option>
@@ -72,7 +72,7 @@ $addressViewModel = $viewModels->require(AddressViewModel::class);
                     </select>
                     <select name="datepicker_year"
                             x-model="year"
-                            class="text-sm rounded border-secondary-400"
+                            class="text-sm rounded border-bg-sunken"
                     >
                         <template x-for="option in yearRange">
                             <option :value="option" x-text="option"></option>
@@ -82,7 +82,7 @@ $addressViewModel = $viewModels->require(AddressViewModel::class);
                 <div>
                     <button
                         type="button"
-                        class="inline-flex p-1 rounded transition-colors cursor-pointer hover:bg-bg-600"
+                        class="inline-flex p-1 rounded transition-colors cursor-pointer hover:bg-bg-sunken"
                         :class="{'cursor-not-allowed opacity-25': isFirstMonth()}"
                         :disabled="isFirstMonth()"
                         :title="labels.prevText"
@@ -93,7 +93,7 @@ $addressViewModel = $viewModels->require(AddressViewModel::class);
                     </button>
                     <button
                         type="button"
-                        class="inline-flex p-1 rounded transition-colors cursor-pointer hover:bg-bg-600"
+                        class="inline-flex p-1 rounded transition-colors cursor-pointer hover:bg-bg-sunken"
                         :class="{'cursor-not-allowed opacity-25': isLastMonth() }"
                         :disabled="isLastMonth()"
                         :title="labels.nextText"
@@ -124,16 +124,16 @@ $addressViewModel = $viewModels->require(AddressViewModel::class);
                             class="text-center text-sm rounded-full transition-colors
                                 flex items-center justify-center h-8"
                             :class="{
-                                'cursor-pointer hover:bg-bg-600 hover:text-text-50': canSelectDate(date),
-                                'bg-primary-bg text-text-on-primary-bg': isToday(date),
-                                'text-secondary-700': isInFuture(date)
+                                'cursor-pointer hover:bg-bg-sunken hover:text-fg': canSelectDate(date),
+                                'bg-primary-bg text-on-primary-bg': isToday(date),
+                                'text-fg-secondary': isInFuture(date)
                             }"
                         ></div>
                     </div>
                 </template>
             </div>
 
-            <button class="p-2 w-full text-sm text-center rounded border border-secondary-400 hover:bg-bg-600"
+            <button class="p-2 w-full text-sm text-center rounded border border-bg-sunken hover:bg-bg-sunken"
                     x-text="labels.currentText"
                     @click.prevent="goToday()"
             ></button>

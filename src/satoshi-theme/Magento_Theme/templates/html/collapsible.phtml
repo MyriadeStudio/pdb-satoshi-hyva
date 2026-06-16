@@ -16,7 +16,7 @@ $hyvaicons = $viewModels->require(SvgIcons::class);
 
 <div x-data="Accordion(!$store.main.isMobile, 300)" class="max-md:mt-3 card p-0 md:p-4 overflow-hidden">
   <button
-        class="group flex items-center justify-between text-start w-full text-primary-600 md:hidden"
+        class="group flex items-center justify-between text-start w-full text-primary-darker md:hidden"
         x-ref="AccordionButton"
         type="button"
         :aria-expanded="isExpanded"
@@ -27,7 +27,7 @@ $hyvaicons = $viewModels->require(SvgIcons::class);
         </span>
         <span
             x-ref="AccordionIcon"
-            class="button button--outline-secondary icon-button icon-button--size-xs group-hoverable border-primary-600"
+            class="button button--outline-secondary icon-button icon-button--size-xs group-hoverable border-primary-darker"
         >
             <?= $hyvaicons->renderHtml('chevron', 'rotate-90'); ?>
         </span>
@@ -37,7 +37,7 @@ $hyvaicons = $viewModels->require(SvgIcons::class);
         x-ref="AccordionPanel"
         :inert="!isExpanded"
         role="region"
-        class="text-text-700 [&_.current]:text-text-500 [&_a:hover]:underline"
+        class="text-fg-secondary [&_.current]:text-fg [&_a:hover]:underline"
     >
         <?= $block->getChildHtml() ?>
     </div>

@@ -57,7 +57,7 @@ $isPopup = $block->getData('is_popup');
                     <?php if ($swatchRendererViewModel->isSwatchAttribute($productAttribute)): ?>
                         <div class="contents">
                             <div class="relative flex h-full w-full flex-row items-center justify-between">
-                                <span class="font-semibold text-text-500"
+                                <span class="font-semibold text-fg"
                                       id="attribute-label-<?= $escaper->escapeHtmlAttr($productId . '-' . $attributeId) ?>">
                                   <?= $escaper->escapeHtml(__('Select your %1', strtolower($productAttribute->getStoreLabel()))) ?>
                                 </span>
@@ -91,7 +91,7 @@ $isPopup = $block->getData('is_popup');
                     <?php else: ?>
                         <div class="relative flex h-full w-full flex-row items-center justify-between">
                             <label for="attribute_<?= $attribute->getAttributeId() ?>"
-                                   class="font-semibold text-text-500">
+                                   class="font-semibold text-fg">
                                 <?= $escaper->escapeHtml(__('Select your %1', strtolower($attribute->getProductAttribute()->getStoreLabel()))) ?>
                             </label>
 

@@ -24,7 +24,7 @@ $title = $block->getData('title') ? __($block->getData('title')) : $block->getTi
         <div class="flex flex-wrap gap-3">
             <?php foreach ($block->getItems() as $additionalInfo): ?>
                 <a
-                    class="button button--outline-primary bg-bg-400"
+                    class="button button--outline-primary bg-bg"
                     href="<?= $escaper->escapeUrl($block->getLink($additionalInfo->getQueryText())) ?>"
                     x-element-transition-trigger
                 >

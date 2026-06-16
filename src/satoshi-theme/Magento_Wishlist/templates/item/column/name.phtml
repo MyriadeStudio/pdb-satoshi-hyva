@@ -19,15 +19,15 @@ $product = $item->getProduct();
 ?>
 <div class="flex justify-between leading-5">
     <span><?= $escaper->escapeHtml($block->getCategoryName($product)) ?></span>
-    <span class="flex text-primary-500">
+    <span class="flex text-primary">
         <?= $hyvaicons->renderHtml('star', 'text-xl') ?>
         <span class="ml-1 mr-2 font-bold"><?= $escaper->escapeHtml($block->getProductReviewAverageRating($product)) ?></span>
-        <span class="after:content-[''] after:block after:relative after:top-[-3px] after:border-t after:border-primary-500">
+        <span class="after:content-[''] after:block after:relative after:top-[-3px] after:border-t after:border-primary">
             <?= $escaper->escapeHtml('(' . $block->getProductReviewCount($product) . ')') ?>
         </span>
     </span>
 </div>
-<span class="block text-text-500 text-lg font-bold leading-6 mb-4 overflow-hidden text-ellipsis text-nowrap">
+<span class="block text-fg text-lg font-bold leading-6 mb-4 overflow-hidden text-ellipsis text-nowrap">
     <a
         href="<?= $escaper->escapeUrl($block->getProductUrl($item)) ?>"
         title="<?= $escaper->escapeHtmlAttr($product->getName()) ?>"
