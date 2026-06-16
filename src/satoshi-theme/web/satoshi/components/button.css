@@ -18,7 +18,7 @@
   
     &--filled {
       &-primary {
-        @apply bg-primary text-on-primary-bg;
+        @apply bg-primary text-text-on-primary-bg;
   
         &:not(.button--disabled) {
           @apply md:hover:bg-primary-lighter;

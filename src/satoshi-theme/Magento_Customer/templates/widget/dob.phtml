@@ -125,7 +125,7 @@ $addressViewModel = $viewModels->require(AddressViewModel::class);
                                 flex items-center justify-center h-8"
                             :class="{
                                 'cursor-pointer hover:bg-bg-sunken hover:text-fg': canSelectDate(date),
-                                'bg-primary-bg text-on-primary-bg': isToday(date),
+                                'bg-primary-bg text-text-on-primary-bg': isToday(date),
                                 'text-fg-secondary': isInFuture(date)
                             }"
                         ></div>

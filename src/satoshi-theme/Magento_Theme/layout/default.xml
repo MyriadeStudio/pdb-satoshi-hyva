@@ -15,7 +15,7 @@
     <body>
         <!-- Attributes in body element which required to show correct color of logo text -->
         <attribute name="class" value="gradient" />
-        <attribute name="class" value="bg-bg-500" />
+        <attribute name="class" value="bg-bg" />
 
         <referenceContainer name="root">
             <block class="Magento\Framework\View\Element\Template" name="svg.filters" template="Magento_Theme::html/components/svg-filters.phtml" before="-" />
@@ -35,7 +35,7 @@
         <referenceContainer name="div.sidebar.main" htmlClass="main-sidebar"/>
 
         <referenceContainer name="header.container" htmlClass="page-header contents"/>
-        <referenceContainer name="page.wrapper" htmlClass="flex min-h-screen max-w-screen flex-col bg-bg-500">
+        <referenceContainer name="page.wrapper" htmlClass="flex min-h-screen max-w-screen flex-col bg-bg">
             <block name="popup-wrapper" template="Magento_Theme::html/popup/popup-wrapper.phtml"/>
 
             <container name="main.wrapper" as="main.wrapper" htmlTag="div" htmlClass="main-wrapper">
