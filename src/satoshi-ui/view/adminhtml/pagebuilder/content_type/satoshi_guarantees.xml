@@ -47,6 +47,11 @@
                                preview_converter="Magento_PageBuilder/js/converter/style/preview/display"/>
                         <attribute name="name" source="data-content-type"/>
                         <attribute name="appearance" source="data-appearance"/>
+                        <attribute name="icon_style" source="data-icon-style"/>
+                        <attribute name="icon_size" source="data-icon-size"/>
+                        <attribute name="layout" source="data-layout"/>
+                        <attribute name="icon_color" source="data-icon-color"/>
+                        <attribute name="circle_color" source="data-circle-color"/>
                         <css name="css_classes"/>
                     </element>
                     <element name="guarantees_columns">

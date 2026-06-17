@@ -15,11 +15,31 @@ define(["Satoshi_SatoshiUi/js/content-type/block-directive"], function (
   _proto.getAdditionalBlockAttributes = function getAdditionalBlockAttributes(
     data,
   ) {
-    return data.guarantees_columns && data.guarantees_columns.length > 0
-      ? {
-          guarantees: JSON.stringify(data.guarantees_columns),
-        }
-      : {};
+    if (!data.guarantees_columns || data.guarantees_columns.length === 0) {
+      return {};
+    }
+
+    var attributes = {
+      guarantees: JSON.stringify(data.guarantees_columns),
+    };
+
+    if (data.icon_style) {
+      attributes.icon_style = data.icon_style;
+    }
+    if (data.icon_size) {
+      attributes.icon_size = data.icon_size;
+    }
+    if (data.layout) {
+      attributes.layout = data.layout;
+    }
+    if (data.icon_color) {
+      attributes.icon_color = data.icon_color;
+    }
+    if (data.circle_color) {
+      attributes.circle_color = data.circle_color;
+    }
+
+    return attributes;
   };
 
   return BlockDirective;

@@ -151,6 +151,161 @@
         </dynamicRows>
     </fieldset>
 
+    <fieldset name="style_fieldset" sortOrder="30">
+        <settings>
+            <label translate="true">Style</label>
+            <collapsible>true</collapsible>
+            <opened>false</opened>
+        </settings>
+
+        <field name="icon_style" sortOrder="10" formElement="select">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="default" xsi:type="string">bordered</item>
+                </item>
+            </argument>
+            <settings>
+                <label translate="true">Icon style</label>
+                <dataType>text</dataType>
+                <additionalClasses>
+                    <class name="admin__field-medium">true</class>
+                </additionalClasses>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options>
+                            <option name="0" xsi:type="array">
+                                <item name="value" xsi:type="string">bordered</item>
+                                <item name="label" xsi:type="string" translate="true">Icône entourée d'une bordure (cercle)</item>
+                            </option>
+                            <option name="1" xsi:type="array">
+                                <item name="value" xsi:type="string">filled</item>
+                                <item name="label" xsi:type="string" translate="true">Icône dans un cercle avec fond</item>
+                            </option>
+                            <option name="2" xsi:type="array">
+                                <item name="value" xsi:type="string">bare</item>
+                                <item name="label" xsi:type="string" translate="true">Icône seule</item>
+                            </option>
+                        </options>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+
+        <field name="icon_size" sortOrder="15" formElement="select">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="default" xsi:type="string">medium</item>
+                </item>
+            </argument>
+            <settings>
+                <label translate="true">Icon size</label>
+                <dataType>text</dataType>
+                <additionalClasses>
+                    <class name="admin__field-medium">true</class>
+                </additionalClasses>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options>
+                            <option name="0" xsi:type="array">
+                                <item name="value" xsi:type="string">small</item>
+                                <item name="label" xsi:type="string" translate="true">Small</item>
+                            </option>
+                            <option name="1" xsi:type="array">
+                                <item name="value" xsi:type="string">medium</item>
+                                <item name="label" xsi:type="string" translate="true">Medium</item>
+                            </option>
+                            <option name="2" xsi:type="array">
+                                <item name="value" xsi:type="string">large</item>
+                                <item name="label" xsi:type="string" translate="true">Large</item>
+                            </option>
+                        </options>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+
+        <field name="layout" sortOrder="18" formElement="select">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="default" xsi:type="string">stacked</item>
+                </item>
+            </argument>
+            <settings>
+                <label translate="true">Layout</label>
+                <dataType>text</dataType>
+                <additionalClasses>
+                    <class name="admin__field-medium">true</class>
+                </additionalClasses>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options>
+                            <option name="0" xsi:type="array">
+                                <item name="value" xsi:type="string">stacked</item>
+                                <item name="label" xsi:type="string" translate="true">Icône au-dessus, texte en dessous</item>
+                            </option>
+                            <option name="1" xsi:type="array">
+                                <item name="value" xsi:type="string">inline</item>
+                                <item name="label" xsi:type="string" translate="true">Icône à gauche, texte à droite</item>
+                            </option>
+                        </options>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+
+        <field name="icon_color" sortOrder="20" formElement="colorPicker">
+            <settings>
+                <label translate="true">Icon color</label>
+                <componentType>colorPicker</componentType>
+                <placeholder translate="true">No Color</placeholder>
+                <additionalClasses>
+                    <class name="admin__field-medium">true</class>
+                </additionalClasses>
+                <validation>
+                    <rule name="validate-color" xsi:type="boolean">true</rule>
+                </validation>
+                <dataType>text</dataType>
+            </settings>
+            <formElements>
+                <colorPicker>
+                    <settings>
+                        <colorPickerMode>full</colorPickerMode>
+                        <colorFormat>hex</colorFormat>
+                    </settings>
+                </colorPicker>
+            </formElements>
+        </field>
+
+        <field name="circle_color" sortOrder="30" formElement="colorPicker">
+            <settings>
+                <label translate="true">Circle color (border / background)</label>
+                <componentType>colorPicker</componentType>
+                <placeholder translate="true">No Color</placeholder>
+                <additionalClasses>
+                    <class name="admin__field-medium">true</class>
+                </additionalClasses>
+                <validation>
+                    <rule name="validate-color" xsi:type="boolean">true</rule>
+                </validation>
+                <dataType>text</dataType>
+            </settings>
+            <formElements>
+                <colorPicker>
+                    <settings>
+                        <colorPickerMode>full</colorPickerMode>
+                        <colorFormat>hex</colorFormat>
+                    </settings>
+                </colorPicker>
+            </formElements>
+        </field>
+    </fieldset>
+
     <fieldset name="advanced">
         <field name="text_align">
             <argument name="data" xsi:type="array">

@@ -49,10 +49,27 @@ define([
         this.previewElement.resolve(element);
     };
 
-    Preview.prototype.buildDirective = function (columns) {
+    Preview.prototype.buildDirective = function (columns, data) {
         var attr = JSON.stringify(columns).replace(/"/g, "&amp;quote;");
+        var directive = '{{block class="' + BLOCK_CLASS + '" guarantees="' + attr + '"';
 
-        return '{{block class="' + BLOCK_CLASS + '" guarantees="' + attr + '"}}';
+        if (data.icon_style) {
+            directive += ' icon_style="' + data.icon_style + '"';
+        }
+        if (data.icon_size) {
+            directive += ' icon_size="' + data.icon_size + '"';
+        }
+        if (data.layout) {
+            directive += ' layout="' + data.layout + '"';
+        }
+        if (data.icon_color) {
+            directive += ' icon_color="' + data.icon_color + '"';
+        }
+        if (data.circle_color) {
+            directive += ' circle_color="' + data.circle_color + '"';
+        }
+
+        return directive + "}}";
     };
 
     Preview.prototype.afterObservablesUpdated = function () {
@@ -79,7 +96,7 @@ define([
             method: "POST",
             data: {
                 role: this.config.name,
-                directive: this.buildDirective(columns)
+                directive: this.buildDirective(columns, data)
             }
         }).done(function (response) {
             if (!response || typeof response.data !== "object") {

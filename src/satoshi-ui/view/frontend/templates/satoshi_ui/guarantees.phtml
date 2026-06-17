@@ -19,25 +19,104 @@ $iconRenderer = $viewModels->require(IconRenderer::class);
 $decodeHelper = $this->helper(DecodeHelper::class);
 $guarantees = $block->getData('guarantees');
 $guarantees = $decodeHelper->decodeJSONHTMLEntity($guarantees);
+
+// Style options (onglet "Style" du Page Builder). Valeurs vides => fallback tokens.
+$iconStyle  = is_string($block->getData('icon_style') ?? null) ? $block->getData('icon_style') : '';
+$iconSize   = is_string($block->getData('icon_size') ?? null) ? $block->getData('icon_size') : '';
+$layout     = is_string($block->getData('layout') ?? null) ? $block->getData('layout') : '';
+$iconColor  = is_string($block->getData('icon_color') ?? null) ? trim($block->getData('icon_color')) : '';
+$circleColor = is_string($block->getData('circle_color') ?? null) ? trim($block->getData('circle_color')) : '';
+
+if (!in_array($iconStyle, ['bordered', 'filled', 'bare'], true)) {
+    $iconStyle = 'bordered';
+}
+if (!in_array($iconSize, ['small', 'medium', 'large'], true)) {
+    $iconSize = 'medium';
+}
+if (!in_array($layout, ['stacked', 'inline'], true)) {
+    $layout = 'stacked';
+}
+
+// Taille : padding du cercle, classes & dimensions de l'icône.
+$sizeMap = [
+    'small'  => ['pad' => 'p-2', 'icon' => 'h-4 w-4', 'dim' => 16],
+    'medium' => ['pad' => 'p-3', 'icon' => 'h-5 w-5', 'dim' => 20],
+    'large'  => ['pad' => 'p-4', 'icon' => 'h-6 w-6', 'dim' => 24],
+];
+$iconPad  = $sizeMap[$iconSize]['pad'];
+$iconDim  = $sizeMap[$iconSize]['dim'];
+$iconSizeClass = $sizeMap[$iconSize]['icon'];
+
+// Classes / styles du contour autour de l'icône selon le style choisi.
+$wrapperClasses = '';
+$wrapperStyle   = '';
+if ($iconStyle === 'bordered') {
+    $wrapperClasses = 'w-fit rounded-full border ' . $iconPad;
+    $wrapperStyle = $circleColor !== ''
+        ? 'border-color:' . $circleColor . ';'
+        : '';
+    if ($circleColor === '') {
+        $wrapperClasses .= ' border-primary-lighter';
+    }
+} elseif ($iconStyle === 'filled') {
+    $wrapperClasses = 'w-fit rounded-full ' . $iconPad;
+    $wrapperStyle = $circleColor !== ''
+        ? 'background-color:' . $circleColor . ';'
+        : '';
+    if ($circleColor === '') {
+        $wrapperClasses .= ' bg-primary-lighter';
+    }
+}
+
+// Couleur de l'icône : style inline si défini, sinon token text-fg.
+$iconClasses = $iconSizeClass . ($iconColor === '' ? ' text-fg' : '');
+$iconAttributes = ['aria-hidden' => 'true'];
+if ($iconColor !== '') {
+    $iconAttributes['style'] = 'color:' . $iconColor;
+}
+
+// Agencement : icône au-dessus (stacked) ou icône à gauche (inline).
+if ($layout === 'inline') {
+    $itemClasses    = 'flex flex-shrink-0 flex-row items-center justify-start gap-4 max-md:w-[240px]';
+    $textWrapClasses = 'flex flex-col gap-1 text-left';
+    $titleClasses    = 'text-lg text-fg m-0';
+} else {
+    $itemClasses    = 'flex flex-shrink-0 flex-col items-center justify-start gap-7 max-md:w-[160px]';
+    $textWrapClasses = 'flex flex-col gap-4 text-center';
+    $titleClasses    = 'whitespace-nowrap text-lg text-fg m-0';
+}
 ?>
 <?php if ($guarantees): ?>
     <div class="relative flex gap-8 md:grid md:grid-cols-4 md:gap-14 max-md:overflow-x-auto ">
         <?php foreach ($guarantees as $guarantee): ?>
-            <div class="flex flex-shrink-0 flex-col items-center justify-start gap-7 max-md:w-[160px]">
+            <div class="<?= $escaper->escapeHtmlAttr($itemClasses) ?>">
                 <?php $columnIcon = is_string($guarantee['column_icon'] ?? null) ? $guarantee['column_icon'] : ''; ?>
-                <div class="w-fit rounded-xl border border-primary-lighter p-3">
+                <?php if ($iconStyle === 'bare'): ?>
                     <?php if ($columnIcon !== ''): ?>
                         <?= /* @noEscape */ $iconRenderer->renderHtml(
                             $columnIcon,
-                            'h-5 w-5 text-fg',
-                            20,
-                            20,
-                            ['aria-hidden' => 'true']
+                            $iconClasses,
+                            $iconDim,
+                            $iconDim,
+                            $iconAttributes
+                        ) ?>
+                    <?php endif; ?>
+                <?php else: ?>
+                <div class="<?= $escaper->escapeHtmlAttr($wrapperClasses) ?>"
+                    <?php if ($wrapperStyle !== ''): ?>style="<?= $escaper->escapeHtmlAttr($wrapperStyle) ?>"<?php endif; ?>>
+                    <?php if ($columnIcon !== ''): ?>
+                        <?= /* @noEscape */ $iconRenderer->renderHtml(
+                            $columnIcon,
+                            $iconClasses,
+                            $iconDim,
+                            $iconDim,
+                            $iconAttributes
                         ) ?>
                     <?php endif; ?>
                 </div>
-                <div class="flex flex-col gap-4 text-center">
-                    <h3 class="whitespace-nowrap text-lg text-fg m-0">
+                <?php endif; ?>
+                <div class="<?= $escaper->escapeHtmlAttr($textWrapClasses) ?>">
+                    <h3 class="<?= $escaper->escapeHtmlAttr($titleClasses) ?>">
                         <?= $escaper->escapeHtml(__($guarantee['column_title'])) ?>
                     </h3>
                     <p class="m-0">
