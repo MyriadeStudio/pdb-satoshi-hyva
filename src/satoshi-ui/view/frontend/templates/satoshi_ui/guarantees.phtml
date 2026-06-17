@@ -23,9 +23,24 @@ $guarantees = $decodeHelper->decodeJSONHTMLEntity($guarantees);
 // Style options (onglet "Style" du Page Builder). Valeurs vides => fallback tokens.
 $iconStyle  = is_string($block->getData('icon_style') ?? null) ? $block->getData('icon_style') : '';
 $iconSize   = is_string($block->getData('icon_size') ?? null) ? $block->getData('icon_size') : '';
-$layout     = is_string($block->getData('layout') ?? null) ? $block->getData('layout') : '';
-$iconColor  = is_string($block->getData('icon_color') ?? null) ? trim($block->getData('icon_color')) : '';
-$circleColor = is_string($block->getData('circle_color') ?? null) ? trim($block->getData('circle_color')) : '';
+$layout     = is_string($block->getData('item_layout') ?? null) ? $block->getData('item_layout') : '';
+$iconColorRaw   = is_string($block->getData('icon_color') ?? null) ? trim($block->getData('icon_color')) : '';
+$circleColorRaw = is_string($block->getData('circle_color') ?? null) ? trim($block->getData('circle_color')) : '';
+
+// Resout une valeur de couleur : token design system (--color-x) => var(...) avec
+// repli currentColor ; ou valeur hex heritee ; sinon vide (=> fallback tokens).
+$resolveColor = static function (string $value): string {
+    if (preg_match('/^--[a-z0-9-]+$/i', $value)) {
+        return 'var(' . $value . ', currentColor)';
+    }
+    if (preg_match('/^#[0-9a-fA-F]{3,8}$/', $value)) {
+        return $value;
+    }
+    return '';
+};
+
+$iconColor   = $resolveColor($iconColorRaw);
+$circleColor = $resolveColor($circleColorRaw);
 
 if (!in_array($iconStyle, ['bordered', 'filled', 'bare'], true)) {
     $iconStyle = 'bordered';

@@ -60,7 +60,7 @@ define([
             directive += ' icon_size="' + data.icon_size + '"';
         }
         if (data.layout) {
-            directive += ' layout="' + data.layout + '"';
+            directive += ' item_layout="' + data.layout + '"';
         }
         if (data.icon_color) {
             directive += ' icon_color="' + data.icon_color + '"';

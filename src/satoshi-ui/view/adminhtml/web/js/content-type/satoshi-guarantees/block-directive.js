@@ -30,7 +30,9 @@ define(["Satoshi_SatoshiUi/js/content-type/block-directive"], function (
       attributes.icon_size = data.icon_size;
     }
     if (data.layout) {
-      attributes.layout = data.layout;
+      // "layout" est un setter reserve d'AbstractBlock (setLayout) : on transmet
+      // sous un nom neutre pour eviter la collision setDataUsingMethod.
+      attributes.item_layout = data.layout;
     }
     if (data.icon_color) {
       attributes.icon_color = data.icon_color;
