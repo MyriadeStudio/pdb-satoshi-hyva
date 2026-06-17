@@ -259,49 +259,37 @@
             </formElements>
         </field>
 
-        <field name="icon_color" sortOrder="20" formElement="colorPicker">
+        <field name="icon_color" sortOrder="20" formElement="select">
             <settings>
                 <label translate="true">Icon color</label>
-                <componentType>colorPicker</componentType>
-                <placeholder translate="true">No Color</placeholder>
+                <dataType>text</dataType>
                 <additionalClasses>
                     <class name="admin__field-medium">true</class>
                 </additionalClasses>
-                <validation>
-                    <rule name="validate-color" xsi:type="boolean">true</rule>
-                </validation>
-                <dataType>text</dataType>
             </settings>
             <formElements>
-                <colorPicker>
+                <select>
                     <settings>
-                        <colorPickerMode>full</colorPickerMode>
-                        <colorFormat>hex</colorFormat>
+                        <options class="Pdb\ThemeHyva\Model\Adminhtml\Source\DesignColors"/>
                     </settings>
-                </colorPicker>
+                </select>
             </formElements>
         </field>
 
-        <field name="circle_color" sortOrder="30" formElement="colorPicker">
+        <field name="circle_color" sortOrder="30" formElement="select">
             <settings>
                 <label translate="true">Circle color (border / background)</label>
-                <componentType>colorPicker</componentType>
-                <placeholder translate="true">No Color</placeholder>
+                <dataType>text</dataType>
                 <additionalClasses>
                     <class name="admin__field-medium">true</class>
                 </additionalClasses>
-                <validation>
-                    <rule name="validate-color" xsi:type="boolean">true</rule>
-                </validation>
-                <dataType>text</dataType>
             </settings>
             <formElements>
-                <colorPicker>
+                <select>
                     <settings>
-                        <colorPickerMode>full</colorPickerMode>
-                        <colorFormat>hex</colorFormat>
+                        <options class="Pdb\ThemeHyva\Model\Adminhtml\Source\DesignColors"/>
                     </settings>
-                </colorPicker>
+                </select>
             </formElements>
         </field>
     </fieldset>
