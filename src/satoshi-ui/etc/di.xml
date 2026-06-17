@@ -11,6 +11,7 @@
                 <item name="satoshi_categories" xsi:type="object">
                     Magento\PageBuilder\Model\Stage\Renderer\WidgetDirective
                 </item>
+                <item name="satoshi_guarantees" xsi:type="object">Magento\PageBuilder\Model\Stage\Renderer\WidgetDirective</item>
             </argument>
         </arguments>
     </type>
