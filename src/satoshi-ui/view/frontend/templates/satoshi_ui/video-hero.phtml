@@ -69,6 +69,18 @@ $mobileAlignment = $block->getData('mobile_content_alignment');
         >
             <source src="<?= $escaper->escapeUrl($videoUrl) ?>" type="video/mp4">
         </video>
+    <?php else if(str_ends_with($videoUrl, '.webm')): ?>
+        <video
+            class="absolute left-0 top-0 z-0 h-full w-full object-cover object-center bg-cover bg-center"
+            <?= $muted ? 'muted' : '' ?>
+            <?= $autoplay ? 'autoplay' : 'false' ?>
+            <?= $loop ? 'loop' : '' ?>
+            playsinline
+            preload="none"
+            @loadeddata="loaded = true"
+        >
+            <source src="<?= $escaper->escapeUrl($videoUrl) ?>" type="video/webm">
+        </video>
     <?php else: ?>
         <iframe
             src="<?= $escaper->escapeUrl($videoUrl) ?>"
