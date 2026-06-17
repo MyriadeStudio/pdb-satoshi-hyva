@@ -93,6 +93,26 @@
             </formElements>
         </field>
 
+        <!-- Mobile image field (optional) -->
+        <field name="mobile_image" sortOrder="15" formElement="imageUploader">
+            <settings>
+                <label translate="true">Mobile image</label>
+                <componentType>imageUploader</componentType>
+                <notice translate="true">Optional. Shown on small screens instead of the main image.</notice>
+            </settings>
+            <formElements>
+                <imageUploader>
+                    <settings>
+                        <allowedExtensions>jpg jpeg gif png</allowedExtensions>
+                        <maxFileSize>4194304</maxFileSize>
+                        <uploaderConfig>
+                            <param xsi:type="string" name="url">pagebuilder/contenttype/image_upload</param>
+                        </uploaderConfig>
+                    </settings>
+                </imageUploader>
+            </formElements>
+        </field>
+
         <!-- Heading field -->
         <field name="heading" sortOrder="20" formElement="input">
             <settings>

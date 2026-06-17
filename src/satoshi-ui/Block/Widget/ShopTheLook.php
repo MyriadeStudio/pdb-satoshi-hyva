@@ -92,6 +92,14 @@ class ShopTheLook extends Template implements BlockInterface
     }
 
     /**
+     * @return array|bool|float|int|mixed|string|null
+     */
+    public function getMobileImage()
+    {
+        return $this->getData('mobile_image') ? $this->decode($this->getData('mobile_image')) : [];
+    }
+
+    /**
      * @param $value
      * @return array|bool|float|int|mixed|string|null
      */
@@ -119,6 +127,7 @@ class ShopTheLook extends Template implements BlockInterface
             'SATOSHI_SHOP_THE_LOOK_WIDGET',
             $this->getData('heading'),
             $this->getData('image'),
+            $this->getData('mobile_image'),
             $this->getData('products')
         ];
     }

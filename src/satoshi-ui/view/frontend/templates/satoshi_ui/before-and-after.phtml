@@ -17,6 +17,8 @@ $hyvaicons = $viewModels->require(SvgIcons::class);
 $sectionHeight = $block->getData('section_height');
 $beforeImage = $block->getData('before_image');
 $afterImage = $block->getData('after_image');
+$beforeImageMobile = $block->getData('before_image_mobile');
+$afterImageMobile = $block->getData('after_image_mobile');
 $id = uniqid();
 ?>
 
@@ -38,7 +40,12 @@ $id = uniqid();
     >
         <?php if(!empty($afterImage)): ?>
             <div class="h-full">
-                <img src="<?= $escaper->escapeUrl($afterImage) ?>" alt="Image after" class="h-full object-cover object-center" width="100%" height="100%" loading="lazy">
+                <picture>
+                    <?php if(!empty($afterImageMobile)): ?>
+                        <source media="(max-width: 767px)" srcset="<?= $escaper->escapeUrl($afterImageMobile) ?>">
+                    <?php endif; ?>
+                    <img src="<?= $escaper->escapeUrl($afterImage) ?>" alt="Image after" class="h-full object-cover object-center" width="100%" height="100%" loading="lazy">
+                </picture>
             </div>
         <?php else: ?>
             <svg class="w-full h-full min-h-[300px]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1052 400">
@@ -51,7 +58,12 @@ $id = uniqid();
         >
             <?php if(!empty($beforeImage)): ?>
                 <div class="h-full">
-                    <img src="<?= $escaper->escapeUrl($beforeImage) ?>" alt="Image after" class="h-full object-cover object-center" width="100%" height="100%" loading="lazy">
+                    <picture>
+                        <?php if(!empty($beforeImageMobile)): ?>
+                            <source media="(max-width: 767px)" srcset="<?= $escaper->escapeUrl($beforeImageMobile) ?>">
+                        <?php endif; ?>
+                        <img src="<?= $escaper->escapeUrl($beforeImage) ?>" alt="Image after" class="h-full object-cover object-center" width="100%" height="100%" loading="lazy">
+                    </picture>
                 </div>
             <?php else: ?>
                 <svg class="w-full h-full min-h-[300px] bg-bg-sunken" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1052 400">

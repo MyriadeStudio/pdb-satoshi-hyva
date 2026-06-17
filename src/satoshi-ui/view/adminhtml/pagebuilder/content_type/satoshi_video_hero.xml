@@ -107,6 +107,14 @@
                             preview_converter="Magento_PageBuilder/js/converter/attribute/preview/src"
                         />
                     </element>
+                    <element name="mobile_image">
+                        <attribute
+                            name="mobile_image"
+                            source="src"
+                            converter="Magento_PageBuilder/js/converter/attribute/src"
+                            preview_converter="Magento_PageBuilder/js/converter/attribute/preview/src"
+                        />
+                    </element>
 
                     <element name="block_directive">
                         <html name="block_directive" converter="Magento_PageBuilder/js/converter/html/tag-escaper"/>

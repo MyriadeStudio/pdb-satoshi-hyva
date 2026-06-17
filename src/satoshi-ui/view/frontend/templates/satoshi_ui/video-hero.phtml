@@ -45,12 +45,17 @@ $mobileAlignment = $block->getData('mobile_content_alignment');
 <div class="relative overflow-hidden" x-data="{ loaded: false }">
     <div class="absolute left-0 top-0 z-10 h-full w-full bg-black" style="opacity: <?= $escaper->escapeHtmlAttr($overlayOpacity) ?>"></div>
     <div class="absolute inset-0 z-[5] transition-opacity" :class="{ 'opacity-0': loaded }">
-        <img
-            src="<?= $escaper->escapeUrl($block->getData('image')) ?>"
-            class="h-full w-full object-cover object-center"
-            loading="eager"
-            fetchpriority="high"
-        />
+        <picture>
+            <?php if ($block->getData('mobile_image')): ?>
+                <source media="(max-width: 767px)" srcset="<?= $escaper->escapeUrl($block->getData('mobile_image')) ?>">
+            <?php endif; ?>
+            <img
+                src="<?= $escaper->escapeUrl($block->getData('image')) ?>"
+                class="h-full w-full object-cover object-center"
+                loading="eager"
+                fetchpriority="high"
+            />
+        </picture>
     </div>
     <?php if(str_ends_with($videoUrl, '.mp4')): ?>
         <video

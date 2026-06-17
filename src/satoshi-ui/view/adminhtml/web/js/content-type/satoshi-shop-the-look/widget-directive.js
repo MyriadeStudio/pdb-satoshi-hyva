@@ -54,6 +54,12 @@ define([
         attributes.image === ""
           ? ""
           : JSON.parse(this.decodeWysiwygCharacters(attributes.image || ""));
+      data.mobile_image =
+        attributes.mobile_image === "" || attributes.mobile_image === undefined
+          ? ""
+          : JSON.parse(
+              this.decodeWysiwygCharacters(attributes.mobile_image || "")
+            );
       data.products =
         attributes.products === ""
           ? ""
@@ -74,6 +80,9 @@ define([
       if (typeof data.image === "object") {
         data.image = JSON.stringify(data.image);
       }
+      if (typeof data.mobile_image === "object") {
+        data.mobile_image = JSON.stringify(data.mobile_image);
+      }
       if (typeof data.products === "object") {
         data.products = JSON.stringify(data.products);
       }
@@ -82,6 +91,7 @@ define([
         type: "Satoshi\\SatoshiUi\\Block\\Widget\\ShopTheLook",
         heading: data.heading,
         image: this.encodeWysiwygCharacters(data.image || ""),
+        mobile_image: this.encodeWysiwygCharacters(data.mobile_image || ""),
         products: this.encodeWysiwygCharacters(data.products || ""),
       };
 

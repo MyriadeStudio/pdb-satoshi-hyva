@@ -66,6 +66,18 @@
                                    converter="Magento_PageBuilder/js/converter/attribute/src"
                                    preview_converter="Magento_PageBuilder/js/converter/attribute/preview/src"/>
                     </element>
+                    <element name="before_image_mobile">
+                        <attribute name="before_image_mobile"
+                                   source="src"
+                                   converter="Magento_PageBuilder/js/converter/attribute/src"
+                                   preview_converter="Magento_PageBuilder/js/converter/attribute/preview/src"/>
+                    </element>
+                    <element name="after_image_mobile">
+                        <attribute name="after_image_mobile"
+                                   source="src"
+                                   converter="Magento_PageBuilder/js/converter/attribute/src"
+                                   preview_converter="Magento_PageBuilder/js/converter/attribute/preview/src"/>
+                    </element>
 
                     <element name="block_directive">
                         <html name="block_directive" converter="Magento_PageBuilder/js/converter/html/tag-escaper"/>

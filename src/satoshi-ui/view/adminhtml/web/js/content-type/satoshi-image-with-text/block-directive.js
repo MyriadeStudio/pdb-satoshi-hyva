@@ -25,6 +25,7 @@ define([
       button_label: data.button_label,
       button_link: JSON.stringify(tidyLink(data.button_link)),
       ...(data.image[0] ? { image: data.image[0].url } : {}),
+      ...(data.mobile_image[0] ? { mobile_image: data.mobile_image[0].url } : {}),
     };
   };
 

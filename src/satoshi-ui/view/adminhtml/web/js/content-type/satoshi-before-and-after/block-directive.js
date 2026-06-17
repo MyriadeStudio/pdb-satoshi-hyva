@@ -21,6 +21,8 @@ define([
     return {
       ...(data.before_image[0] ? { before_image: data.before_image[0].url } : {}),
       ...(data.after_image[0] ? { after_image: data.after_image[0].url } : {}),
+      ...(data.before_image_mobile[0] ? { before_image_mobile: data.before_image_mobile[0].url } : {}),
+      ...(data.after_image_mobile[0] ? { after_image_mobile: data.after_image_mobile[0].url } : {}),
       section_height: data.section_height,
     };
   };

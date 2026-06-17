@@ -117,6 +117,46 @@
             </formElements>
         </field>
 
+        <!-- Before mobile image field (optional) -->
+        <field name="before_image_mobile" sortOrder="12" formElement="imageUploader">
+            <settings>
+                <label translate="true">Before image (mobile)</label>
+                <componentType>imageUploader</componentType>
+                <notice translate="true">Optional. Shown on small screens instead of the before image.</notice>
+            </settings>
+            <formElements>
+                <imageUploader>
+                    <settings>
+                        <allowedExtensions>jpg jpeg gif png</allowedExtensions>
+                        <maxFileSize>4194304</maxFileSize>
+                        <uploaderConfig>
+                            <param xsi:type="string" name="url">pagebuilder/contenttype/image_upload</param>
+                        </uploaderConfig>
+                    </settings>
+                </imageUploader>
+            </formElements>
+        </field>
+
+        <!-- After mobile image field (optional) -->
+        <field name="after_image_mobile" sortOrder="22" formElement="imageUploader">
+            <settings>
+                <label translate="true">After image (mobile)</label>
+                <componentType>imageUploader</componentType>
+                <notice translate="true">Optional. Shown on small screens instead of the after image.</notice>
+            </settings>
+            <formElements>
+                <imageUploader>
+                    <settings>
+                        <allowedExtensions>jpg jpeg gif png</allowedExtensions>
+                        <maxFileSize>4194304</maxFileSize>
+                        <uploaderConfig>
+                            <param xsi:type="string" name="url">pagebuilder/contenttype/image_upload</param>
+                        </uploaderConfig>
+                    </settings>
+                </imageUploader>
+            </formElements>
+        </field>
+
         <!-- Section height -->
         <field name="section_height" sortOrder="30" formElement="select" component="Magento_PageBuilder/js/form/element/visual-select">
             <argument name="data" xsi:type="array">

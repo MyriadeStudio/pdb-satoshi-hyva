@@ -26,18 +26,24 @@ $bannerHeight = $block->getData('banner_height');
 $overlayOpacity = $block->getData('overlay_opacity');
 $desktopAlignment = $block->getData('desktop_content_position');
 $mobileAlignment = $block->getData('mobile_content_alignment');
+$mobileImage = $block->getData('mobile_image');
 ?>
 <div class="relative overflow-hidden">
     <div class="absolute left-0 top-0 z-10 h-full w-full bg-black" style="opacity: <?= $escaper->escapeHtmlAttr($overlayOpacity) ?>"></div>
     <?php if ($block->getData('image')): ?>
         <div class="bg-[--fade-in-bg]">
-            <img
-                class="absolute left-0 top-0 z-0 h-full w-full object-cover object-center"
-                width="100%"
-                height="100%"
-                src="<?= $escaper->escapeUrl($block->getData('image')) ?>"
-                alt="<?= $escaper->escapeHtmlAttr($block->getData('heading')) ?>"
-            >
+            <picture>
+                <?php if ($mobileImage): ?>
+                    <source media="(max-width: 767px)" srcset="<?= $escaper->escapeUrl($mobileImage) ?>">
+                <?php endif; ?>
+                <img
+                    class="absolute left-0 top-0 z-0 h-full w-full object-cover object-center"
+                    width="100%"
+                    height="100%"
+                    src="<?= $escaper->escapeUrl($block->getData('image')) ?>"
+                    alt="<?= $escaper->escapeHtmlAttr($block->getData('heading')) ?>"
+                >
+            </picture>
         </div>
     <?php else: ?>
         <svg class="absolute left-0 top-0 z-0 h-full w-full object-cover object-center bg-bg-sunken" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 525.5 525.5">
