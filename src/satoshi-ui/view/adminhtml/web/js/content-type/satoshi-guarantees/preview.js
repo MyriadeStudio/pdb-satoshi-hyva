@@ -50,8 +50,8 @@ define([
 
         this.previousData = JSON.parse(JSON.stringify(data));
 
-        var directive = this.data.block_directive && this.data.block_directive.html
-            ? this.data.block_directive.html()
+        var directive = this.data.main && this.data.main.html
+            ? this.data.main.html()
             : "";
 
         if (!directive) {

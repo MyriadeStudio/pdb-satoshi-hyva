@@ -95,6 +95,9 @@
                 <field name="column_icon" sortOrder="10" formElement="select">
                     <argument name="data" xsi:type="array">
                         <item name="config" xsi:type="array">
+                            <item name="component" xsi:type="string">Pdb_ThemeHyva/js/form/element/icon-select</item>
+                            <item name="elementTmpl" xsi:type="string">Pdb_ThemeHyva/form/element/icon-select</item>
+                            <item name="optionsUrl" xsi:type="url" path="pdb_themehyva/icon/options"/>
                             <item name="default" xsi:type="string">lucide:shield-check</item>
                         </item>
                     </argument>
@@ -102,13 +105,6 @@
                         <label translate="true">Column icon</label>
                         <dataType>text</dataType>
                     </settings>
-                    <formElements>
-                        <select>
-                            <settings>
-                                <options class="Pdb\ThemeHyva\Model\Adminhtml\Source\MergedIcons"/>
-                            </settings>
-                        </select>
-                    </formElements>
                 </field>
                 <field name="column_title" sortOrder="20" formElement="input">
                     <argument name="data" xsi:type="array">
