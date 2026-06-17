@@ -84,4 +84,24 @@
             </argument>
         </arguments>
     </type>
+
+    <!--
+        Renderers du stage Page Builder, en scope ADMINHTML.
+        L'apercu (Controller\Adminhtml\Stage\Preview) tourne en zone adminhtml. Dans ce
+        projet, les entrees du tableau `renderers` du etc/di.xml GLOBAL de Satoshi ne se
+        retrouvent PAS dans le pool adminhtml (meme perte de fusion que celle contournee par
+        le commentaire "harden against generated/ corruption" de Pdb/ThemeHyva/etc/adminhtml/di.xml).
+        Sans ce mapping adminhtml, satoshi_* tombe sur le renderer `default` (Block) -> apercu VIDE.
+    -->
+    <type name="Magento\PageBuilder\Model\Stage\RendererPool">
+        <arguments>
+            <argument name="renderers" xsi:type="array">
+                <item name="satoshi_collage" xsi:type="object">Magento\PageBuilder\Model\Stage\Renderer\WidgetDirective</item>
+                <item name="satoshi_category" xsi:type="object">Magento\PageBuilder\Model\Stage\Renderer\WidgetDirective</item>
+                <item name="satoshi_shop_the_look" xsi:type="object">Magento\PageBuilder\Model\Stage\Renderer\WidgetDirective</item>
+                <item name="satoshi_categories" xsi:type="object">Magento\PageBuilder\Model\Stage\Renderer\WidgetDirective</item>
+                <item name="satoshi_guarantees" xsi:type="object">Magento\PageBuilder\Model\Stage\Renderer\WidgetDirective</item>
+            </argument>
+        </arguments>
+    </type>
 </config>
