@@ -9,15 +9,27 @@ define([
     "use strict";
 
     /**
-     * Rendu de l'apercu BO via le directive {{block}} execute cote serveur
-     * (meme mecanique que satoshi-collage / pdb-ui-usp). Permet d'afficher le
-     * vrai rendu front du composant — notamment les icones (SVG) selectionnees
-     * via le champ column_icon — au lieu d'une reconstruction Knockout.
+     * Apercu du stage BO via rendu serveur du directive {{block}}.
+     *
+     * On NE lit PAS this.data.main.html() (comme satoshi-collage/category) : le
+     * master-format de guarantees imbrique des elements enfants (guarantees_columns
+     * + block_directive) dans `main`, donc au chargement main.html contient ce blob
+     * imbrique et non un directive propre -> rendu vide.
+     *
+     * On reconstruit donc le directive directement depuis les donnees live du
+     * formulaire (guarantees_columns), avec l'encodage attendu par le block
+     * (Helper\Decode : guillemets -> &amp;quote;). Le resultat est poste a
+     * preview_url, rendu cote serveur par Renderer\WidgetDirective (mappe sur
+     * satoshi_guarantees dans di.xml), qui resout {{block}} et renvoie le vrai
+     * HTML front, icones SVG comprises.
      */
+    var BLOCK_CLASS = "Satoshi\\SatoshiUi\\Block\\Guarantees";
+
     function Preview(contentType, configData, observableUpdater) {
         PreviewBase.call(this, contentType, configData, observableUpdater);
         this.previewElement = $.Deferred();
-        this.widgetUnsanitizedHtml = ko.observable($t("Configurez le composant Guarantees pour l'apercu."));
+        this.widgetUnsanitizedHtml = ko.observable("");
+        this.placeholderText = ko.observable($t("Ajoutez une colonne pour previsualiser le composant Guarantees."));
         this.ignoredKeysForBuild = [
             "margins_and_padding",
             "border",
@@ -37,6 +49,12 @@ define([
         this.previewElement.resolve(element);
     };
 
+    Preview.prototype.buildDirective = function (columns) {
+        var attr = JSON.stringify(columns).replace(/"/g, "&amp;quote;");
+
+        return '{{block class="' + BLOCK_CLASS + '" guarantees="' + attr + '"}}';
+    };
+
     Preview.prototype.afterObservablesUpdated = function () {
         var self = this;
 
@@ -50,11 +68,10 @@ define([
 
         this.previousData = JSON.parse(JSON.stringify(data));
 
-        var directive = this.data.main && this.data.main.html
-            ? this.data.main.html()
-            : "";
+        var columns = data.guarantees_columns;
 
-        if (!directive) {
+        if (!columns || !columns.length) {
+            this.widgetUnsanitizedHtml("");
             return;
         }
 
@@ -62,7 +79,7 @@ define([
             method: "POST",
             data: {
                 role: this.config.name,
-                directive: directive
+                directive: this.buildDirective(columns)
             }
         }).done(function (response) {
             if (!response || typeof response.data !== "object") {
@@ -80,6 +97,7 @@ define([
     Preview.prototype.hasDataChanged = function (previousData, newData) {
         previousData = _.omit(previousData, this.ignoredKeysForBuild);
         newData = _.omit(newData, this.ignoredKeysForBuild);
+
         return !_.isEqual(previousData, newData);
     };
 
