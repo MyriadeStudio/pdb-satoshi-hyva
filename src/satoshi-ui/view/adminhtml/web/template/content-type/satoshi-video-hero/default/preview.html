@@ -10,8 +10,23 @@
         ko-style="data.overlay_opacity.style"
     ></div>
     <div>
-        <video class="video-banner__video" attr="data.video.attributes" playsinline if="data.video.attributes()?.src?.endsWith('.mp4')" muted>
-            <source attr="data.video.attributes" type="video/mp4">
+        <video
+            class="video-banner__video"
+            attr="data.video.attributes"
+            playsinline
+            if="data.video.attributes()?.src?.endsWith('.mp4')"
+            muted
+        >
+            <source attr="data.video.attributes" type="video/mp4" />
+        </video>
+        <video
+            class="video-banner__video"
+            attr="data.video.attributes"
+            playsinline
+            if="data.video.attributes()?.src?.endsWith('.webm')"
+            muted
+        >
+            <source attr="data.video.attributes" type="video/webm" />
         </video>
         <iframe
             frameborder="0"
@@ -19,7 +34,7 @@
             attr="data.video.attributes"
             class="video-banner__video"
             muted="true"
-            ifnot="data.video.attributes()?.src?.endsWith('.mp4')"
+            ifnot="data.video.attributes()?.src?.endsWith('.mp4') || data.video.attributes()?.src?.endsWith('.webm')"
         ></iframe>
         <svg
             class="video-banner__placeholder"
