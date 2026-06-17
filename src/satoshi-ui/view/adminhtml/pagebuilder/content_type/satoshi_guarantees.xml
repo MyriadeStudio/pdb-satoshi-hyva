@@ -5,7 +5,7 @@
           label="Guarantees"
           menu_section="satoshi_components"
           component="Magento_PageBuilder/js/content-type"
-          preview_component="Magento_PageBuilder/js/content-type/preview"
+          preview_component="Satoshi_SatoshiUi/js/content-type/satoshi-guarantees/preview"
           master_component="Magento_PageBuilder/js/content-type/master"
           form="pagebuilder_satoshi_guarantees_form"
           icon="icon-pagebuilder-heading"

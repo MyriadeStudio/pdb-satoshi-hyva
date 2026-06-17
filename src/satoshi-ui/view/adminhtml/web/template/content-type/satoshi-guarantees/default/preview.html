@@ -1,48 +1,18 @@
 <div
-  attr="data.main.attributes"
-  ko-style="data.main.style"
   class="pagebuilder-content-type"
-  css="data.main.css"
-  event="{ mouseover: onMouseOver, mouseout: onMouseOut }, mouseoverBubble: false"
+  data-bind="event: { mouseover: onMouseOver, mouseout: onMouseOut }, mouseoverBubble: false"
+  style="min-height: 80px;"
 >
-  <if
-    args="!data.guarantees_columns.attributes().guarantees.length > 0 || data.guarantees_columns.attributes().guarantees === '[]'"
-  >
-    <div class="empty-guarantees">
-      Guarantees
-    </div>
-  </if>
-
-  <if
-    args="data.guarantees_columns.attributes().guarantees.length > 0 && data.guarantees_columns.attributes().guarantees !== '[]'"
+  <div
+    attr="data.main.attributes"
+    ko-style="data.main.style"
+    css="data.main.css"
   >
     <div
-      data-bind="attr: { guarantees: JSON.stringify(data.guarantees_columns.attributes().guarantees) }"
-      ko-style="data.guarantees_columns.style"
-      data-element="guarantees_columns"
-      css="data.guarantees_columns.css"
-      class="guarantees"
-    >
-      <!-- ko foreach: data.guarantees_columns.attributes().guarantees -->
-      <div class="guarantee">
-        <if args="typeof column_icon === 'string' && column_icon">
-          <div class="guarantee-icon">
-            <span class="guarantee-icon-name" data-bind="text: column_icon"></span>
-          </div>
-        </if>
-
-        <div class="guarantee-content">
-          <h3
-            data-bind="text: column_title"
-            class="guarantee-title"
-          >
-          </h3>
-          <p data-bind="text: column_description">
-          </p>
-        </div>
-      </div>
-      <!-- /ko -->
-    </div>
-  </if>
+      afterRender="onAfterRender"
+      class="rendered-content"
+      html="widgetUnsanitizedHtml"
+    >Guarantees</div>
+  </div>
   <render args="getOptions().template" />
 </div>
