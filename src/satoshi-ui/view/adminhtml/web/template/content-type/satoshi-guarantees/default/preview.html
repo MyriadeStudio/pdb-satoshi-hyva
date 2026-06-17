@@ -25,9 +25,9 @@
     >
       <!-- ko foreach: data.guarantees_columns.attributes().guarantees -->
       <div class="guarantee">
-        <if args="column_icon[0]">
+        <if args="column_icon">
           <div class="guarantee-icon">
-            <img data-bind="attr: {src: column_icon[0].url}" />
+            <span class="guarantee-icon-name" data-bind="text: column_icon"></span>
           </div>
         </if>
 
