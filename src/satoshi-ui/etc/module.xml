@@ -5,6 +5,7 @@
         <sequence>
             <module name="Satoshi_Core"/>
             <module name="Magento_PageBuilder"/>
+            <module name="Pdb_ThemeHyva"/>
         </sequence>
     </module>
 </config>

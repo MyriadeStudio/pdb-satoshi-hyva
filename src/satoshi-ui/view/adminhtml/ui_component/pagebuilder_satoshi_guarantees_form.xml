@@ -92,21 +92,22 @@
                         <item name="componentType" xsi:type="string">container</item>
                     </item>
                 </argument>
-                <field name="column_icon" sortOrder="10" formElement="imageUploader">
+                <field name="column_icon" sortOrder="10" formElement="select">
+                    <argument name="data" xsi:type="array">
+                        <item name="config" xsi:type="array">
+                            <item name="default" xsi:type="string">lucide:shield-check</item>
+                        </item>
+                    </argument>
                     <settings>
                         <label translate="true">Column icon</label>
-                        <componentType>imageUploader</componentType>
+                        <dataType>text</dataType>
                     </settings>
                     <formElements>
-                        <imageUploader>
+                        <select>
                             <settings>
-                                <allowedExtensions>jpg jpeg gif png</allowedExtensions>
-                                <maxFileSize>4194304</maxFileSize>
-                                <uploaderConfig>
-                                    <param xsi:type="string" name="url">pagebuilder/contenttype/image_upload</param>
-                                </uploaderConfig>
+                                <options class="Pdb\ThemeHyva\Model\Adminhtml\Source\MergedIcons"/>
                             </settings>
-                        </imageUploader>
+                        </select>
                     </formElements>
                 </field>
                 <field name="column_title" sortOrder="20" formElement="input">

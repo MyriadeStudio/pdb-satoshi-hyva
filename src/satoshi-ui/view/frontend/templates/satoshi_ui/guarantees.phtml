@@ -2,12 +2,18 @@
 
 declare(strict_types=1);
 
+use Hyva\Theme\Model\ViewModelRegistry;
 use Magento\Framework\Escaper;
 use Magento\Framework\View\Element\Template;
+use Pdb\ThemeHyva\ViewModel\IconRenderer;
 use Satoshi\SatoshiUi\Helper\Decode as DecodeHelper;
 
 /** @var Template $block */
 /** @var Escaper $escaper */
+/** @var ViewModelRegistry $viewModels */
+
+/** @var IconRenderer $iconRenderer */
+$iconRenderer = $viewModels->require(IconRenderer::class);
 
 /** @var DecodeHelper $decodeHelper */
 $decodeHelper = $this->helper(DecodeHelper::class);
@@ -19,14 +25,14 @@ $guarantees = $decodeHelper->decodeJSONHTMLEntity($guarantees);
         <?php foreach ($guarantees as $guarantee): ?>
             <div class="flex flex-shrink-0 flex-col items-center justify-start gap-7 max-md:w-[160px]">
                 <div class="w-fit rounded-xl border border-primary-lighter p-3">
-                    <?php if ($guarantee['column_icon']): ?>
-                        <img
-                            src="<?= $escaper->escapeHtmlAttr($guarantee['column_icon'][0]['url']) ?>"
-                            alt="<?= $escaper->escapeHtmlAttr(__($guarantee['column_title'])) ?>"
-                            width="20px"
-                            height="20px"
-                            loading="lazy"
-                        />
+                    <?php if (!empty($guarantee['column_icon'])): ?>
+                        <?= /* @noEscape */ $iconRenderer->renderHtml(
+                            (string) $guarantee['column_icon'],
+                            'h-5 w-5 text-fg',
+                            20,
+                            20,
+                            ['aria-hidden' => 'true']
+                        ) ?>
                     <?php endif; ?>
                 </div>
                 <div class="flex flex-col gap-4 text-center">
