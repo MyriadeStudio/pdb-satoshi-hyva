@@ -45,6 +45,9 @@
                                preview_converter="Magento_PageBuilder/js/converter/style/preview/display"/>
                         <attribute name="name" source="data-content-type"/>
                         <attribute name="appearance" source="data-appearance"/>
+                        <attribute name="pdb_anim" source="data-pdb-anim"/>
+                        <attribute name="pdb_anim_duration" source="data-pdb-anim-dur"/>
+                        <attribute name="pdb_anim_delay" source="data-pdb-anim-delay"/>
                         <css name="css_classes"/>
                     </element>
 
@@ -57,6 +60,9 @@
                     </element>
                     <element name="mobile_content_alignment">
                         <attribute name="mobile_content_alignment" source="data-mobile-alignment" />
+                    </element>
+                    <element name="text_color_scheme">
+                        <attribute name="text_color_scheme" source="data-text-color-scheme" />
                     </element>
                     <element name="heading">
                         <html name="heading" converter="Magento_PageBuilder/js/converter/html/decode"/>

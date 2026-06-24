@@ -55,6 +55,7 @@ define([
       data.display_as_buttons = attributes.display_as_buttons;
       data.view_all_button = attributes.view_all_button;
       data.hide_arrows = attributes.hide_arrows;
+      data.text_color_scheme = attributes.text_color_scheme;
       data.categories =
         attributes.categories === ""
           ? ""
@@ -85,6 +86,7 @@ define([
         display_as_buttons: data.display_as_buttons,
         view_all_button: data.view_all_button,
         hide_arrows: data.hide_arrows,
+        text_color_scheme: data.text_color_scheme,
         categories: this.encodeWysiwygCharacters(data.categories || ""),
       };
 

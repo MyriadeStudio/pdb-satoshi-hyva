@@ -41,10 +41,20 @@ $bannerHeight = $block->getData('banner_height');
 $desktopAlignment = $block->getData('desktop_content_position');
 $mobileAlignment = $block->getData('mobile_content_alignment');
 
+// Text color scheme: "inverse" = textes/boutons clairs (vidéo sombre),
+// "dark" = dark texts/buttons (for a bright video). Default "dark".
+// Exception : la branche "dark" de la description garde la couleur de marque
+// (text-primary-darker), donc on conserve le ternaire ; le blanc en dur devient
+// un token themable (text-fg-inverse) et le noir en dur devient text-fg.
+$colorScheme = $block->getData('text_color_scheme') === 'inverse' ? 'inverse' : 'default';
+$headingClass = $colorScheme === 'inverse' ? 'text-fg-inverse' : 'text-fg';
+$descriptionClass = $colorScheme === 'inverse' ? 'text-fg-inverse' : 'text-primary-darker';
+$buttonClass = $colorScheme === 'inverse' ? 'button--filled-secondary' : 'button--filled-primary';
+
 ?>
 <div class="relative overflow-hidden" x-data="{ loaded: false }">
     <div class="absolute left-0 top-0 z-10 h-full w-full bg-black" style="opacity: <?= $escaper->escapeHtmlAttr($overlayOpacity) ?>"></div>
-    <div class="absolute inset-0 z-[5] transition-opacity" :class="{ 'opacity-0': loaded }">
+    <div class="absolute inset-0 z-[5]" :class="{ 'opacity-0 pointer-events-none': loaded }">
         <picture>
             <?php if ($block->getData('mobile_image')): ?>
                 <source media="(max-width: 767px)" srcset="<?= $escaper->escapeUrl($block->getData('mobile_image')) ?>">
@@ -60,24 +70,30 @@ $mobileAlignment = $block->getData('mobile_content_alignment');
     <?php if(str_ends_with($videoUrl, '.mp4')): ?>
         <video
             class="absolute left-0 top-0 z-0 h-full w-full object-cover object-center bg-cover bg-center"
-            <?= $muted ? 'muted' : '' ?>
-            <?= $autoplay ? 'autoplay' : 'false' ?>
+            <?= ($muted || $autoplay) ? 'muted' : '' ?>
+            <?= $autoplay ? 'autoplay' : '' ?>
             <?= $loop ? 'loop' : '' ?>
             playsinline
-            preload="none"
+            preload="auto"
+            x-init="$el.muted = true;<?php if ($autoplay): ?> $el.play().catch(Boolean); var _kick = function () { $el.play().catch(Boolean); }; document.addEventListener('touchstart', _kick, { once: true, passive: true }); document.addEventListener('click', _kick, { once: true });<?php endif; ?> if ($el.readyState !== 0 && $el.readyState !== 1) { loaded = true }"
             @loadeddata="loaded = true"
+            @canplay="loaded = true<?php if ($autoplay): ?>; $el.play().catch(Boolean)<?php endif; ?>"
+            @playing="loaded = true"
         >
             <source src="<?= $escaper->escapeUrl($videoUrl) ?>" type="video/mp4">
         </video>
     <?php elseif(str_ends_with($videoUrl, '.webm')): ?>
         <video
             class="absolute left-0 top-0 z-0 h-full w-full object-cover object-center bg-cover bg-center"
-            <?= $muted ? 'muted' : '' ?>
-            <?= $autoplay ? 'autoplay' : 'false' ?>
+            <?= ($muted || $autoplay) ? 'muted' : '' ?>
+            <?= $autoplay ? 'autoplay' : '' ?>
             <?= $loop ? 'loop' : '' ?>
             playsinline
-            preload="none"
+            preload="auto"
+            x-init="$el.muted = true;<?php if ($autoplay): ?> $el.play().catch(Boolean); var _kick = function () { $el.play().catch(Boolean); }; document.addEventListener('touchstart', _kick, { once: true, passive: true }); document.addEventListener('click', _kick, { once: true });<?php endif; ?> if ($el.readyState !== 0 && $el.readyState !== 1) { loaded = true }"
             @loadeddata="loaded = true"
+            @canplay="loaded = true<?php if ($autoplay): ?>; $el.play().catch(Boolean)<?php endif; ?>"
+            @playing="loaded = true"
         >
             <source src="<?= $escaper->escapeUrl($videoUrl) ?>" type="video/webm">
         </video>
@@ -151,14 +167,14 @@ $mobileAlignment = $block->getData('mobile_content_alignment');
         >
             <?php if($hasHeading): ?>
                 <h2
-                    class="heading text-4xl leading-tight md:text-6xl md:leading-tight text-black"
+                    class="heading text-4xl leading-tight md:text-6xl md:leading-tight <?= $escaper->escapeHtmlAttr($headingClass) ?>"
                 >
                     <?= $escaper->escapeHtml($heading) ?>
                 </h2>
             <?php endif; ?>
             <?php if($hasDescription): ?>
                 <p
-                    class="text-lg font-medium text-primary-darker <?= $hasHeading ? 'mt-5' : '' ?>"
+                    class="text-lg font-medium <?= $escaper->escapeHtmlAttr($descriptionClass) ?> <?= $hasHeading ? 'mt-5' : '' ?>"
                 >
                     <?= $escaper->escapeHtml($description) ?>
                 </p>
@@ -169,7 +185,7 @@ $mobileAlignment = $block->getData('mobile_content_alignment');
                         href="<?= $escaper->escapeUrl($linkHref); ?>"
                         target="<?= $escaper->escapeHtmlAttr($linkHelper->getLinkTarget($link_url)); ?>"
                     <?php endif; ?>
-                    class="button button--filled-secondary <?= ($hasHeading || $hasDescription) ? 'mt-16' : '' ?>"
+                    class="button <?= $escaper->escapeHtmlAttr($buttonClass) ?> <?= ($hasHeading || $hasDescription) ? 'mt-16' : '' ?>"
                     <?php if($linkType === 'category'): ?>
                         x-element-transition-trigger:category.animate="{
                             'title': `<?= $category['name'] ?? '' ?>`,

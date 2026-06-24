@@ -54,6 +54,9 @@ module.exports = hyvaModules.mergeTailwindConfig({
           alt: "var(--color-fg-alt)",
           // texte discret/secondaire
           secondary: "var(--color-fg-secondary)",
+          // texte garanti lisible sur fond sombre (scheme "light" / data-scheme="dark")
+          "inverse": "var(--color-fg-inverse)",
+          "inverse-secondary": "var(--color-fg-inverse-secondary)",
         },
         surface: {
           DEFAULT: "var(--color-surface)",

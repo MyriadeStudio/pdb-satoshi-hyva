@@ -24,8 +24,28 @@ $link_url = $decodeHelper->decodeJSONHTMLEntity($block->getData('button_link'));
 $linkHref = $linkHelper->getLinkHref($block, $link_url);
 $appearance = $block->getData('appearance');
 
+// Schéma de couleur du texte (onglet Style) : "light" = textes clairs (fond
+// sombre), "dark" = textes sombres (fond clair, défaut). S'applique au titre et
+// au contenu.
+// Scheme porté par data-scheme="dark" sur la racine ; texte en text-fg (remappé
+// en CSS, color-scheme.css).
+$colorScheme = $block->getData('text_color_scheme') === 'inverse' ? 'inverse' : 'default';
+$textColor = 'text-fg';
+$schemeAttr = $colorScheme === 'inverse';
+
+// Type de bouton (onglet Style) : primary / secondary (boutons pleins) ou link
+// (texte souligné, coloré selon le schéma). Défaut primary (comportement initial).
+$buttonStyle = in_array($block->getData('button_style'), ['primary', 'secondary', 'link'], true)
+    ? $block->getData('button_style')
+    : 'primary';
+$buttonClass = match ($buttonStyle) {
+    'secondary' => 'button button--filled-secondary',
+    'link' => 'underline ' . $textColor,
+    default => 'button button--filled-primary text-primary-on',
+};
+
 ?>
-<div class="flex flex-col items-center md:grid md:grid-cols-2 xl:gap-20 2xl:gap-28 max-md:gap-7">
+<div class="flex flex-col items-center md:grid md:grid-cols-2 xl:gap-20 2xl:gap-28 max-md:gap-7"<?php if ($schemeAttr): ?> data-scheme="dark"<?php endif; ?>>
     <?php if ($block->getData('image')): ?>
         <div class="relative overflow-hidden rounded-md w-full">
             <picture>
@@ -38,8 +58,8 @@ $appearance = $block->getData('appearance');
     <?php endif; ?>
 
     <div class="flex flex-col items-start gap-5 md:gap-7 md:py-12 md:pl-12 md:self-center w-full" style="<?= $appearance === 'text-first' ? 'order: -1' : '' ?>">
-        <h2 class="heading text-3xl text-fg md:text-4xl w-full"><?= $escaper->escapeHtml($block->getData('heading')) ?></h2>
-        <div class="w-full">
+        <h2 class="heading text-3xl <?= $escaper->escapeHtmlAttr($textColor) ?> md:text-4xl w-full"><?= $escaper->escapeHtml($block->getData('heading')) ?></h2>
+        <div class="w-full <?= $escaper->escapeHtmlAttr($textColor) ?>">
             <?= /* @noEscape */ str_replace('&quote;', '"', html_entity_decode($block->getData('content'))) ?>
         </div>
 
@@ -49,7 +69,7 @@ $appearance = $block->getData('appearance');
                     href="<?= $escaper->escapeUrl($linkHref); ?>"
                     target="<?= $escaper->escapeHtmlAttr($linkHelper->getLinkTarget($link_url)); ?>"
                 <?php endif; ?>
-                class="button button--filled-primary"
+                class="<?= $escaper->escapeHtmlAttr($buttonClass) ?>"
                 x-element-transition-trigger
             >
                 <?= $escaper->escapeHtml($block->getData('button_label')) ?>

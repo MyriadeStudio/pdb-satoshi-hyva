@@ -1,0 +1,121 @@
+//
+// Previews PageBuilder (BO) — reflète le champ "Text color scheme" (onglet Style).
+// La racine de chaque content-type porte data-text-color-scheme="light|dark"
+// (attribut mappé sur l'élément `main`), donc on recolore les textes du preview
+// sans toucher aux templates KO.
+//
+// IMPORTANT : le stage PB applique des règles génériques (`.pagebuilder-stage p`,
+// `.pagebuilder-stage h3`… avec color:#333). Pour les conteneurs de texte riche
+// (RTE/WYSIWYG) il faut donc cibler AUSSI les balises imbriquées (p, hN, li…),
+// sinon ces règles reprennent la main. !important + spécificité supérieure
+// suffisent à passer devant (les règles du stage n'ont pas de !important).
+//
+// Importé en dernier dans _module.less pour passer après les couleurs par défaut.
+//
+
+// --- Light : textes clairs (pour un fond sombre) ---
+[data-text-color-scheme="inverse"] {
+    // Conteneurs de texte riche : conteneur + balises imbriquées.
+    &[data-content-type="satoshi_guarantees"],
+    .rich-text__content,
+    .image-with-text__wysiwyg,
+    .shop-the-look,
+    .quote__quote {
+        &,
+        p,
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        span,
+        a,
+        li,
+        strong,
+        em,
+        blockquote {
+            color: #fff !important;
+        }
+    }
+
+    // Éléments texte directs.
+    .countdown__heading,
+    .countdown__heading--img,
+    .countdown__description,
+    .countdown__description--img,
+    .countdown__part,
+    .countdown__part--img,
+    .countdown__label,
+    .countdown__label--img,
+    .countdown__btn,
+    .countdown__btn--img,
+    .countdown__btn svg,
+    .countdown__btn--img svg,
+    .image-with-text__title,
+    .faq__heading,
+    .faq button h2,
+    .faq > div > p,
+    .satoshi-menu button h2,
+    .satoshi-menu .menu__panel div a,
+    .rich-text__heading,
+    .rich-text__caption,
+    .rich-text__button,
+    .rich-text__button svg,
+    .newsletter__heading,
+    .newsletter__caption,
+    .before-and-after__handle span,
+    .image-banner__content,
+    .image-banner__title,
+    .image-banner__description,
+    .video-banner__content,
+    .video-banner__title,
+    .video-banner__description,
+    .video__intro--container,
+    .video__intro--container h2,
+    .video__intro--container h3,
+    .quotes__heading h2,
+    .quotes__slide span {
+        color: #fff !important;
+    }
+
+    .countdown__separator {
+        background-color: #fff !important;
+    }
+
+    // Newsletter : bouton inversé (fond clair, texte foncé) — reflète filled-secondary.
+    .newsletter__button {
+        background-color: #fff !important;
+        color: #363030 !important;
+    }
+}
+
+// --- Dark : textes sombres (composants media blancs par défaut : banner / video) ---
+.preview-color-scheme--dark,
+[data-text-color-scheme="default"] {
+    .countdown__heading,
+    .countdown__heading--img,
+    .countdown__description,
+    .countdown__description--img,
+    .countdown__part,
+    .countdown__part--img,
+    .countdown__label,
+    .countdown__label--img,
+    .countdown__btn,
+    .countdown__btn--img,
+    .countdown__btn svg,
+    .countdown__btn--img svg,
+    .image-banner__content,
+    .image-banner__title,
+    .image-banner__description,
+    .video-banner__content,
+    .video-banner__title,
+    .video-banner__description,
+    .video__intro--container,
+    .video__intro--container h2 {
+        color: #363030 !important;
+    }
+    .countdown__separator {
+        background-color: #363030 !important;
+    }
+}

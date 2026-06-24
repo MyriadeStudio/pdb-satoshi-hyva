@@ -16,6 +16,7 @@ define(["Satoshi_SatoshiUi/js/content-type/block-directive"], function (
     data,
   ) {
     return {
+      ...(data.text_color_scheme ? { text_color_scheme: data.text_color_scheme } : {}),
       heading: data.heading,
       ...(data.menu_items && data.menu_items.length > 0
         ? {

@@ -118,9 +118,11 @@ define(["Satoshi_SatoshiUi/js/content-type/block-directive"], function (
     return {
       heading: data.heading,
       subheading: data.subheading,
+      text_color_scheme: data.text_color_scheme,
       video_source: src,
       autoplay: data.autoplay,
       ...(data.image[0] ? { image: data.image[0].url } : {}),
+      ...(data.mobile_image[0] ? { mobile_image: data.mobile_image[0].url } : {}),
     };
   };
 

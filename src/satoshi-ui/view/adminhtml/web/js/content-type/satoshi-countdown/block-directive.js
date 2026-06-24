@@ -20,6 +20,9 @@ define([
 
     return {
       ...(data.image[0] ? { image: data.image[0].url } : {}),
+      ...(data.mobile_image && data.mobile_image[0]
+        ? { mobile_image: data.mobile_image[0].url }
+        : {}),
       overlay_opacity: +data.overlay_opacity / 100,
       heading: data.heading,
       description: data.description,
@@ -28,6 +31,10 @@ define([
       button_label: data.button_label,
       button_link: JSON.stringify(tidyLink(data.button_link)),
       section_height: data.section_height,
+      ...(data.text_color_scheme
+        ? { text_color_scheme: data.text_color_scheme }
+        : {}),
+      ...(data.button_style ? { button_style: data.button_style } : {}),
     };
   };
 

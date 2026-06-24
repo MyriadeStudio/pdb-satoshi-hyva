@@ -27,6 +27,11 @@ $overlayOpacity = $block->getData('overlay_opacity');
 $desktopAlignment = $block->getData('desktop_content_position');
 $mobileAlignment = $block->getData('mobile_content_alignment');
 $mobileImage = $block->getData('mobile_image');
+
+// Schéma de couleur du texte (onglet Style) : par défaut "light" (texte clair sur
+// image/overlay sombre). "dark" pour une image claire sans overlay.
+$colorScheme = $block->getData('text_color_scheme') === 'default' ? 'default' : 'inverse';
+$textColor = $colorScheme === 'default' ? 'text-fg' : 'text-text-on-primary-bg';
 ?>
 <div class="relative overflow-hidden">
     <div class="absolute left-0 top-0 z-10 h-full w-full bg-black" style="opacity: <?= $escaper->escapeHtmlAttr($overlayOpacity) ?>"></div>
@@ -86,7 +91,7 @@ $mobileImage = $block->getData('mobile_image');
     >
         <div
             class="
-                flex max-w-[335px] md:max-w-[500px] flex-col justify-center gap-7 md:gap-10 text-text-on-primary-bg
+                flex max-w-[335px] md:max-w-[500px] flex-col justify-center gap-7 md:gap-10 <?= $escaper->escapeHtmlAttr($textColor) ?>
                 <?php if(str_contains($mobileAlignment, 'left')): ?>
                     items-start text-start
                 <?php elseif(str_contains($mobileAlignment, 'right')): ?>

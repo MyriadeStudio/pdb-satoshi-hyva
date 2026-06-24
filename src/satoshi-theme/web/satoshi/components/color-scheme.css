@@ -1,0 +1,209 @@
+/* =============================================================================
+   Color scheme — texte clair sur fond sombre
+   -----------------------------------------------------------------------------
+   Mécanisme générique : un conteneur portant `data-scheme="dark"` (posé par les
+   templates quand le champ PageBuilder text_color_scheme = "inverse", càd "textes
+   clairs pour un fond/média sombre") bascule les utilitaires de texte vers des
+   tokens DÉDIÉS, garantis lisibles sur fond sombre :
+     - .text-fg            → --color-fg-inverse
+     - .text-fg-secondary  → --color-fg-inverse-secondary
+
+   On ne remappe PAS la variable --color-fg globalement (sinon le texte des
+   boutons wishlist/compare, qui veut rester sombre sur fond clair, casserait) :
+   on cible les classes utilitaires.
+
+   !important nécessaire : le thème compile Tailwind avec `important: true`, donc
+   `.text-fg` = `color: var(--color-fg) !important`. Une règle non-important ne
+   peut pas la battre ; avec !important des deux côtés c'est la spécificité qui
+   tranche, et `[data-scheme="dark"] .text-fg` (0,2,0) l'emporte sur `.text-fg`
+   (0,1,0). Idem pour `.slider--on-dark` (alias historique, cf. slider.phtml).
+
+   Tokens définis dans Pdb_ThemeHyva (BO → :root via css-vars.phtml).
+   ============================================================================ */
+
+[data-scheme="dark"],
+.slider--on-dark {
+    color: var(--color-fg-inverse) !important;
+    /* voile du survol des cartes produit (.card-hover::before) lisible sur sombre */
+    --card-hover-bg: rgb(255 255 255 / 0.1);
+}
+
+/* .text-fg en descendant OU porté par l'élément racine lui-même (sélecteur
+   composé `[data-scheme="dark"].text-fg`, spécificité 0,2,0 > .text-fg 0,1,0). */
+[data-scheme="dark"] .slider__header,
+[data-scheme="dark"] .slider__title,
+[data-scheme="dark"] .price,
+[data-scheme="dark"] .text-fg,
+[data-scheme="dark"].text-fg,
+.slider--on-dark .slider__header,
+.slider--on-dark .slider__title,
+.slider--on-dark .price,
+.slider--on-dark .text-fg,
+.slider--on-dark .card-category article h2,
+.slider--on-dark.text-fg {
+    color: var(--color-fg-inverse) !important;
+}
+
+[data-scheme="dark"] .text-fg-secondary,
+[data-scheme="dark"].text-fg-secondary,
+.slider--on-dark .text-fg-secondary,
+.slider--on-dark.text-fg-secondary {
+    color: var(--color-fg-inverse-secondary) !important;
+}
+
+/* -----------------------------------------------------------------------------
+   Boutons "outline" sur fond sombre (slider--on-dark / data-scheme="dark")
+   -----------------------------------------------------------------------------
+   Les variantes outline du thème (button.css) sont pensées pour des pages
+   CLAIRES : au repos texte/bordure sombres, et au survol bascule vers un fond
+   clair (`bg-bg`). Sur fond sombre cela donne un texte illisible au repos (cas
+   des flèches outline-primary et des boutons catégories) et une pastille toute
+   BLANCHE au survol (catégories + collapse FAQ). On garde tout dans la palette
+   sombre : texte + bordure clairs (tokens on-dark), et au survol un simple voile
+   clair translucide au lieu d'un fond blanc.
+
+   Cibles : flèches de slider (outline-primary icon-button), boutons catégories
+   et collapse FAQ (outline-secondary, ce dernier en group-hoverable). Le
+   template des boutons catégories fige aussi `text-primary-lighter` /
+   `border-bg-sunken` : ces règles (≥ 0,2,0 + !important) les surchargent malgré
+   le `important: true` de Tailwind.
+   --------------------------------------------------------------------------- */
+
+/* Repos : texte clair, bordure claire discrète, fond transparent. */
+[data-scheme="dark"] .button--outline-secondary,
+[data-scheme="dark"] .button--outline-primary,
+.slider--on-dark .button--outline-secondary,
+.slider--on-dark .button--outline-primary {
+    color: var(--color-fg-inverse) !important;
+    border-color: color-mix(
+        in srgb,
+        var(--color-fg-inverse) 35%,
+        transparent
+    ) !important;
+    background-color: transparent !important;
+}
+
+/* Survol (hover direct + group-hover du collapse FAQ), hors état désactivé :
+   voile clair translucide, on reste en texte clair — jamais de fond blanc. */
+[data-scheme="dark"] .button--outline-secondary:not(.button--disabled):hover,
+[data-scheme="dark"] .button--outline-primary:not(.button--disabled):hover,
+[data-scheme="dark"]
+    .group:hover
+    .button--outline-secondary.group-hoverable:not(.button--disabled),
+.slider--on-dark .button--outline-secondary:not(.button--disabled):hover,
+.slider--on-dark .button--outline-primary:not(.button--disabled):hover,
+.slider--on-dark
+    .group:hover
+    .button--outline-secondary.group-hoverable:not(.button--disabled) {
+    color: var(--color-fg-inverse) !important;
+    border-color: var(--color-fg-inverse) !important;
+    background-color: color-mix(
+        in srgb,
+        var(--color-fg-inverse) 14%,
+        transparent
+    ) !important;
+}
+
+/* -----------------------------------------------------------------------------
+   Champs de formulaire sur fond sombre (input.css)
+   -----------------------------------------------------------------------------
+   `.input__field` est pensé pour pages claires : bordure + texte + placeholder en
+   `fg-secondary` (sombre) et au survol/focus bascule en `bg-bg` (blanc). Sur fond
+   sombre → champ quasi invisible au repos puis boîte blanche au survol. On reste
+   dans la palette sombre : bordure/texte/placeholder clairs, voile translucide
+   au survol/focus (jamais de fond blanc). Cas concret : composant newsletter.
+   --------------------------------------------------------------------------- */
+[data-scheme="dark"] .input__field,
+.slider--on-dark .input__field {
+    color: var(--color-fg-inverse) !important;
+    border-color: color-mix(
+        in srgb,
+        var(--color-fg-inverse) 50%,
+        transparent
+    ) !important;
+    background-color: transparent !important;
+}
+
+[data-scheme="dark"] .input__field::placeholder,
+.slider--on-dark .input__field::placeholder {
+    color: color-mix(
+        in srgb,
+        var(--color-fg-inverse) 55%,
+        transparent
+    ) !important;
+}
+
+/* Survol : léger voile clair, pas de fond blanc. */
+[data-scheme="dark"] .input__field:hover,
+.slider--on-dark .input__field:hover {
+    color: var(--color-fg-inverse) !important;
+    border-color: var(--color-fg-inverse) !important;
+    background-color: color-mix(
+        in srgb,
+        var(--color-fg-inverse) 8%,
+        transparent
+    ) !important;
+}
+
+/* Focus : le thème pose un fond blanc (bg-bg) + un halo bleu vif
+   (`shadow-input` / focus-ring `0 0 0 3px rgb(66 153 225 / .6)`) — agressif sur
+   fond sombre. On reste dans la palette : voile discret, bordure claire nette et
+   anneau on-dark doux. On neutralise box-shadow ET outline du thème. */
+[data-scheme="dark"] .input__field:focus-visible,
+.slider--on-dark .input__field:focus-visible {
+    color: var(--color-fg-inverse) !important;
+    border-color: var(--color-fg-inverse) !important;
+    background-color: color-mix(
+        in srgb,
+        var(--color-fg-inverse) 8%,
+        transparent
+    ) !important;
+    box-shadow: 0 0 0 1px
+        color-mix(in srgb, var(--color-fg-inverse) 35%, transparent) !important;
+    outline-color: transparent !important;
+}
+
+/* -----------------------------------------------------------------------------
+   Bouton newsletter sur fond sombre → rendu "outlined" (choix produit)
+   -----------------------------------------------------------------------------
+   Le CTA newsletter est `button--filled-secondary` (plein blanc). Sur fond sombre
+   on l'harmonise avec les boutons catégories en outlined clair (bordure + texte
+   on-dark, voile au survol). Scopé au content-type `satoshi_newsletter` UNIQUEMENT
+   (les autres CTA filled restent pleins) et au seul contexte `data-scheme="dark"`
+   (le mode clair garde le bouton plein). */
+[data-content-type="satoshi_newsletter"]
+    [data-scheme="dark"]
+    .button--filled-secondary {
+    background-color: transparent !important;
+    color: var(--color-fg-inverse) !important;
+    border-width: 1px !important;
+    border-style: solid !important;
+    border-color: color-mix(
+        in srgb,
+        var(--color-fg-inverse) 35%,
+        transparent
+    ) !important;
+}
+
+[data-content-type="satoshi_newsletter"]
+    [data-scheme="dark"]
+    .button--filled-secondary:not(.button--disabled):hover {
+    background-color: color-mix(
+        in srgb,
+        var(--color-fg-inverse) 14%,
+        transparent
+    ) !important;
+    color: var(--color-fg-inverse) !important;
+    border-color: var(--color-fg-inverse) !important;
+}
+
+/* Boutons wishlist / compare des cartes produit posées sur fond sombre :
+   pastille claire (fond = token on-dark) avec icône sombre (--color-fg, NON
+   remappé ici → reste la couleur de texte de page d'origine). */
+[data-scheme="dark"] [data-addto="wishlist"],
+[data-scheme="dark"] [data-addto="compare"],
+.slider--on-dark [data-addto="wishlist"],
+.slider--on-dark [data-addto="compare"] {
+    background-color: var(--color-fg-inverse) !important;
+    color: var(--color-fg) !important;
+}

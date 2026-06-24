@@ -20,6 +20,15 @@ $afterImage = $block->getData('after_image');
 $beforeImageMobile = $block->getData('before_image_mobile');
 $afterImageMobile = $block->getData('after_image_mobile');
 $id = uniqid();
+
+// Schéma de couleur (onglet Style). Ce composant n'a pas de texte visible :
+// le schéma ne pilote que la couleur de la poignée de glissement (drag handle)
+// pour qu'elle reste visible sur fond clair (dark, défaut) ou sombre (light).
+// Scheme porté par data-scheme="dark" sur la racine ; la poignée utilise
+// text-fg-secondary (remappé en CSS, color-scheme.css).
+$colorScheme = $block->getData('text_color_scheme') === 'inverse' ? 'inverse' : 'default';
+$textColor = 'text-fg-secondary';
+$schemeAttr = $colorScheme === 'inverse';
 ?>
 
 <div
@@ -27,6 +36,7 @@ $id = uniqid();
     x-data="BeforeAfter({ id: '<?= $escaper->escapeHtmlAttr($id) ?>' })"
     id="<?= $escaper->escapeHtmlAttr($id) ?>"
     style="--exposure: 50%;"
+    <?php if ($schemeAttr): ?>data-scheme="dark"<?php endif; ?>
 >
     <div
         class="
@@ -87,7 +97,7 @@ $id = uniqid();
                 id="exposure_<?= $escaper->escapeHtmlAttr($id) ?>"
             >
             <span
-                class="button button--filled-secondary icon-button icon-button--size-sm absolute bottom-0 top-0 m-auto -translate-x-1/2 text-fg-secondary  [&_svg]:rotate-90"
+                class="button button--filled-secondary icon-button icon-button--size-sm absolute bottom-0 top-0 m-auto -translate-x-1/2 <?= $escaper->escapeHtmlAttr($textColor) ?>  [&_svg]:rotate-90"
                 @pointerdown="onPointerDown"
                 @keydown="onKeyDown"
                 tabindex="0"

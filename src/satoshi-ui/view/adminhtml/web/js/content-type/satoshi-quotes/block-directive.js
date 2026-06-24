@@ -17,6 +17,9 @@ define(["Satoshi_SatoshiUi/js/content-type/block-directive"], function (
   ) {
     return {
       heading: data.heading,
+      ...(data.text_color_scheme
+        ? { text_color_scheme: data.text_color_scheme }
+        : {}),
       ...(data.quotes_slides && data.quotes_slides.length > 0
         ? {
             quotes: JSON.stringify(data.quotes_slides),

@@ -38,7 +38,7 @@
     }
   
     &__control {
-      @apply inline-flex h-6 w-6 mr-5 cursor-pointer items-center justify-center rounded-xs border border-solid border-fg text-md text-on-image transition-colors duration-200;
+      @apply inline-flex h-6 w-6 mr-5 cursor-pointer items-center justify-center rounded-xs border border-solid border-fg text-md text-primary-on transition-colors duration-200;
   
       svg {
         @apply scale-50 stroke-current stroke-2 opacity-0 transition-transform duration-200;

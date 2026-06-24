@@ -178,19 +178,21 @@ export const Slider = () =>
       }
 
       const { gap } = this.config;
-      const containerScrollLeft = this.$refs.slider.scrollLeft;
+      const slider = this.$refs.slider;
+      const containerScrollLeft = slider.scrollLeft;
       // vvv Amount of scrolled over + 1
       const currentSlideIndex =
         Math.ceil(containerScrollLeft / ((this.slideWidth || 1) + gap)) + 1;
 
       this.currentSlideIndex = currentSlideIndex;
 
-      this.isNextBtnDisabled =
-        currentSlideIndex >
-        Math.ceil(
-          this.$refs.slider.childElementCount - this.getSlidesAmountInView(),
-        );
-      this.isPrevBtnDisabled = currentSlideIndex <= 1;
+      // Désactivation basée sur la géométrie réelle du scroll (et non sur un
+      // calcul slide-count, faux en mode "boutons" à largeur auto) : si le
+      // contenu ne déborde pas, les deux flèches sont désactivées → le wrapper
+      // x-show les masque (rien à faire défiler). Tolérance 1px sous-pixel.
+      const maxScrollLeft = slider.scrollWidth - slider.clientWidth;
+      this.isPrevBtnDisabled = containerScrollLeft <= 1;
+      this.isNextBtnDisabled = containerScrollLeft >= maxScrollLeft - 1;
     },
 
     getSlidesAmountInView() {

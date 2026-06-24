@@ -20,6 +20,7 @@
 @import url(components/resizable.css);
 @import url(components/transition.css);
 @import url(components/slider.css);
+@import url(components/color-scheme.css);
 /* TODO: Replace with Prose */
 @import url(components/rte.css);
 @import url(components/card-product.css);

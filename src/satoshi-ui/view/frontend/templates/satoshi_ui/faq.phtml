@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 use Magento\Framework\Escaper;
 use Satoshi\SatoshiUi\Block\FAQ;
-use Satoshi\SatoshiUi\Helper\Decode as DecodeHelper;
 use Hyva\Theme\ViewModel\SvgIcons;
 
 /** @var FAQ $block */
@@ -14,14 +13,29 @@ use Hyva\Theme\ViewModel\SvgIcons;
 /** @var SvgIcons $hyvaicons */
 $hyvaicons = $viewModels->require(SvgIcons::class);
 
-/** @var DecodeHelper $decodeHelper */
-$decodeHelper = $this->helper(DecodeHelper::class);
-$faqs = $block->getData('faqs');
-$faqs = $decodeHelper->decodeJSONHTMLEntity($faqs);
+// Décodage du tableau FAQ. On reprend le décodeur universel éprouvé de
+// rich-text.phtml (au lieu du Helper\Decode partagé) parce que la réponse peut
+// désormais contenir du HTML : html_entity_decode restitue les balises
+// (&lt;/&gt;) si la valeur arrive encore entity-encodée, et le token custom
+// "&quote;" restitue les guillemets internes au HTML (ex. href="…") que le Page
+// Builder encode pour ne pas casser le JSON. Idempotent si Magento a déjà décodé
+// les entités structurelles (&quot; → ").
+$faqs = json_decode(
+    str_replace('&quote;', '"', html_entity_decode((string)$block->getData('faqs'))),
+    true
+) ?: [];
 $id = uniqid();
+
+// Schéma de couleur du texte (onglet Style) : "light" = textes clairs (fond
+// sombre), "dark" = textes sombres (fond clair, défaut).
+// Scheme porté par data-scheme="dark" sur la racine ; texte en text-fg (remappé
+// en CSS, color-scheme.css).
+$colorScheme = $block->getData('text_color_scheme') === 'inverse' ? 'inverse' : 'default';
+$textColor = 'text-fg';
+$schemeAttr = $colorScheme === 'inverse';
 ?>
-<div>
-    <h1 class="heading mb-7 text-2xl md:text-4xl"><?= $escaper->escapeHtml($block->getData('heading')) ?></h1>
+<div class="<?= $escaper->escapeHtmlAttr($textColor) ?>"<?php if ($schemeAttr): ?> data-scheme="dark"<?php endif; ?>>
+    <h2 class="heading mb-7 text-2xl md:text-4xl"><?= $escaper->escapeHtml($block->getData('heading')) ?></h2>
     <?php if(count($faqs) > 0): ?>
         <div class="flex flex-col gap-7">
             <?php foreach ($faqs as $index => $faq): ?>
@@ -65,8 +79,12 @@ $id = uniqid();
                         role="region"
                         aria-labelledby="<?= $escaper->escapeHtmlAttr($id) ?>_label"
                     >
-                        <div class="rte mt-3 text-fg [&>p]:m-0">
-                            <?= $escaper->escapeHtml($faq['answer']) ?>
+                        <div class="rte mt-3 [&>p]:m-0">
+                            <?php // Réponse FAQ : HTML léger autorisé (lien, liste, gras…) tout en filtrant les balises dangereuses (XSS) via la whitelist de escapeHtml. ?>
+                            <?= /* @noEscape */ $escaper->escapeHtml(
+                                $faq['answer'],
+                                ['a', 'b', 'strong', 'i', 'em', 'u', 's', 'br', 'p', 'span', 'small', 'ul', 'ol', 'li']
+                            ) ?>
                         </div>
                     </div>
                 </div>

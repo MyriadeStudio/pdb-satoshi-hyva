@@ -68,6 +68,9 @@ define([
         if (data.circle_color) {
             directive += ' circle_color="' + data.circle_color + '"';
         }
+        if (data.text_color_scheme) {
+            directive += ' text_color_scheme="' + data.text_color_scheme + '"';
+        }
 
         return directive + "}}";
     };

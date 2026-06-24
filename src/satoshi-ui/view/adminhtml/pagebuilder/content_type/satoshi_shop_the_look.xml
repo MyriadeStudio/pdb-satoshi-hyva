@@ -46,6 +46,9 @@
                                preview_converter="Magento_PageBuilder/js/converter/style/preview/display"/>
                         <attribute name="name" source="data-content-type"/>
                         <attribute name="appearance" source="data-appearance"/>
+                        <attribute name="pdb_anim" source="data-pdb-anim"/>
+                        <attribute name="pdb_anim_duration" source="data-pdb-anim-dur"/>
+                        <attribute name="pdb_anim_delay" source="data-pdb-anim-delay"/>
                         <html name="html"
                               preview_converter="Magento_PageBuilder/js/converter/attribute/preview/store-id"/>
                         <css name="css_classes"/>

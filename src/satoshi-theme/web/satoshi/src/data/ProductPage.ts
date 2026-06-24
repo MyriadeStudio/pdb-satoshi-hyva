@@ -395,6 +395,26 @@ export const ProductPage = () =>
               () => Alpine.store("cart").focusInCart(item.item_id),
               200,
             );
+          } else {
+            // checkIsItemInCart() only matches configurable attributes via
+            // selectedValues; it can never pinpoint the line of a product that
+            // carries Magento custom options ($product->getOptions()), so the
+            // cart drawer used to stay closed for those products (no UI feedback
+            // on add). Fall back to the most recent cart line for this product
+            // so the drawer still opens and highlights something.
+            const fallbackItem = [...items]
+              .reverse()
+              .find(
+                (cartItem: CartItem) =>
+                  cartItem.product_id == this.productId && !cartItem.isDeleted,
+              );
+
+            if (fallbackItem) {
+              setTimeout(
+                () => Alpine.store("cart").focusInCart(fallbackItem.item_id),
+                200,
+              );
+            }
           }
         },
         { once: true },

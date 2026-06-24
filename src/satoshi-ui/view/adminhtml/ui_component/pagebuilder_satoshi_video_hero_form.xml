@@ -99,120 +99,6 @@
             </formElements>
         </field>
 
-        <!-- Content position -->
-        <field name="desktop_content_position" sortOrder="20" formElement="select">
-            <argument name="data" xsi:type="array">
-                <item name="config" xsi:type="array">
-                    <item name="default" xsi:type="string">middle-right</item>
-                </item>
-            </argument>
-            <settings>
-                <dataType>text</dataType>
-                <label translate="true">Desktop content position</label>
-            </settings>
-            <formElements>
-                <select>
-                    <settings>
-                        <options>
-                            <option name="0" xsi:type="array">
-                                <item name="value" xsi:type="string">top-left</item>
-                                <item name="label" xsi:type="string" translate="true">Top Left</item>
-                            </option>
-                            <option name="1" xsi:type="array">
-                                <item name="value" xsi:type="string">top-center</item>
-                                <item name="label" xsi:type="string" translate="true">Top Center</item>
-                            </option>
-                            <option name="2" xsi:type="array">
-                                <item name="value" xsi:type="string">top-right</item>
-                                <item name="label" xsi:type="string" translate="true">Top Right</item>
-                            </option>
-                            <option name="3" xsi:type="array">
-                                <item name="value" xsi:type="string">middle-left</item>
-                                <item name="label" xsi:type="string" translate="true">Middle Left</item>
-                            </option>
-                            <option name="4" xsi:type="array">
-                                <item name="value" xsi:type="string">middle-center</item>
-                                <item name="label" xsi:type="string" translate="true">Middle Center</item>
-                            </option>
-                            <option name="5" xsi:type="array">
-                                <item name="value" xsi:type="string">middle-right</item>
-                                <item name="label" xsi:type="string" translate="true">Middle Right</item>
-                            </option>
-                            <option name="6" xsi:type="array">
-                                <item name="value" xsi:type="string">bottom-left</item>
-                                <item name="label" xsi:type="string" translate="true">Bottom Left</item>
-                            </option>
-                            <option name="7" xsi:type="array">
-                                <item name="value" xsi:type="string">bottom-center</item>
-                                <item name="label" xsi:type="string" translate="true">Bottom Center</item>
-                            </option>
-                            <option name="8" xsi:type="array">
-                                <item name="value" xsi:type="string">bottom-right</item>
-                                <item name="label" xsi:type="string" translate="true">Bottom Right</item>
-                            </option>
-                        </options>
-                    </settings>
-                </select>
-            </formElements>
-        </field>
-
-        <!-- Mobile content alignment -->
-        <field name="mobile_content_alignment" sortOrder="30" formElement="select">
-            <argument name="data" xsi:type="array">
-                <item name="config" xsi:type="array">
-                    <item name="default" xsi:type="string">middle-center</item>
-                </item>
-            </argument>
-            <settings>
-                <dataType>text</dataType>
-                <label translate="true">Mobile content position</label>
-            </settings>
-            <formElements>
-                <select>
-                    <settings>
-                        <options>
-                            <option name="0" xsi:type="array">
-                                <item name="value" xsi:type="string">top-left</item>
-                                <item name="label" xsi:type="string" translate="true">Top Left</item>
-                            </option>
-                            <option name="1" xsi:type="array">
-                                <item name="value" xsi:type="string">top-center</item>
-                                <item name="label" xsi:type="string" translate="true">Top Center</item>
-                            </option>
-                            <option name="2" xsi:type="array">
-                                <item name="value" xsi:type="string">top-right</item>
-                                <item name="label" xsi:type="string" translate="true">Top Right</item>
-                            </option>
-                            <option name="3" xsi:type="array">
-                                <item name="value" xsi:type="string">middle-left</item>
-                                <item name="label" xsi:type="string" translate="true">Middle Left</item>
-                            </option>
-                            <option name="4" xsi:type="array">
-                                <item name="value" xsi:type="string">middle-center</item>
-                                <item name="label" xsi:type="string" translate="true">Middle Center</item>
-                            </option>
-                            <option name="5" xsi:type="array">
-                                <item name="value" xsi:type="string">middle-right</item>
-                                <item name="label" xsi:type="string" translate="true">Middle Right</item>
-                            </option>
-                            <option name="6" xsi:type="array">
-                                <item name="value" xsi:type="string">bottom-left</item>
-                                <item name="label" xsi:type="string" translate="true">Bottom Left</item>
-                            </option>
-                            <option name="7" xsi:type="array">
-                                <item name="value" xsi:type="string">bottom-center</item>
-                                <item name="label" xsi:type="string" translate="true">Bottom Center</item>
-                            </option>
-                            <option name="8" xsi:type="array">
-                                <item name="value" xsi:type="string">bottom-right</item>
-                                <item name="label" xsi:type="string" translate="true">Bottom Right</item>
-                            </option>
-                        </options>
-                    </settings>
-                </select>
-            </formElements>
-        </field>
-
         <!-- Heading field -->
         <field name="heading" sortOrder="40" formElement="input">
             <settings>
@@ -267,28 +153,6 @@
                 </imports>
             </settings>
         </urlInput>
-
-        <!-- Overlay opacity -->
-        <field name="overlay_opacity" sortOrder="80" formElement="input">
-            <argument name="data" xsi:type="array">
-                <item name="config" xsi:type="array">
-                    <item name="default" xsi:type="string">0</item>
-                    <item name="validation" xsi:type="array">
-                        <item name="required-entry" xsi:type="boolean">true</item>
-                        <item name="validate-number" xsi:type="boolean">true</item>
-                        <item name="validate-number-range" xsi:type="string">0-100</item>
-                    </item>
-                </item>
-            </argument>
-            <settings>
-                <label translate="true">Overlay opacity</label>
-                <additionalClasses>
-                    <class name="admin__field-small">true</class>
-                </additionalClasses>
-                <addAfter translate="true">%</addAfter>
-                <notice translate="true">Between 0 and 100</notice>
-            </settings>
-        </field>
 
         <!-- Video src -->
         <field name="video_source" formElement="input" sortOrder="90">
@@ -347,8 +211,183 @@
             </formElements>
         </field>
 
+    </fieldset>
+
+    <fieldset name="style" sortOrder="25">
+        <settings>
+            <label translate="true">Style</label>
+            <collapsible>true</collapsible>
+            <opened>true</opened>
+        </settings>
+
+        <!-- Text color scheme -->
+        <field name="text_color_scheme" sortOrder="10" formElement="select">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="default" xsi:type="string">default</item>
+                </item>
+            </argument>
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Text color scheme</label>
+                <notice translate="true">« Inversé » = textes/boutons clairs (vidéo sombre) ; « Par défaut » = textes qui suivent le fond.</notice>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options>
+                            <option name="0" xsi:type="array">
+                                <item name="value" xsi:type="string">default</item>
+                                <item name="label" xsi:type="string" translate="true">Par défaut — texte qui suit le fond</item>
+                            </option>
+                            <option name="1" xsi:type="array">
+                                <item name="value" xsi:type="string">inverse</item>
+                                <item name="label" xsi:type="string" translate="true">Inversé — texte sur média contrastant</item>
+                            </option>
+                        </options>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+
+        <!-- Content position -->
+        <field name="desktop_content_position" sortOrder="12" formElement="select">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="default" xsi:type="string">middle-right</item>
+                </item>
+            </argument>
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Desktop content position</label>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options>
+                            <option name="0" xsi:type="array">
+                                <item name="value" xsi:type="string">top-left</item>
+                                <item name="label" xsi:type="string" translate="true">Top Left</item>
+                            </option>
+                            <option name="1" xsi:type="array">
+                                <item name="value" xsi:type="string">top-center</item>
+                                <item name="label" xsi:type="string" translate="true">Top Center</item>
+                            </option>
+                            <option name="2" xsi:type="array">
+                                <item name="value" xsi:type="string">top-right</item>
+                                <item name="label" xsi:type="string" translate="true">Top Right</item>
+                            </option>
+                            <option name="3" xsi:type="array">
+                                <item name="value" xsi:type="string">middle-left</item>
+                                <item name="label" xsi:type="string" translate="true">Middle Left</item>
+                            </option>
+                            <option name="4" xsi:type="array">
+                                <item name="value" xsi:type="string">middle-center</item>
+                                <item name="label" xsi:type="string" translate="true">Middle Center</item>
+                            </option>
+                            <option name="5" xsi:type="array">
+                                <item name="value" xsi:type="string">middle-right</item>
+                                <item name="label" xsi:type="string" translate="true">Middle Right</item>
+                            </option>
+                            <option name="6" xsi:type="array">
+                                <item name="value" xsi:type="string">bottom-left</item>
+                                <item name="label" xsi:type="string" translate="true">Bottom Left</item>
+                            </option>
+                            <option name="7" xsi:type="array">
+                                <item name="value" xsi:type="string">bottom-center</item>
+                                <item name="label" xsi:type="string" translate="true">Bottom Center</item>
+                            </option>
+                            <option name="8" xsi:type="array">
+                                <item name="value" xsi:type="string">bottom-right</item>
+                                <item name="label" xsi:type="string" translate="true">Bottom Right</item>
+                            </option>
+                        </options>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+
+        <!-- Mobile content alignment -->
+        <field name="mobile_content_alignment" sortOrder="14" formElement="select">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="default" xsi:type="string">middle-center</item>
+                </item>
+            </argument>
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Mobile content position</label>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options>
+                            <option name="0" xsi:type="array">
+                                <item name="value" xsi:type="string">top-left</item>
+                                <item name="label" xsi:type="string" translate="true">Top Left</item>
+                            </option>
+                            <option name="1" xsi:type="array">
+                                <item name="value" xsi:type="string">top-center</item>
+                                <item name="label" xsi:type="string" translate="true">Top Center</item>
+                            </option>
+                            <option name="2" xsi:type="array">
+                                <item name="value" xsi:type="string">top-right</item>
+                                <item name="label" xsi:type="string" translate="true">Top Right</item>
+                            </option>
+                            <option name="3" xsi:type="array">
+                                <item name="value" xsi:type="string">middle-left</item>
+                                <item name="label" xsi:type="string" translate="true">Middle Left</item>
+                            </option>
+                            <option name="4" xsi:type="array">
+                                <item name="value" xsi:type="string">middle-center</item>
+                                <item name="label" xsi:type="string" translate="true">Middle Center</item>
+                            </option>
+                            <option name="5" xsi:type="array">
+                                <item name="value" xsi:type="string">middle-right</item>
+                                <item name="label" xsi:type="string" translate="true">Middle Right</item>
+                            </option>
+                            <option name="6" xsi:type="array">
+                                <item name="value" xsi:type="string">bottom-left</item>
+                                <item name="label" xsi:type="string" translate="true">Bottom Left</item>
+                            </option>
+                            <option name="7" xsi:type="array">
+                                <item name="value" xsi:type="string">bottom-center</item>
+                                <item name="label" xsi:type="string" translate="true">Bottom Center</item>
+                            </option>
+                            <option name="8" xsi:type="array">
+                                <item name="value" xsi:type="string">bottom-right</item>
+                                <item name="label" xsi:type="string" translate="true">Bottom Right</item>
+                            </option>
+                        </options>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+
+        <!-- Overlay opacity -->
+        <field name="overlay_opacity" sortOrder="16" formElement="input">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="default" xsi:type="string">0</item>
+                    <item name="validation" xsi:type="array">
+                        <item name="required-entry" xsi:type="boolean">true</item>
+                        <item name="validate-number" xsi:type="boolean">true</item>
+                        <item name="validate-number-range" xsi:type="string">0-100</item>
+                    </item>
+                </item>
+            </argument>
+            <settings>
+                <label translate="true">Overlay opacity</label>
+                <additionalClasses>
+                    <class name="admin__field-small">true</class>
+                </additionalClasses>
+                <addAfter translate="true">%</addAfter>
+                <notice translate="true">Between 0 and 100</notice>
+            </settings>
+        </field>
+
         <!-- Video autoplay -->
-        <field name="autoplay" sortOrder="100" formElement="checkbox">
+        <field name="autoplay" sortOrder="20" formElement="checkbox">
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
                     <item name="default" xsi:type="string">false</item>
@@ -375,7 +414,7 @@
         </field>
 
         <!-- Video loop -->
-        <field name="loop" sortOrder="110" formElement="checkbox">
+        <field name="loop" sortOrder="30" formElement="checkbox">
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
                     <item name="default" xsi:type="string">false</item>
@@ -400,7 +439,7 @@
         </field>
 
         <!-- Video mute -->
-        <field name="muted" sortOrder="120" formElement="checkbox">
+        <field name="muted" sortOrder="40" formElement="checkbox">
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
                     <item name="default" xsi:type="string">false</item>
@@ -432,6 +471,52 @@
                     <item name="default" xsi:type="string">center</item>
                 </item>
             </argument>
+        </field>
+    </fieldset>
+    <!-- PDB — onglet Animation au scroll (data-pdb-anim*). Observer global Pdb_ThemeHyva/js/pdb-animations.js -->
+    <fieldset name="pdb_animation" sortOrder="25">
+        <settings>
+            <label translate="true">Animation</label>
+            <collapsible>true</collapsible>
+            <opened>true</opened>
+        </settings>
+        <field name="pdb_anim" sortOrder="10" formElement="select">
+            <argument name="data" xsi:type="array"><item name="config" xsi:type="array"><item name="default" xsi:type="string"></item></item></argument>
+            <settings><label translate="true">Animation au scroll</label><dataType>text</dataType><dataScope>pdb_anim</dataScope>
+                <notice translate="true">Déclenchée à l'entrée dans le viewport. Sans effet au-dessus de la ligne de flottaison.</notice></settings>
+            <formElements><select><settings><options>
+                <option name="none" xsi:type="array"><item name="value" xsi:type="string"></item><item name="label" xsi:type="string" translate="true">Aucune</item></option>
+                <option name="fade_in" xsi:type="array"><item name="value" xsi:type="string">fade-in</item><item name="label" xsi:type="string" translate="true">Fondu (fade-in)</item></option>
+                <option name="fade_up" xsi:type="array"><item name="value" xsi:type="string">fade-up</item><item name="label" xsi:type="string" translate="true">Fondu + montée (fade-up)</item></option>
+                <option name="fade_down" xsi:type="array"><item name="value" xsi:type="string">fade-down</item><item name="label" xsi:type="string" translate="true">Fondu + descente (fade-down)</item></option>
+                <option name="slide_left" xsi:type="array"><item name="value" xsi:type="string">slide-left</item><item name="label" xsi:type="string" translate="true">Glissement depuis la droite (slide-left)</item></option>
+                <option name="slide_right" xsi:type="array"><item name="value" xsi:type="string">slide-right</item><item name="label" xsi:type="string" translate="true">Glissement depuis la gauche (slide-right)</item></option>
+                <option name="zoom" xsi:type="array"><item name="value" xsi:type="string">zoom</item><item name="label" xsi:type="string" translate="true">Zoom</item></option>
+                <option name="blur_in" xsi:type="array"><item name="value" xsi:type="string">blur-in</item><item name="label" xsi:type="string" translate="true">Netteté (blur-in)</item></option>
+            </options></settings></select></formElements>
+        </field>
+        <field name="pdb_anim_duration" sortOrder="20" formElement="select">
+            <argument name="data" xsi:type="array"><item name="config" xsi:type="array"><item name="default" xsi:type="string"></item></item></argument>
+            <settings><label translate="true">Durée (ms)</label><dataType>text</dataType><dataScope>pdb_anim_duration</dataScope></settings>
+            <formElements><select><settings><options>
+                <option name="def" xsi:type="array"><item name="value" xsi:type="string"></item><item name="label" xsi:type="string" translate="true">Défaut (600)</item></option>
+                <option name="d300" xsi:type="array"><item name="value" xsi:type="string">300</item><item name="label" xsi:type="string">300</item></option>
+                <option name="d450" xsi:type="array"><item name="value" xsi:type="string">450</item><item name="label" xsi:type="string">450</item></option>
+                <option name="d600" xsi:type="array"><item name="value" xsi:type="string">600</item><item name="label" xsi:type="string">600</item></option>
+                <option name="d800" xsi:type="array"><item name="value" xsi:type="string">800</item><item name="label" xsi:type="string">800</item></option>
+                <option name="d1000" xsi:type="array"><item name="value" xsi:type="string">1000</item><item name="label" xsi:type="string">1000</item></option>
+            </options></settings></select></formElements>
+        </field>
+        <field name="pdb_anim_delay" sortOrder="30" formElement="select">
+            <argument name="data" xsi:type="array"><item name="config" xsi:type="array"><item name="default" xsi:type="string"></item></item></argument>
+            <settings><label translate="true">Délai (ms)</label><dataType>text</dataType><dataScope>pdb_anim_delay</dataScope></settings>
+            <formElements><select><settings><options>
+                <option name="def" xsi:type="array"><item name="value" xsi:type="string"></item><item name="label" xsi:type="string" translate="true">Aucun</item></option>
+                <option name="delay100" xsi:type="array"><item name="value" xsi:type="string">100</item><item name="label" xsi:type="string">100</item></option>
+                <option name="delay200" xsi:type="array"><item name="value" xsi:type="string">200</item><item name="label" xsi:type="string">200</item></option>
+                <option name="delay300" xsi:type="array"><item name="value" xsi:type="string">300</item><item name="label" xsi:type="string">300</item></option>
+                <option name="delay500" xsi:type="array"><item name="value" xsi:type="string">500</item><item name="label" xsi:type="string">500</item></option>
+            </options></settings></select></formElements>
         </field>
     </fieldset>
 </form>

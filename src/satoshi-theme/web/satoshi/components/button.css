@@ -39,7 +39,7 @@
         @apply border-1 border-solid border-primary-darker bg-transparent text-primary-darker;
   
         &:not(.button--disabled) {
-          @apply md:hover:border-primary-lighter md:hover:bg-primary-lighter md:hover:text-on-image;
+          @apply md:hover:border-primary-lighter md:hover:bg-primary-lighter md:hover:text-primary-on;
         }
       }
   

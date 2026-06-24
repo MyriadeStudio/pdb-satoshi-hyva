@@ -27,7 +27,7 @@
             data-bind="css: 'countdown__details--' + data.section_height.attributes()['data-section-height']"
         >
             <div class="countdown__intro">
-                <h1
+                <h2
                     class="countdown__heading"
                     attr="data.heading.attributes"
                     ko-style="data.heading.style"
@@ -35,7 +35,7 @@
                         liveEdit: { field: 'heading', placeholder: $t('Enter heading') },
                         css: data.image.attributes().src ? 'countdown__heading--img' : 'eeeeeeeh'
                     "
-                ></h1>
+                ></h2>
 
                 <p
                     class="countdown__description"

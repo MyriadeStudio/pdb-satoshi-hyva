@@ -22,9 +22,17 @@ $linkHelper = $this->helper(LinkHelper::class);
 $decodeHelper = $this->helper(DecodeHelper::class);
 $link_url = $decodeHelper->decodeJSONHTMLEntity($block->getData('button_link'));
 $linkHref = $linkHelper->getLinkHref($block, $link_url);
+
+// Schéma de couleur du texte (onglet Style) : "light" = textes clairs (fond
+// sombre), "dark" = textes sombres (fond clair, défaut).
+// Le scheme est porté par data-scheme="dark" sur le conteneur racine ; le texte
+// utilise l'utilitaire sémantique text-fg, remappé en CSS (color-scheme.css).
+$colorScheme = $block->getData('text_color_scheme') === 'inverse' ? 'inverse' : 'default';
+$textColor = 'text-fg';
+$schemeAttr = $colorScheme === 'inverse';
 ?>
-<div>
-    <h2 class="heading mb-3 text-lg text-fg md:mb-5">
+<div class="<?= $escaper->escapeHtmlAttr($textColor) ?>"<?php if ($schemeAttr): ?> data-scheme="dark"<?php endif; ?>>
+    <h2 class="heading mb-3 text-lg md:mb-5">
         <?= $escaper->escapeHtml($block->getData('heading')) ?>
     </h2>
 
@@ -34,7 +42,7 @@ $linkHref = $linkHelper->getLinkHref($block, $link_url);
         </p>
     <?php endif; ?>
 
-    <div class="rte mb-7 text-fg">
+    <div class="rte mb-7">
         <?= /* @noEscape */ str_replace('&quote;', '"', html_entity_decode($block->getData('content'))) ?>
     </div>
 
@@ -44,7 +52,6 @@ $linkHref = $linkHelper->getLinkHref($block, $link_url);
                 href="<?= $escaper->escapeUrl($linkHref); ?>"
                 target="<?= $escaper->escapeHtmlAttr($linkHelper->getLinkTarget($link_url)); ?>"
             <?php endif; ?>
-            class="text-fg"
             x-element-transition-trigger
         >
             <span class="underline"><?= $escaper->escapeHtml($block->getData('button_label')) ?></span>

@@ -24,6 +24,10 @@ define([
       content: data.content,
       button_label: data.button_label,
       button_link: JSON.stringify(tidyLink(data.button_link)),
+      ...(data.text_color_scheme
+        ? { text_color_scheme: data.text_color_scheme }
+        : {}),
+      ...(data.button_style ? { button_style: data.button_style } : {}),
       ...(data.image[0] ? { image: data.image[0].url } : {}),
       ...(data.mobile_image[0] ? { mobile_image: data.mobile_image[0].url } : {}),
     };

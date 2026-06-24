@@ -40,6 +40,9 @@ define(["Satoshi_SatoshiUi/js/content-type/block-directive"], function (
     if (data.circle_color) {
       attributes.circle_color = data.circle_color;
     }
+    if (data.text_color_scheme) {
+      attributes.text_color_scheme = data.text_color_scheme;
+    }
 
     return attributes;
   };

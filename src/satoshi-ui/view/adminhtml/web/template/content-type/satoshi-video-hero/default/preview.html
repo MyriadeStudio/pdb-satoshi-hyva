@@ -1,5 +1,5 @@
 <div
-    attr="data.main.attributes"
+    attr="Object.assign({}, data.main.attributes(), { 'data-text-color-scheme': data.text_color_scheme.attributes()['data-text-color-scheme'] || 'default' })"
     ko-style="data.main.style"
     class="pagebuilder-content-type video-banner"
     css="data.main.css"

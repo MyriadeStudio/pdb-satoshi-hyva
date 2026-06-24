@@ -128,7 +128,8 @@ class ShopTheLook extends Template implements BlockInterface
             $this->getData('heading'),
             $this->getData('image'),
             $this->getData('mobile_image'),
-            $this->getData('products')
+            $this->getData('products'),
+            $this->getData('text_color_scheme')
         ];
     }
 }

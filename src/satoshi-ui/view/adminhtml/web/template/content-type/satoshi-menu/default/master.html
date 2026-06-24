@@ -1,18 +1,16 @@
-<div
-    attr="data.main.attributes"
-    css="data.main.css"
-    ko-style="data.main.style"
->
+<div attr="data.main.attributes" css="data.main.css" ko-style="data.main.style">
     <div data-is-page-builder-ignored-element="true">
-        <h1
+        <h2
             attr="data.heading.attributes"
             css="data.heading.css"
             hidden
             html="data.heading.html"
             ko-style="data.heading.style"
-        ></h1>
+        ></h2>
 
-        <if args="data.menu_items.attributes().items.length > 0 && data.menu_items.attributes().items !== '[]'">
+        <if
+            args="data.menu_items.attributes().items.length > 0 && data.menu_items.attributes().items !== '[]'"
+        >
             <div
                 css="data.menu_items.css"
                 data-bind="attr: { items: JSON.stringify(data.menu_items.attributes().items) }"

@@ -26,6 +26,13 @@
   }
 
   .card-hover {
-    @apply relative cursor-pointer before:absolute before:-inset-3 before:size-[calc(100%+16px)] before:overflow-hidden before:rounded-2xl before:bg-bg-sunken before:p-3 before:opacity-0 before:transition-opacity before:duration-300 before:content-[''] md:hover:before:opacity-100;
+    @apply relative cursor-pointer before:absolute before:-inset-3 before:size-[calc(100%+16px)] before:overflow-hidden before:rounded-2xl before:p-3 before:opacity-0 before:transition-opacity before:duration-300 before:content-[''] md:hover:before:opacity-100;
+  }
+
+  /* Couleur du fond de survol surchargeable via --card-hover-bg (ex. composant
+     Categories en scheme "inverse" sur fond sombre). Défaut = bg-sunken,
+     comportement inchangé. */
+  .card-hover::before {
+    background-color: var(--card-hover-bg, var(--color-bg-sunken, var(--color-bg)));
   }
 }

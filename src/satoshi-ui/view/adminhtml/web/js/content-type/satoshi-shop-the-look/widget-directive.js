@@ -50,6 +50,7 @@ define([
       );
 
       data.heading = attributes.heading;
+      data.text_color_scheme = attributes.text_color_scheme;
       data.image =
         attributes.image === ""
           ? ""
@@ -90,6 +91,7 @@ define([
       var attributes = {
         type: "Satoshi\\SatoshiUi\\Block\\Widget\\ShopTheLook",
         heading: data.heading,
+        text_color_scheme: data.text_color_scheme,
         image: this.encodeWysiwygCharacters(data.image || ""),
         mobile_image: this.encodeWysiwygCharacters(data.mobile_image || ""),
         products: this.encodeWysiwygCharacters(data.products || ""),

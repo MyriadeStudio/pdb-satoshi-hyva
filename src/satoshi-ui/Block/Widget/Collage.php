@@ -99,11 +99,17 @@ class Collage extends Template implements BlockInterface
     {
         $category = $this->categoryRepository->get($categoryId, $this->_storeManager->getStore()->getId());
 
+        // Image principale de la catégorie, avec repli sur la vignette (thumbnail) si absente.
+        $image = $category->getImageUrl();
+        if (!$image) {
+            $image = $category->getImageUrl('thumbnail');
+        }
+
         return [
             'id' => $category->getId(),
             'name' => $category->getName(),
             'url' => $category->getUrl(),
-            'image' => $category->getImageUrl()
+            'image' => $image
         ];
     }
 

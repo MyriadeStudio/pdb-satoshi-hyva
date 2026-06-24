@@ -19,6 +19,7 @@ define([
     const tidyLink = linkHelper.prototype.tidyLink;
 
     return {
+      ...(data.text_color_scheme ? { text_color_scheme: data.text_color_scheme } : {}),
       heading: data.heading,
       caption: data.caption,
       content: data.content,

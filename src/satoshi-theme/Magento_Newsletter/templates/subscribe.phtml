@@ -23,11 +23,22 @@ $title = $block->getData('title') ?? __('Join Our Newsletter.');
 $subtitle = $block->getData('subtitle');
 $buttonLabel = $block->getData('button_label') ?? __('Subscribe');
 $isWrapped = $block->getData('wrapped') == 'true';
+
+// Schéma de couleur du texte (onglet Style) : "inverse" = textes clairs (fond
+// sombre), "default" = textes sombres (fond clair, défaut). Porté par data-scheme="dark"
+// sur la racine ; le texte utilise text-fg (remappé en CSS, color-scheme.css).
+$schemeAttr = $block->getData('text_color_scheme') === 'inverse';
+// Sur fond sombre (scheme "inverse"), bouton inversé (filled-secondary = fond clair
+// + texte foncé), comme video-hero ; sinon bouton de marque (filled-primary).
+$buttonClass = $schemeAttr
+    ? 'button button--filled-secondary'
+    : 'button button--filled-primary text-primary-on';
 ?>
 
 <div
+    <?php if ($schemeAttr): ?>data-scheme="dark"<?php endif; ?>
     class="md:max-w-screen-sm mx-auto flex flex-col items-stretch gap-5 rounded-md border-1 border-transparent px-5 py-6 md:min-w-[35%] md:gap-4 md:p-7 h-fit <?= $isWrapped ? 'card' : '' ?>">
-    <h2 class="text-lg"><?= $escaper->escapeHtml($title) ?></h2>
+    <h2 class="text-lg text-fg"><?= $escaper->escapeHtml($title) ?></h2>
     <?php if (!empty($subtitle)): ?>
         <p class="text-fg"><?= $escaper->escapeHtml($subtitle) ?></p>
     <?php endif; ?>
@@ -35,7 +46,7 @@ $isWrapped = $block->getData('wrapped') == 'true';
         class="flex flex-col gap-3 items-stretch md:gap-4"
         action="<?= $escaper->escapeUrl($block->getFormActionUrl()) ?>"
         method="post"
-        x-data="Newsletter('<?= __('Something went wrong with the subscription.') ?>')"
+        x-data="Newsletter(<?= $escaper->escapeHtmlAttr(json_encode((string) __('Something went wrong with the subscription.'))) ?>)"
         @submit.prevent="function($event) {
             // do not rename $form, the variable is the expected name in the recaptcha output
             const $form = $event.target;
@@ -91,7 +102,7 @@ $isWrapped = $block->getData('wrapped') == 'true';
 
         <button
             type="submit"
-            class="button button--filled-primary w-full"
+            class="<?= $escaper->escapeHtmlAttr($buttonClass) ?> w-full"
             :class="{
                 'button--disabled': isLoading
             }"

@@ -20,10 +20,19 @@ $decodeHelper = $this->helper(DecodeHelper::class);
 $items = $block->getData('items');
 $items = $decodeHelper->decodeJSONHTMLEntity($items) ?? [];
 $id = uniqid();
+
+// Schéma de couleur du texte (onglet Style) : "light" = textes clairs (fond
+// sombre, ex. footer), "dark" = textes sombres (fond clair, défaut).
+// Scheme porté par data-scheme="dark" sur la racine ; texte en text-fg (remappé
+// en CSS, color-scheme.css).
+$colorScheme = $block->getData('text_color_scheme') === 'inverse' ? 'inverse' : 'default';
+$textColor = 'text-fg';
+$schemeAttr = $colorScheme === 'inverse';
 ?>
 <div
-    class="flex-1 py-2 md:flex md:flex-col md:gap-4 md:py-4"
+    class="flex-1 py-2 md:flex md:flex-col md:gap-4 md:py-4 <?= $escaper->escapeHtmlAttr($textColor) ?>"
     x-data="Accordion(!$store.main.isMobile, 300, true)"
+    <?php if ($schemeAttr): ?>data-scheme="dark"<?php endif; ?>
 >
     <button
         x-ref="AccordionButton"
@@ -35,7 +44,7 @@ $id = uniqid();
         aria-labelledby="<?= $escaper->escapeHtmlAttr($id) ?>_label"
         type="button"
     >
-        <h2 class="grow text-fg" id="<?= $escaper->escapeHtmlAttr($id) ?>_label">
+        <h2 class="grow" id="<?= $escaper->escapeHtmlAttr($id) ?>_label">
             <?= $escaper->escapeHtml($block->getData('heading')) ?>
         </h2>
         <div class="button button--outline-secondary icon-button icon-button--size-xs group-hoverable md:hidden">
@@ -66,7 +75,7 @@ $id = uniqid();
                         x-element-transition-trigger
                     >
                         <span
-                                class="link border-transparent md:group-hover:border-current md:group-hover:text-fg">
+                            class="link border-transparent md:group-hover:border-current md:group-hover:<?= $textColor ?>">
                             <?= $escaper->escapeHtml($item['item_label']) ?>
                         </span>
                     </a>

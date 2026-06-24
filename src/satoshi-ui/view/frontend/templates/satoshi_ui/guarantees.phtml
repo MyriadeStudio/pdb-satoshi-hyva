@@ -54,9 +54,9 @@ if (!in_array($layout, ['stacked', 'inline'], true)) {
 
 // Taille : padding du cercle, classes & dimensions de l'icône.
 $sizeMap = [
-    'small'  => ['pad' => 'p-2', 'icon' => 'h-4 w-4', 'dim' => 16],
-    'medium' => ['pad' => 'p-3', 'icon' => 'h-5 w-5', 'dim' => 20],
-    'large'  => ['pad' => 'p-4', 'icon' => 'h-6 w-6', 'dim' => 24],
+    'small'  => ['pad' => 'p-4', 'icon' => 'h-6 w-6', 'dim' => 24],
+    'medium' => ['pad' => 'p-6', 'icon' => 'h-7 w-7', 'dim' => 24],
+    'large'  => ['pad' => 'p-6', 'icon' => 'h-10 w-10', 'dim' => 32],
 ];
 $iconPad  = $sizeMap[$iconSize]['pad'];
 $iconDim  = $sizeMap[$iconSize]['dim'];
@@ -90,21 +90,44 @@ if ($iconColor !== '') {
     $iconAttributes['style'] = 'color:' . $iconColor;
 }
 
+// Schéma de couleur du texte : "light" (textes clairs, fond sombre) ou "dark"
+// (textes sombres, fond clair — défaut). On conserve la nuance titre/description :
+// titre = couleur principale, description = couleur atténuée.
+// Scheme porté par data-scheme="dark" sur la racine ; titre = text-fg,
+// description = text-fg-secondary (remappés en CSS, color-scheme.css).
+$colorScheme = $block->getData('text_color_scheme') === 'inverse' ? 'inverse' : 'default';
+$titleColor = 'text-fg';
+$descColor  = 'text-fg-secondary';
+$schemeAttr = $colorScheme === 'inverse';
+
 // Agencement : icône au-dessus (stacked) ou icône à gauche (inline).
 if ($layout === 'inline') {
-    $itemClasses    = 'flex flex-shrink-0 flex-row items-center justify-start gap-4 max-md:w-[240px]';
+    $itemClasses    = 'flex flex-row items-center justify-start gap-4 max-md:w-full md:flex-shrink-0';
     $textWrapClasses = 'flex flex-col gap-1 text-left';
-    $titleClasses    = 'text-lg text-fg m-0';
+    $titleClasses    = 'text-lg ' . $titleColor . ' m-0';
 } else {
-    $itemClasses    = 'flex flex-shrink-0 flex-col items-center justify-start gap-7 max-md:w-[160px]';
+    $itemClasses    = 'flex flex-col items-center justify-start gap-7 max-md:w-full md:flex-shrink-0';
     $textWrapClasses = 'flex flex-col gap-4 text-center';
-    $titleClasses    = 'whitespace-nowrap text-lg text-fg m-0';
+    $titleClasses    = 'text-lg ' . $titleColor . ' m-0 md:whitespace-nowrap';
 }
 ?>
 <?php if ($guarantees): ?>
-    <div class="relative flex gap-8 md:grid md:grid-cols-4 md:gap-14 max-md:overflow-x-auto ">
+    <div class="relative flex flex-col gap-8 md:grid md:grid-cols-4 md:gap-14"<?php if ($schemeAttr): ?> data-scheme="dark"<?php endif; ?>>
         <?php foreach ($guarantees as $guarantee): ?>
-            <div class="<?= $escaper->escapeHtmlAttr($itemClasses) ?>">
+            <?php
+            // Lien optionnel : si une URL est renseignee, toute la colonne devient
+            // cliquable (<a>), sinon on conserve un simple <div>. URL absolue ou
+            // relative (saisie libre cote BO).
+            $linkHref   = is_string($guarantee['column_link'] ?? null) ? trim($guarantee['column_link']) : '';
+            $newTab     = !empty($guarantee['column_link_new_tab'])
+                && !in_array($guarantee['column_link_new_tab'], ['0', 'false', ''], true);
+            $itemTag    = $linkHref !== '' ? 'a' : 'div';
+            ?>
+            <<?= $itemTag ?> class="<?= $escaper->escapeHtmlAttr($itemClasses) ?>"
+                <?php if ($linkHref !== ''): ?>
+                    href="<?= $escaper->escapeUrl($linkHref) ?>"
+                    <?php if ($newTab): ?>target="_blank" rel="noopener"<?php endif; ?>
+                <?php endif; ?>>
                 <?php $columnIcon = is_string($guarantee['column_icon'] ?? null) ? $guarantee['column_icon'] : ''; ?>
                 <?php if ($iconStyle === 'bare'): ?>
                     <?php if ($columnIcon !== ''): ?>
@@ -132,13 +155,13 @@ if ($layout === 'inline') {
                 <?php endif; ?>
                 <div class="<?= $escaper->escapeHtmlAttr($textWrapClasses) ?>">
                     <h3 class="<?= $escaper->escapeHtmlAttr($titleClasses) ?>">
-                        <?= $escaper->escapeHtml(__($guarantee['column_title'])) ?>
+                        <?= $escaper->escapeHtml($guarantee['column_title']) ?>
                     </h3>
-                    <p class="m-0">
-                        <?= $escaper->escapeHtml(__($guarantee['column_description'])) ?>
+                    <p class="m-0 <?= $escaper->escapeHtmlAttr($descColor) ?>">
+                        <?= $escaper->escapeHtml($guarantee['column_description']) ?>
                     </p>
                 </div>
-            </div>
+            </<?= $itemTag ?>>
         <?php endforeach; ?>
     </div>
 <?php endif; ?>

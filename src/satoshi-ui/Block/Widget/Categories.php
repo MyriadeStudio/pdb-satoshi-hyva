@@ -85,7 +85,7 @@ class Categories extends Template implements BlockInterface
 
         $storeId = $this->storeManager->getStore()->getId();
         $collection = $this->categoryCollectionFactory->create()
-            ->addAttributeToSelect(['name', 'url', 'image'])
+            ->addAttributeToSelect(['name', 'url', 'image', 'thumbnail'])
             ->addFieldToFilter('entity_id', ['in' => $ids])
             ->addFieldToFilter('level', ['gt' => 1])
             ->setStoreId($storeId);
@@ -94,7 +94,7 @@ class Categories extends Template implements BlockInterface
             'id' => $category->getId(),
             'name' => $category->getName(),
             'url' => $category->getUrl(),
-            'image' => $category->getImageUrl()
+            'image' => $category->getImageUrl('thumbnail') ?: $category->getImageUrl()
         ], [...$collection]);
 
         // Sort categories by the order of IDs
@@ -137,6 +137,7 @@ class Categories extends Template implements BlockInterface
             $this->getData('display_as_buttons'),
             $this->getData('view_all_button'),
             $this->getData('heading'),
+            $this->getData('text_color_scheme'),
         ];
     }
 }

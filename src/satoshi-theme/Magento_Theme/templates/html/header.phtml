@@ -75,7 +75,7 @@ $hyvaicons = $viewModels->require(SvgIcons::class);
         <div class="col-start-3 flex items-center justify-center md:hidden mix-blend-multiply">
             <a href="<?= $escaper->escapeUrl($block->getUrl('')) ?>"
                x-element-transition-trigger
-               class="rounded-sm px-3 py-2 text-xl font-semibold"
+               class="rounded-sm md:px-3 md:py-2 text-xl font-semibold"
                aria-label="<?= __('Go to Home page') ?>"
             >
                 <?= $block->getChildHtml('logo') ?>

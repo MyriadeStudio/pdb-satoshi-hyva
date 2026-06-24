@@ -1,7 +1,7 @@
 <div
     class="pagebuilder-content-type"
     data-bind="event: { mouseover: onMouseOver, mouseout: onMouseOut }, mouseoverBubble: false"
-    attr="data.main.attributes"
+    attr="Object.assign({}, data.main.attributes(), { 'data-text-color-scheme': colorScheme() })"
     ko-style="data.main.style"
     css="data.main.css"
     style="min-height: 150px"

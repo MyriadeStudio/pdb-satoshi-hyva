@@ -23,18 +23,27 @@ $quotes = $block->getData('quotes');
 $quotes = $decodeHelper->decodeJSONHTMLEntity($quotes);
 $id = uniqid();
 
+// Schéma de couleur du texte (onglet Style) : "light" = textes clairs (fond
+// sombre), "dark" = textes sombres (fond clair, défaut). S'applique au titre,
+// aux citations et aux auteurs ; les étoiles de note gardent leur couleur.
+// Le scheme est porté par data-scheme="dark" sur le conteneur racine ; le texte
+// utilise l'utilitaire sémantique text-fg, remappé en CSS (color-scheme.css).
+$colorScheme = $block->getData('text_color_scheme') === 'inverse' ? 'inverse' : 'default';
+$textColor = 'text-fg';
+$schemeAttr = $colorScheme === 'inverse';
+
 $slidesHtml = '';
 foreach ($quotes as $quote) {
     $rate = floatval($quote['rate']);
-    $starsHtml = array_reduce(range(0, 4), function ($carry, $item) use ($rate, $hyvaicons) {
+    $starsHtml = array_reduce(range(0, 4), function ($carry, $item) use ($rate, $hyvaicons, $textColor) {
         // Do full stars
         $full = floor($rate);
         if ($item < $full) {
-            return $carry . $hyvaicons->renderHtml('star-full');
+            return $carry . $hyvaicons->renderHtml('star-full', $textColor);
         } elseif($full != $rate && $item == $full) {
-            return $carry . $hyvaicons->renderHtml('star-half');
+            return $carry . $hyvaicons->renderHtml('star-half', $textColor);
         } else {
-            return $carry . $hyvaicons->renderHtml('star-empty');
+            return $carry . $hyvaicons->renderHtml('star-empty', $textColor);
         }
     });
     $slidesHtml .= <<<HTML
@@ -43,22 +52,22 @@ foreach ($quotes as $quote) {
                 <div class="flex gap-2 text-xl mb-5">
                     $starsHtml
                 </div>
-                <div class="rte mb-5 text-lg text-fg md:text-2xl">{$quote['quote']}</div>
-                <span class="text-fg">– {$quote['author_name']}</span>
+                <div class="rte mb-5 text-lg {$textColor} md:text-2xl">{$quote['quote']}</div>
+                <span class="{$textColor}">– {$quote['author_name']}</span>
             </div>
         </div>
     HTML;
 }
 ?>
-<div>
+<div<?php if ($schemeAttr): ?> data-scheme="dark"<?php endif; ?>>
     <div
-        class="[[data-appearance='contained']_&]:rounded-md bg-bg-sunken px-7 py-8 md:p-12"
+        class="px-7 py-8 md:p-12"
         x-data="Slider()"
     >
         <div class="mb-7 flex w-full items-center justify-between md:mb-8">
-            <h1 class="heading text-fg">
+            <h2 class="heading <?= $escaper->escapeHtmlAttr($textColor) ?>">
                 <?= $escaper->escapeHtml($block->getData('heading')) ?>
-            </h1>
+            </h2>
             <?php if (count($quotes) > 1): ?>
                 <div class="min-h-9">
                     <div x-show="!isPrevBtnDisabled || !isNextBtnDisabled"

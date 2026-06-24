@@ -62,6 +62,11 @@ define([
         _preview2.call(this, contentType, config, observableUpdater) || this;
       _this.previewElement = _jquery.Deferred();
       _this.widgetUnsanitizedHtml = _knockout.observable();
+      // Schéma de couleur (champ Style) exposé pour le preview BO. Le preview est
+      // rendu côté serveur (la classe .slider--on-dark est déjà dans le HTML),
+      // mais on expose AUSSI data-text-color-scheme sur la racine pour un hook
+      // CSS [data-text-color-scheme] uniforme avec les autres composants.
+      _this.colorScheme = _knockout.observable("default");
 
       _this.ignoredKeysForBuild = [
         "margins_and_padding",
@@ -102,6 +107,7 @@ define([
       _preview2.prototype.afterObservablesUpdated.call(this);
 
       var data = this.contentType.dataStore.getState();
+      this.colorScheme(data.text_color_scheme || "default");
 
       if (this.hasDataChanged(this.previousData, data)) {
         var url = _config.getConfig("preview_url");

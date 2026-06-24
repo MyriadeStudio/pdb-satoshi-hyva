@@ -24,6 +24,7 @@ define([
       subtitle: data.subtitle,
       button_label: data.button_label,
       wrapped: data.wrapped,
+      text_color_scheme: data.text_color_scheme,
     };
   };
 

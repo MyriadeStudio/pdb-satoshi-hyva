@@ -32,13 +32,19 @@ $isScrollbarHidden = (bool)$block->getData('is_scrollbar_hidden');
 $isAutoPlay = (bool)$block->getData('is_auto_play');
 $autoplaySpeed = (int)$block->getData('autoplay_speed') ?? 0;
 
+// Schéma de couleur : "light" = slider posé sur un fond sombre → titre, noms et
+// prix passent en clair, et le voile de survol des cartes est neutralisé (cf.
+// .slider--on-dark dans slider.css). Défaut "default" = inchangé (fond clair).
+$colorScheme = $block->getData('color_scheme') === 'inverse' ? 'inverse' : 'default';
+$colorSchemeClass = $colorScheme === 'inverse' ? 'slider--on-dark' : '';
+
 $convertedSlidesAmountInView = array_reduce(array_keys($slidesAmountInViewArray),
     fn($carry, $key) => $carry." --slide-count-$key: {$slidesAmountInViewArray[$key]};", '');
 $viewAllUrl = $block->getData('view_all_url') ?? '';
 ?>
 
 <div
-    class="slider <?= $isFullPage ? 'slider--full-width' : '' ?> <?= $class ?>"
+    class="slider <?= $isFullPage ? 'slider--full-width' : '' ?> <?= $colorSchemeClass ?> <?= $class ?>"
     x-init="
         configureAndStart({
             slidesAmountInView: <?= $escaper->escapeUrl(json_encode($slidesAmountInViewArray)) ?>,
@@ -54,7 +60,7 @@ $viewAllUrl = $block->getData('view_all_url') ?? '';
     <?php if (!$isHeaderDisabled && ($title || !$isActionsDisabled)): ?>
         <div class="slider__header">
             <?php if ($title): ?>
-                <h1 class="slider__title"><?= $title ?></h1>
+                <h2 class="slider__title"><?= $title ?></h2>
             <?php endif; ?>
             <div class="slider__actions max-md:[.slider--pagebuilder_&]:hidden">
                 <div x-show="!isPrevBtnDisabled || !isNextBtnDisabled"

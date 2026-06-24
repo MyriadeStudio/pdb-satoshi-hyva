@@ -194,4 +194,50 @@
             </argument>
         </field>
     </fieldset>
+    <!-- PDB — onglet Animation au scroll (data-pdb-anim*). Observer global Pdb_ThemeHyva/js/pdb-animations.js -->
+    <fieldset name="pdb_animation" sortOrder="25">
+        <settings>
+            <label translate="true">Animation</label>
+            <collapsible>true</collapsible>
+            <opened>true</opened>
+        </settings>
+        <field name="pdb_anim" sortOrder="10" formElement="select">
+            <argument name="data" xsi:type="array"><item name="config" xsi:type="array"><item name="default" xsi:type="string"></item></item></argument>
+            <settings><label translate="true">Animation au scroll</label><dataType>text</dataType><dataScope>pdb_anim</dataScope>
+                <notice translate="true">Déclenchée à l'entrée dans le viewport. Sans effet au-dessus de la ligne de flottaison.</notice></settings>
+            <formElements><select><settings><options>
+                <option name="none" xsi:type="array"><item name="value" xsi:type="string"></item><item name="label" xsi:type="string" translate="true">Aucune</item></option>
+                <option name="fade_in" xsi:type="array"><item name="value" xsi:type="string">fade-in</item><item name="label" xsi:type="string" translate="true">Fondu (fade-in)</item></option>
+                <option name="fade_up" xsi:type="array"><item name="value" xsi:type="string">fade-up</item><item name="label" xsi:type="string" translate="true">Fondu + montée (fade-up)</item></option>
+                <option name="fade_down" xsi:type="array"><item name="value" xsi:type="string">fade-down</item><item name="label" xsi:type="string" translate="true">Fondu + descente (fade-down)</item></option>
+                <option name="slide_left" xsi:type="array"><item name="value" xsi:type="string">slide-left</item><item name="label" xsi:type="string" translate="true">Glissement depuis la droite (slide-left)</item></option>
+                <option name="slide_right" xsi:type="array"><item name="value" xsi:type="string">slide-right</item><item name="label" xsi:type="string" translate="true">Glissement depuis la gauche (slide-right)</item></option>
+                <option name="zoom" xsi:type="array"><item name="value" xsi:type="string">zoom</item><item name="label" xsi:type="string" translate="true">Zoom</item></option>
+                <option name="blur_in" xsi:type="array"><item name="value" xsi:type="string">blur-in</item><item name="label" xsi:type="string" translate="true">Netteté (blur-in)</item></option>
+            </options></settings></select></formElements>
+        </field>
+        <field name="pdb_anim_duration" sortOrder="20" formElement="select">
+            <argument name="data" xsi:type="array"><item name="config" xsi:type="array"><item name="default" xsi:type="string"></item></item></argument>
+            <settings><label translate="true">Durée (ms)</label><dataType>text</dataType><dataScope>pdb_anim_duration</dataScope></settings>
+            <formElements><select><settings><options>
+                <option name="def" xsi:type="array"><item name="value" xsi:type="string"></item><item name="label" xsi:type="string" translate="true">Défaut (600)</item></option>
+                <option name="d300" xsi:type="array"><item name="value" xsi:type="string">300</item><item name="label" xsi:type="string">300</item></option>
+                <option name="d450" xsi:type="array"><item name="value" xsi:type="string">450</item><item name="label" xsi:type="string">450</item></option>
+                <option name="d600" xsi:type="array"><item name="value" xsi:type="string">600</item><item name="label" xsi:type="string">600</item></option>
+                <option name="d800" xsi:type="array"><item name="value" xsi:type="string">800</item><item name="label" xsi:type="string">800</item></option>
+                <option name="d1000" xsi:type="array"><item name="value" xsi:type="string">1000</item><item name="label" xsi:type="string">1000</item></option>
+            </options></settings></select></formElements>
+        </field>
+        <field name="pdb_anim_delay" sortOrder="30" formElement="select">
+            <argument name="data" xsi:type="array"><item name="config" xsi:type="array"><item name="default" xsi:type="string"></item></item></argument>
+            <settings><label translate="true">Délai (ms)</label><dataType>text</dataType><dataScope>pdb_anim_delay</dataScope></settings>
+            <formElements><select><settings><options>
+                <option name="def" xsi:type="array"><item name="value" xsi:type="string"></item><item name="label" xsi:type="string" translate="true">Aucun</item></option>
+                <option name="delay100" xsi:type="array"><item name="value" xsi:type="string">100</item><item name="label" xsi:type="string">100</item></option>
+                <option name="delay200" xsi:type="array"><item name="value" xsi:type="string">200</item><item name="label" xsi:type="string">200</item></option>
+                <option name="delay300" xsi:type="array"><item name="value" xsi:type="string">300</item><item name="label" xsi:type="string">300</item></option>
+                <option name="delay500" xsi:type="array"><item name="value" xsi:type="string">500</item><item name="label" xsi:type="string">500</item></option>
+            </options></settings></select></formElements>
+        </field>
+    </fieldset>
 </form>

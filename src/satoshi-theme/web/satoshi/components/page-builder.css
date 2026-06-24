@@ -1,4 +1,80 @@
 @layer components {
+  /*
+   * Satoshi UI — rythme vertical par défaut des composants éditoriaux.
+   * Posé sur l'élément `main` (qui porte `data-content-type` + le fond), donc :
+   *  - le fond couleur/image couvre bien le padding (bandes pleine largeur correctes) ;
+   *  - le réglage Page Builder « Margins and Padding » pose un `style` inline sur ce même
+   *    élément, qui bat ce sélecteur d'attribut → override par instance automatique, sans !important.
+   * Exclus volontairement : satoshi_collage / satoshi_image_banner / satoshi_video_hero
+   * (composants structurellement pleine largeur, padding vertical géré en propre)
+   * et satoshi_menu (nav, pas de rythme de bande éditoriale).
+   */
+  [data-content-type="satoshi_before_and_after"],
+  [data-content-type="satoshi_categories"],
+  [data-content-type="satoshi_category"],
+  [data-content-type="satoshi_countdown"],
+  [data-content-type="satoshi_faq"],
+  [data-content-type="satoshi_guarantees"],
+  [data-content-type="satoshi_image_with_text"],
+  [data-content-type="satoshi_newsletter"],
+  [data-content-type="satoshi_quotes"],
+  [data-content-type="satoshi_rich_text"],
+  [data-content-type="satoshi_shop_the_look"],
+  [data-content-type="satoshi_video"] {
+    @apply py-8 md:py-12;
+  }
+
+  /*
+   * Satoshi UI — gouttière horizontale par défaut des composants « contenus ».
+   * L'intégration PDB pose un wrapper centré `max-w-7xl mx-auto` sur les
+   * composants non pleine largeur. Tant que le viewport est plus étroit que ce
+   * max-w (1280px = 7xl), le conteneur occupe toute la largeur et collait aux
+   * bords → on garantit une marge gauche/droite. Les composants pleine largeur
+   * (video_hero, before_and_after pleine bande, collage, image_banner…) n'ont
+   * PAS ce wrapper centré (`[class*="mx-auto"]`) → non ciblés, ils restent
+   * edge-to-edge. Au-delà de 1280px le wrapper est centré avec des marges auto
+   * → aucune règle, le desktop reste inchangé. Le réglage PB « Margins and
+   * Padding » pose un style inline qui bat ce sélecteur d'attribut → override
+   * par instance automatique, sans !important.
+   */
+  @media (max-width: 1279.98px) {
+    [data-content-type^="satoshi_"][class*="mx-auto"] {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+
+    /*
+     * Empêche un composant Satoshi UI de déborder le viewport sous 7xl.
+     * Les composants sont des flex items des rows Page Builder : un slider
+     * interne à slides non-rétrécissables (mode boutons) ou à images étire
+     * sinon le composant à la largeur de SON contenu, et le wrapper centré
+     * `max-w-7xl` (1280px) ne le borne pas tant que le viewport est plus
+     * étroit. Résultat : composant clippé (boutons non-slidables) ou slider
+     * d'images débordant (dernier visuel inatteignable). On cappe à 100% du
+     * conteneur → `.slider__slides` (overflow-x-auto) redevient la vraie zone
+     * de défilement. `!important` car `max-w-7xl` est posé en couche utilitaire
+     * (bat la spécificité) ; borné au mobile/tablette pour préserver le
+     * centrage 7xl en desktop (≥1280px, aucune règle).
+     */
+    [data-content-type^="satoshi_"] {
+      max-width: 100% !important;
+    }
+  }
+
+  @media (min-width: 768px) and (max-width: 1279.98px) {
+    [data-content-type^="satoshi_"][class*="mx-auto"] {
+      padding-left: 2rem;
+      padding-right: 2rem;
+    }
+  }
+
+  /* Satoshi UI — autorise le rétrécissement des composants flex items des rows
+     (min-width:auto par défaut → refus de descendre sous la largeur du contenu)
+     pour que le cap max-width ci-dessus et les sliders internes fonctionnent. */
+  [data-content-type^="satoshi_"] {
+    min-width: 0;
+  }
+
   /* Rows */
   [data-content-type="row"] {
     @apply box-border;
