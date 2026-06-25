@@ -31,22 +31,57 @@
     }
   
     &__field {
-      @apply md:focus-visible:focus-ring relative h-11 w-full min-w-0 appearance-none rounded-sm border-1 border-solid border-fg-secondary bg-bg px-4 text-[16px] text-fg-secondary transition-[background,color,border-color] duration-200 placeholder:text-fg-secondary md:hover:border-primary md:hover:bg-bg md:hover:text-primary md:focus-visible:bg-bg;
-  
+      /* Contrat de tokens propre au champ (même modèle que le .btn de
+         Pdb_ThemeHyva). Le color scheme sombre flippe CES tokens-là, jamais les
+         globaux : --color-bg sert aussi le bouton blanc, on ne peut donc pas le
+         remapper globalement. Les variantes ci-dessous ne font que redéfinir ces
+         tokens — plus aucun !important nécessaire pour le rendu sur fond sombre. */
+      --input-bg: var(--color-bg);
+      --input-fg: var(--color-fg-secondary);
+      --input-border: var(--color-fg-secondary);
+      --input-placeholder: var(--color-fg-secondary);
+      --input-bg-hover: var(--color-bg);
+      --input-fg-hover: var(--color-primary);
+      --input-border-hover: var(--color-primary);
+      --input-bg-focus: var(--color-bg);
+      --input-border-focus: var(--color-primary);
+      --input-ring: 0 0 0 1px var(--color-primary);
+
+      @apply md:focus-visible:focus-ring relative h-11 w-full min-w-0 appearance-none rounded-sm border-1 border-solid px-4 text-[16px] transition-[background,color,border-color] duration-200;
+
+      background-color: var(--input-bg);
+      color: var(--input-fg);
+      border-color: var(--input-border);
+
+      &::placeholder {
+        color: var(--input-placeholder);
+      }
+
+      @screen md {
+        &:hover {
+          background-color: var(--input-bg-hover);
+          color: var(--input-fg-hover);
+          border-color: var(--input-border-hover);
+        }
+      }
+
       &:focus-visible {
-        @apply border-primary shadow-input;
+        background-color: var(--input-bg-focus);
+        border-color: var(--input-border-focus);
+        box-shadow: var(--input-ring);
       }
-  
+
       &--outline {
-        @apply border-fg-secondary bg-transparent;
+        --input-bg: transparent;
       }
-  
+
       &--filled {
-        @apply bg-bg-sunken text-fg;
+        --input-bg: var(--color-bg-sunken);
+        --input-fg: var(--color-fg);
       }
-  
+
       &--ghost {
-        @apply bg-transparent;
+        --input-bg: transparent;
       }
     }
   

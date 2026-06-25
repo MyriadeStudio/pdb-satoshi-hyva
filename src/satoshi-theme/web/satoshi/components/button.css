@@ -44,26 +44,61 @@
       }
   
       &-secondary {
-        @apply border-1 border-solid border-fg-secondary bg-transparent;
-  
+        /* Contrat de tokens : rest + hover pilotés par --btn-*. Le color scheme
+           sombre flippe CES tokens (color-scheme.css) SANS !important, et le look
+           « quiet » des boutons catégories (.button--quiet) n'est qu'un preset de
+           tokens — non plus des utilitaires `text-*`/`border-*` figés en dur. */
+        --btn-fg: inherit;
+        --btn-border: var(--color-fg-secondary);
+        --btn-bg: transparent;
+        --btn-fg-hover: var(--color-primary);
+        --btn-border-hover: var(--color-primary);
+        --btn-bg-hover: var(--color-bg);
+
+        @apply border-1 border-solid;
+        color: var(--btn-fg);
+        border-color: var(--btn-border);
+        background-color: var(--btn-bg);
+
         &:not(.button--disabled) {
-          @apply md:hover:border-primary md:hover:bg-bg md:hover:text-primary md:active:bg-bg;
-  
-          &.group-hoverable {
-            @apply md:group-hover:border-primary md:group-hover:bg-bg md:group-hover:text-primary md:group-active:bg-bg;
+          @screen md {
+            &:hover,
+            &:active {
+              color: var(--btn-fg-hover);
+              border-color: var(--btn-border-hover);
+              background-color: var(--btn-bg-hover);
+            }
           }
         }
-  
+
+        &.group-hoverable:not(.button--disabled) {
+          .group:hover & {
+            @screen md {
+              color: var(--btn-fg-hover);
+              border-color: var(--btn-border-hover);
+              background-color: var(--btn-bg-hover);
+            }
+          }
+        }
+
         &.selected {
           @apply border-current text-primary-darker;
-  
+
           &:not(.button--disabled) {
             @apply md:hover:bg-primary-lighter md:active:bg-primary-lighter;
           }
         }
       }
     }
-  
+
+    &--quiet {
+      /* Preset « doux » de outline-secondary (boutons catégories) : ton de marque
+         clair + bordure sunken en mode clair, posés via les tokens du contrat —
+         donc surchargeables par le color scheme (0,2,0) sans !important. */
+      --btn-fg: var(--color-primary-lighter);
+      --btn-border: var(--color-bg-sunken);
+    }
+
     &--ghost {
       &-primary {
         @apply bg-transparent text-primary;
