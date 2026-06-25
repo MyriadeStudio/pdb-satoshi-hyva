@@ -1,0 +1,23 @@
+<div attr="data.main.attributes" ko-style="data.main.style" css="data.main.css">
+    <div data-is-page-builder-ignored-element="true">
+        <p attr="data.slider_height.attributes" hidden></p>
+        <p attr="data.autoplay_speed.attributes" hidden></p>
+        <p attr="data.show_arrows.attributes" hidden></p>
+        <p attr="data.show_dots.attributes" hidden></p>
+
+        <if args="data.slides.attributes().slides.length > 0 && data.slides.attributes().slides !== '[]'">
+            <div
+                data-bind="attr: { slides: JSON.stringify(data.slides.attributes().slides) }"
+                ko-style="data.slides.style"
+                data-element="slides"
+                css="data.slides.css"
+                hidden
+            ></div>
+        </if>
+    </div>
+
+    <div
+        attr="data.block_directive.attributes"
+        html="data.block_directive.html"
+    ></div>
+</div>

@@ -1,0 +1,192 @@
+<!--
+/**
+ * Record d'une slide du Hero slider : disposition VERTICALE regroupée par bloc
+ * (Média / Contenu / Bouton / Mise en page) au lieu d'une ligne à N colonnes.
+ * Squelette repris de Satoshi_SatoshiUi/dynamic-rows/satoshi-collage/default
+ * (repeat des records, drag&drop, bouton d'ajout, pagination, spinner).
+ */
+-->
+<div
+  class="admin__field"
+  visible="visible"
+  disable="disabled"
+  css="element.setClasses(element)"
+>
+  <label
+    if="element.label"
+    class="admin__field-label"
+    attr="for: element.uid"
+  >
+    <span translate="element.label"></span>
+  </label>
+
+  <div
+    class="admin__field-control"
+    data-role="grid-wrapper"
+    attr="'data-index': index"
+  >
+    <div class="admin__control-table-wrapper">
+      <div
+        data-role="spinner"
+        class="admin__data-grid-loading-mask"
+        if="$data.showSpinner"
+      >
+        <div class="spinner">
+          <span repeat="8"></span>
+        </div>
+      </div>
+
+      <table
+        class="admin__dynamic-rows admin__control-table"
+        data-role="grid"
+        attr="{'data-index': index}"
+      >
+        <tbody>
+          <tr
+            class="data-row"
+            repeat="foreach: elems, item: '$record'"
+          >
+            <td
+              if="dndConfig.enabled"
+              class="col-draggable"
+              style="vertical-align: top; padding-top: 18px;"
+            >
+              <div template="name: dndConfig.template, data: dnd"></div>
+            </td>
+
+            <td style="padding: 12px;">
+              <!-- En-tête : type de slide + suppression -->
+              <div style="display: flex; align-items: flex-end; gap: 24px; margin-bottom: 18px; padding-bottom: 12px; border-bottom: 2px solid #e3e3e3;">
+                <!-- ko foreach: { data: $record().elems(), as: 'elem' } -->
+                <div
+                  if="elem.index === 'slide_type'"
+                  style="min-width: 160px;"
+                >
+                  <div class="admin__field-label" style="margin-bottom: 6px; text-align: left !important; float: none !important; width: auto !important; position: static !important;" if="elem.label" html="elem.label"></div>
+                  <div template="elem.template"></div>
+                </div>
+                <!-- /ko -->
+
+                <div style="margin-left: auto;">
+                  <!-- ko foreach: { data: $record().elems(), as: 'elem' } -->
+                  <div if="['slide_type','image','mobile_image','video_source','video_image','video_mobile_image','autoplay','loop','muted','heading','description','button_label','button_link','button_target','button_style','text_color_scheme','desktop_content_position','mobile_content_position','overlay_opacity'].indexOf(elem.index) === -1">
+                    <div template="elem.template"></div>
+                  </div>
+                  <!-- /ko -->
+                </div>
+              </div>
+
+              <!-- Groupes de champs -->
+              <div style="display: flex; flex-wrap: wrap; gap: 32px; align-items: flex-start;">
+                <!-- Groupe Média -->
+                <div style="flex: 1 1 240px; min-width: 240px; display: flex; flex-direction: column; gap: 14px;">
+                  <div style="font-weight: 600; color: #41362f;">Média</div>
+                  <!-- ko foreach: { data: $record().elems(), as: 'elem' } -->
+                  <div
+                    class="admin__field"
+                    if="['image','mobile_image','video_source','video_image','video_mobile_image','autoplay','loop','muted'].indexOf(elem.index) !== -1"
+                    visible="elem.visible() && elem.formElement !== 'hidden'"
+                  >
+                    <div class="admin__field-label" style="margin-bottom: 6px; text-align: left !important; float: none !important; width: auto !important; position: static !important;" if="elem.label" html="elem.label"></div>
+                    <div class="admin__field-control" template="elem.template"></div>
+                  </div>
+                  <!-- /ko -->
+                </div>
+
+                <!-- Groupe Contenu -->
+                <div style="flex: 1 1 240px; min-width: 240px; display: flex; flex-direction: column; gap: 14px;">
+                  <div style="font-weight: 600; color: #41362f;">Contenu</div>
+                  <!-- ko foreach: { data: $record().elems(), as: 'elem' } -->
+                  <div
+                    class="admin__field"
+                    if="['heading','description'].indexOf(elem.index) !== -1"
+                    visible="elem.visible() && elem.formElement !== 'hidden'"
+                  >
+                    <div class="admin__field-label" style="margin-bottom: 6px; text-align: left !important; float: none !important; width: auto !important; position: static !important;" if="elem.label" html="elem.label"></div>
+                    <div class="admin__field-control" template="elem.template"></div>
+                  </div>
+                  <!-- /ko -->
+                </div>
+
+                <!-- Groupe Bouton -->
+                <div style="flex: 1 1 240px; min-width: 240px; display: flex; flex-direction: column; gap: 14px;">
+                  <div style="font-weight: 600; color: #41362f;">Bouton</div>
+                  <!-- ko foreach: { data: $record().elems(), as: 'elem' } -->
+                  <div
+                    class="admin__field"
+                    if="['button_label','button_link','button_target','button_style'].indexOf(elem.index) !== -1"
+                    visible="elem.visible() && elem.formElement !== 'hidden'"
+                  >
+                    <div class="admin__field-label" style="margin-bottom: 6px; text-align: left !important; float: none !important; width: auto !important; position: static !important;" if="elem.label" html="elem.label"></div>
+                    <div class="admin__field-control" template="elem.template"></div>
+                  </div>
+                  <!-- /ko -->
+                </div>
+
+                <!-- Groupe Mise en page -->
+                <div style="flex: 1 1 240px; min-width: 240px; display: flex; flex-direction: column; gap: 14px;">
+                  <div style="font-weight: 600; color: #41362f;">Mise en page</div>
+                  <!-- ko foreach: { data: $record().elems(), as: 'elem' } -->
+                  <div
+                    class="admin__field"
+                    if="['text_color_scheme','desktop_content_position','mobile_content_position','overlay_opacity'].indexOf(elem.index) !== -1"
+                    visible="elem.visible() && elem.formElement !== 'hidden'"
+                  >
+                    <div class="admin__field-label" style="margin-bottom: 6px; text-align: left !important; float: none !important; width: auto !important; position: static !important;" if="elem.label" html="elem.label"></div>
+                    <div class="admin__field-control" template="elem.template"></div>
+                  </div>
+                  <!-- /ko -->
+                </div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+
+        <tfoot visible="element.addButton || (!!element.getRecordCount() && pages() > 1)">
+          <tr>
+            <td
+              attr="{'colspan': element.getColumnsCount()}"
+              visible="element.addButton || pages() > 1"
+            >
+              <button
+                if="element.addButton"
+                attr="{disabled: disabled, 'data-action': 'add_new_row'}"
+                type="button"
+                click="processingAddChild.bind($data, false, false, false)"
+              >
+                <span translate="addButtonLabel"></span>
+              </button>
+
+              <div
+                class="admin__control-table-pagination"
+                visible="!!element.getRecordCount() && pages() > 1"
+              >
+                <div class="admin__data-grid-pager">
+                  <button
+                    class="action-previous"
+                    type="button"
+                    data-bind="attr: {title: $t('Previous Page')}, click: previousPage, disable: isFirst()"
+                  ></button>
+                  <input
+                    class="admin__control-text"
+                    type="number"
+                    data-bind="attr: {id: ++ko.uid}, value: currentPage"
+                  >
+                  <label
+                    class="admin__control-support-text"
+                    data-bind="attr: {for: ko.uid}, text: 'of ' + pages()"
+                  ></label>
+                  <button
+                    class="action-next"
+                    type="button"
+                    data-bind="attr: {title: $t('Next Page')}, click: nextPage, disable: isLast()"
+                  ></button>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+</div>

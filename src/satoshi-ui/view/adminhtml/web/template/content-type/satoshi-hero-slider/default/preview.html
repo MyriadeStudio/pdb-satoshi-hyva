@@ -1,0 +1,93 @@
+<div
+    attr="data.main.attributes"
+    ko-style="data.main.style"
+    class="pagebuilder-content-type hero-slider"
+    css="data.main.css"
+    event="{ mouseover: onMouseOver, mouseout: onMouseOut }, mouseoverBubble: false"
+>
+    <style>
+        .hero-slider .hsa-content-light,
+        .hero-slider .hsa-content-light h2,
+        .hero-slider .hsa-content-light p,
+        .hero-slider .hsa-content-light span { color: #ffffff; }
+        .hero-slider .hsa-content-dark,
+        .hero-slider .hsa-content-dark h2,
+        .hero-slider .hsa-content-dark p,
+        .hero-slider .hsa-content-dark span { color: #1a1a1a; }
+    </style>
+    <if args="data.slides.attributes().slides.length > 0 && data.slides.attributes().slides !== '[]'">
+        <div
+            class="hero-slider__preview"
+            style="display: flex; overflow-x: auto; gap: 2px; width: 100%;"
+            data-bind="style: { height: (data.slider_height.attributes()['data-slider-height'] === 'small' ? '40vh' : (data.slider_height.attributes()['data-slider-height'] === 'medium' ? '60vh' : '80vh')) }"
+        >
+            <!-- ko foreach: data.slides.attributes().slides -->
+            <div style="position: relative; flex: 0 0 100%; height: 100%; overflow: hidden; background: #e9e9e9; display: flex; align-items: center; justify-content: center;">
+                <!-- Priorité à l'image (slide image OU image de repli vidéo) : toujours visible -->
+                <!-- ko if: slide_type === 'video' ? (video_image && video_image[0]) : (image && image[0]) -->
+                <img
+                    data-bind="attr: { src: slide_type === 'video' ? video_image[0].url : image[0].url }"
+                    style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;"
+                />
+                <!-- /ko -->
+
+                <!-- Pas d'image -->
+                <!-- ko ifnot: slide_type === 'video' ? (video_image && video_image[0]) : (image && image[0]) -->
+                    <!-- Vidéo mp4/webm sans repli : on la joue (muette) pour la prévisualiser -->
+                    <!-- ko if: slide_type === 'video' && video_source && (video_source.endsWith('.mp4') || video_source.endsWith('.webm')) -->
+                    <video
+                        data-bind="attr: { src: video_source }"
+                        autoplay
+                        muted
+                        loop
+                        playsinline
+                        preload="auto"
+                        style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;"
+                    ></video>
+                    <!-- /ko -->
+                    <!-- ko ifnot: slide_type === 'video' && video_source && (video_source.endsWith('.mp4') || video_source.endsWith('.webm')) -->
+                    <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #b0b0b0; font-size: 13px;">
+                        <span data-bind="text: slide_type === 'video' ? '▶ Vidéo — ajoutez une source ou une image de repli' : 'Ajoutez une image'"></span>
+                    </div>
+                    <!-- /ko -->
+                <!-- /ko -->
+
+                <!-- Overlay (overlay_opacity stocké en 0–100). NB : le stage PB convertit
+                     le binding `style:` en règle data-pb-style et n'y sérialise QUE les
+                     valeurs chaîne (les nombres sont ignorés → règle vide → opacity 1 = noir).
+                     On force donc une chaîne. -->
+                <div
+                    style="position: absolute; inset: 0; background: #000;"
+                    data-bind="style: { opacity: '' + ((Number(overlay_opacity) || 0) / 100) }"
+                ></div>
+
+                <!-- Contenu (centré pour l'aperçu). Couleur selon le color scheme de la slide :
+                     inverse = texte clair (média sombre), default = texte sombre (média clair). -->
+                <div
+                    style="position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 24px; gap: 14px; max-width: 535px;"
+                    data-bind="css: { 'hsa-content-dark': text_color_scheme === 'default', 'hsa-content-light': text_color_scheme !== 'default' }"
+                >
+                    <!-- ko if: heading -->
+                    <h2 data-bind="text: heading" style="font-size: 32px; line-height: 1.15; margin: 0;"></h2>
+                    <!-- /ko -->
+                    <!-- ko if: description -->
+                    <p data-bind="text: description" style="font-size: 16px; margin: 0;"></p>
+                    <!-- /ko -->
+                    <!-- ko if: button_label -->
+                    <span
+                        data-bind="text: button_label"
+                        style="display: inline-block; padding: 10px 22px; border: 1px solid currentColor; border-radius: 999px; font-size: 14px;"
+                    ></span>
+                    <!-- /ko -->
+                </div>
+            </div>
+            <!-- /ko -->
+        </div>
+    </if>
+    <if args="!(data.slides.attributes().slides.length > 0) || data.slides.attributes().slides === '[]'">
+        <div style="padding: 48px; text-align: center; color: #8a8a8a; border: 1px dashed #d6d6d6;">
+            <span translate="'Add slides to the hero slider'"></span>
+        </div>
+    </if>
+    <render args="getOptions().template" />
+</div>

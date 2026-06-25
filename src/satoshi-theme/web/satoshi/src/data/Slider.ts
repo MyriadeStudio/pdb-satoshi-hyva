@@ -15,6 +15,9 @@ type SliderConfig = {
   gap: number;
   isAutoplay: boolean;
   autoplaySpeed?: number;
+  // Opt-in (ex. Hero slider) — sans effet sur les autres sliders qui ne les passent pas.
+  pauseOnHover?: boolean;
+  enableDrag?: boolean;
 };
 
 export type SliderType = {
@@ -43,6 +46,8 @@ export type SliderType = {
   touchMove(e: any): void;
   handleManualScroll(): void;
   getSlidesAmountInView(): number;
+  initHoverPause(): void;
+  initDrag(): void;
 } & Magics<{}>;
 
 export const Slider = () =>
@@ -104,6 +109,101 @@ export const Slider = () =>
         left: proxScrollTarget,
         behavior: "smooth",
       });
+
+      if (this.config.pauseOnHover) {
+        this.initHoverPause();
+      }
+      if (this.config.enableDrag) {
+        this.initDrag();
+      }
+    },
+
+    // Met l'autoplay en pause au survol du composant (toute la zone via $root),
+    // reprend à la sortie. Sans effet si l'autoplay est désactivé.
+    initHoverPause() {
+      const root = this.$root as HTMLElement;
+      if (!root) {
+        return;
+      }
+      root.addEventListener("mouseenter", () => {
+        if (this.autoplayInterval) {
+          window.clearInterval(this.autoplayInterval);
+          this.autoplayInterval = null;
+        }
+      });
+      root.addEventListener("mouseleave", () => {
+        this.play();
+      });
+    },
+
+    // Drag à la souris sur desktop (le tactile garde le scroll natif). Un seuil
+    // de mouvement évite de déclencher les liens : au-delà du seuil, le clic de
+    // fin de drag est annulé en phase de capture.
+    initDrag() {
+      const slider = this.$refs.slider as HTMLElement;
+      if (!slider) {
+        return;
+      }
+      let isDown = false;
+      let startX = 0;
+      let startScroll = 0;
+      let moved = 0;
+      const THRESHOLD = 6;
+
+      slider.addEventListener("pointerdown", (e: PointerEvent) => {
+        if (e.pointerType !== "mouse") {
+          return;
+        }
+        isDown = true;
+        moved = 0;
+        startX = e.clientX;
+        startScroll = slider.scrollLeft;
+        slider.style.scrollBehavior = "auto";
+      });
+
+      window.addEventListener("pointermove", (e: PointerEvent) => {
+        if (!isDown) {
+          return;
+        }
+        const dx = e.clientX - startX;
+        if (Math.abs(dx) > moved) {
+          moved = Math.abs(dx);
+        }
+        slider.scrollLeft = startScroll - dx;
+        if (Math.abs(dx) > THRESHOLD) {
+          e.preventDefault();
+          slider.classList.add("is-dragging");
+        }
+      });
+
+      const endDrag = () => {
+        if (!isDown) {
+          return;
+        }
+        isDown = false;
+        slider.style.scrollBehavior = "";
+        slider.classList.remove("is-dragging");
+
+        if (moved > THRESHOLD) {
+          const cancelClick = (ev: Event) => {
+            ev.preventDefault();
+            ev.stopPropagation();
+          };
+          slider.addEventListener("click", cancelClick, {
+            capture: true,
+            once: true,
+          });
+          window.setTimeout(() => {
+            slider.removeEventListener("click", cancelClick, {
+              capture: true,
+            } as EventListenerOptions);
+          }, 60);
+          this.play();
+        }
+      };
+
+      window.addEventListener("pointerup", endDrag);
+      window.addEventListener("pointercancel", endDrag);
     },
 
     destroy() {

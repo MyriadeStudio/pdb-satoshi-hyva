@@ -1,0 +1,285 @@
+<?php
+
+declare(strict_types=1);
+
+use Hyva\Theme\Model\ViewModelRegistry;
+use Hyva\Theme\ViewModel\SvgIcons;
+use Magento\Framework\Escaper;
+use Satoshi\SatoshiUi\Block\HeroSlider;
+use Satoshi\SatoshiUi\Helper\Decode as DecodeHelper;
+
+/** @var HeroSlider $block */
+/** @var Escaper $escaper */
+/** @var ViewModelRegistry $viewModels */
+
+/** @var SvgIcons $hyvaicons */
+$hyvaicons = $viewModels->require(SvgIcons::class);
+/** @var DecodeHelper $decodeHelper */
+$decodeHelper = $this->helper(DecodeHelper::class);
+
+$slides = $decodeHelper->decodeJSONHTMLEntity($block->getData('slides'));
+if (!is_array($slides)) {
+    $slides = [];
+}
+$slideCount = count($slides);
+
+$sliderHeight = $block->getData('slider_height') ?: 'large';
+$autoplaySpeed = (int) $block->getData('autoplay_speed');
+
+$boolify = static fn($v): bool => $v === true || $v === 'true' || $v === '1' || $v === 1;
+$showArrows = $boolify($block->getData('show_arrows'));
+$showDots = $boolify($block->getData('show_dots'));
+
+// 1 seule slide → pas de navigation ni d'autoplay (décision produit).
+$hasNav = $slideCount > 1;
+$isAutoplay = $hasNav && $autoplaySpeed > 0;
+
+// Schéma de couleur de la navigation (flèches + puces) : suit le color scheme de la
+// slide COURANTE (pas de réglage global). Par slide : inverse → nav claire (média
+// sombre), default → nav sombre (média clair). On expose un tableau JS aligné sur
+// l'ordre des slides, indexé par currentSlideIndex (1-based) côté Alpine.
+$navSchemes = array_map(
+    static fn($s): string => (($s['text_color_scheme'] ?? 'default') === 'inverse') ? 'light' : 'dark',
+    $slides
+);
+$navJs = "['" . implode("','", $navSchemes) . "']";
+
+// Hauteur GLOBALE du slider (partagée par toutes les slides).
+$heightClasses = match ($sliderHeight) {
+    'small' => 'pb-12 pt-20 md:py-[5vh] h-[40vh]',
+    'medium' => 'pb-12 pt-20 md:py-[10vh] h-[60vh]',
+    default => 'pb-12 pt-20 md:py-[20vh] h-[calc(100svh-34px)] md:h-[80vh]',
+};
+
+$alignMobile = static fn(string $pos): string => match ($pos) {
+    'top-left' => 'items-start justify-start',
+    'top-center' => 'items-start justify-center',
+    'top-right' => 'items-start justify-end',
+    'middle-left' => 'items-center justify-start',
+    'middle-center' => 'items-center justify-center',
+    'middle-right' => 'items-center justify-end',
+    'bottom-left' => 'items-end justify-start',
+    'bottom-center' => 'items-end justify-center',
+    'bottom-right' => 'items-end justify-end',
+    default => 'items-center justify-center',
+};
+$alignDesktop = static fn(string $pos): string => match ($pos) {
+    'top-left' => 'md:items-start md:justify-start',
+    'top-center' => 'md:items-start md:justify-center',
+    'top-right' => 'md:items-start md:justify-end',
+    'middle-left' => 'md:items-center md:justify-start',
+    'middle-center' => 'md:items-center md:justify-center',
+    'middle-right' => 'md:items-center md:justify-end',
+    'bottom-left' => 'md:items-end md:justify-start',
+    'bottom-center' => 'md:items-end md:justify-center',
+    'bottom-right' => 'md:items-end md:justify-end',
+    default => 'md:items-center md:justify-center',
+};
+?>
+<div class="hero-slider relative" x-data="Slider()">
+    <div
+        class="slider slider--pagebuilder"
+        x-init="configureAndStart({
+            slidesAmountInView: { xs: 1, sm: 1, md: 1, lg: 1, xl: 1, xxl: 1 },
+            gap: 0,
+            isAutoplay: '<?= $isAutoplay ? '1' : '' ?>',
+            autoplaySpeed: <?= (int) $autoplaySpeed ?>,
+            pauseOnHover: true,
+            enableDrag: true
+        })"
+        style="--slide-gap: 0px; --slide-count-xs: 1; --slide-count-sm: 1; --slide-count-md: 1; --slide-count-lg: 1; --slide-count-xl: 1; --slide-count-xxl: 1;"
+    >
+        <div
+            class="slider__slides scrollbar-hidden pt-0 pb-0"
+            x-ref="slider"
+            @scroll="handleManualScroll"
+        >
+            <?php foreach ($slides as $slide): ?>
+                <?php
+                $type = ($slide['slide_type'] ?? 'image') === 'video' ? 'video' : 'image';
+                $heading = $slide['heading'] ?? '';
+                $description = $slide['description'] ?? '';
+                $buttonLabel = $slide['button_label'] ?? '';
+                $image = $slide['image'] ?? '';
+                $mobileImage = $slide['mobile_image'] ?? '';
+                $overlayOpacity = $slide['overlay_opacity'] ?? 0;
+                $desktopPos = $slide['desktop_content_position'] ?? 'middle-center';
+                $mobilePos = $slide['mobile_content_position'] ?? 'middle-center';
+
+                $colorScheme = ($slide['text_color_scheme'] ?? 'default') === 'inverse' ? 'inverse' : 'default';
+                $headingClass = $colorScheme === 'inverse' ? 'text-fg-inverse' : 'text-fg';
+                $descriptionClass = $colorScheme === 'inverse' ? 'text-fg-inverse' : 'text-primary-darker';
+                // Couleur du bouton déduite du color scheme. Pour l'outline, le rendu clair
+                // sur média sombre vient du contexte data-scheme="dark" posé sur la slide
+                // inverse (remap des tokens --btn-*, cf. color-scheme.css) — comme les flèches.
+                $buttonFill = ($slide['button_style'] ?? 'filled') === 'outlined' ? 'outline' : 'filled';
+                if ($buttonFill === 'outline') {
+                    // outline-primary : sombre nativement (média clair), clair sous data-scheme="dark".
+                    $buttonClass = 'button--outline-primary';
+                } else {
+                    // filled : blanc (secondary) sur média sombre, doré (primary) sur média clair.
+                    $buttonClass = 'button--filled-' . ($colorScheme === 'inverse' ? 'secondary' : 'primary');
+                }
+
+                $linkHref = is_string($slide['button_link'] ?? null) ? $slide['button_link'] : '';
+                $linkTarget = $boolify($slide['button_target'] ?? false) ? '_blank' : '';
+
+                $videoUrl = $slide['video_source'] ?? '';
+                $autoplay = $boolify($slide['autoplay'] ?? false);
+                $muted = $boolify($slide['muted'] ?? false);
+                $loop = $boolify($slide['loop'] ?? false);
+
+                $hasHeading = !empty($heading);
+                $hasDescription = !empty($description);
+                $hasButton = !empty($buttonLabel);
+                // Lien renseigné sans libellé → pas de bouton, mais toute la slide devient cliquable.
+                $slideClickable = $linkHref !== '' && !$hasButton;
+                ?>
+                <div class="slider__slide">
+                    <div class="relative w-full overflow-hidden"<?php if ($colorScheme === 'inverse'): ?> data-scheme="dark"<?php endif; ?> <?= $type === 'video' ? 'x-data="{ loaded: false }"' : '' ?>>
+                        <div class="absolute left-0 top-0 z-10 h-full w-full bg-black" style="opacity: <?= $escaper->escapeHtmlAttr((string) $overlayOpacity) ?>"></div>
+
+                        <?php if ($type === 'video'): ?>
+                            <div class="absolute inset-0 z-[5]" :class="{ 'opacity-0 pointer-events-none': loaded }">
+                                <picture>
+                                    <?php if ($mobileImage): ?>
+                                        <source media="(max-width: 767px)" srcset="<?= $escaper->escapeUrl($mobileImage) ?>">
+                                    <?php endif; ?>
+                                    <img src="<?= $escaper->escapeUrl($image) ?>" class="h-full w-full object-cover object-center" loading="eager" fetchpriority="high" alt="">
+                                </picture>
+                            </div>
+                            <?php if (str_ends_with($videoUrl, '.mp4') || str_ends_with($videoUrl, '.webm')): ?>
+                                <?php $videoType = str_ends_with($videoUrl, '.webm') ? 'video/webm' : 'video/mp4'; ?>
+                                <video
+                                    class="absolute left-0 top-0 z-0 h-full w-full object-cover object-center bg-cover bg-center"
+                                    <?= ($muted || $autoplay) ? 'muted' : '' ?>
+                                    <?= $autoplay ? 'autoplay' : '' ?>
+                                    <?= $loop ? 'loop' : '' ?>
+                                    playsinline
+                                    preload="auto"
+                                    x-init="$el.muted = true;<?php if ($autoplay): ?> $el.play().catch(Boolean); var _kick = function () { $el.play().catch(Boolean); }; document.addEventListener('touchstart', _kick, { once: true, passive: true }); document.addEventListener('click', _kick, { once: true });<?php endif; ?> if ($el.readyState !== 0 && $el.readyState !== 1) { loaded = true }"
+                                    @loadeddata="loaded = true"
+                                    @canplay="loaded = true<?php if ($autoplay): ?>; $el.play().catch(Boolean)<?php endif; ?>"
+                                    @playing="loaded = true"
+                                >
+                                    <source src="<?= $escaper->escapeUrl($videoUrl) ?>" type="<?= $escaper->escapeHtmlAttr($videoType) ?>">
+                                </video>
+                            <?php elseif ($videoUrl): ?>
+                                <iframe
+                                    src="<?= $escaper->escapeUrl($videoUrl) ?>"
+                                    class="absolute left-0 top-0 z-0 h-full w-full object-cover object-center"
+                                    allow="autoplay; encrypted-media"
+                                    allowfullscreen
+                                    title="<?= $escaper->escapeHtmlAttr($heading) ?>"
+                                    loading="lazy"
+                                    @load="loaded = true"
+                                ></iframe>
+                            <?php endif; ?>
+                        <?php else: ?>
+                            <?php if ($image): ?>
+                                <div class="bg-[--fade-in-bg] absolute inset-0 z-0">
+                                    <picture>
+                                        <?php if ($mobileImage): ?>
+                                            <source media="(max-width: 767px)" srcset="<?= $escaper->escapeUrl($mobileImage) ?>">
+                                        <?php endif; ?>
+                                        <img class="absolute left-0 top-0 h-full w-full object-cover object-center" src="<?= $escaper->escapeUrl($image) ?>" alt="<?= $escaper->escapeHtmlAttr($heading) ?>">
+                                    </picture>
+                                </div>
+                            <?php else: ?>
+                                <div class="absolute inset-0 z-0 bg-bg-sunken"></div>
+                            <?php endif; ?>
+                        <?php endif; ?>
+
+                        <div class="content-wrapper relative z-20 m-auto flex <?= $escaper->escapeHtmlAttr($heightClasses) ?> <?= $escaper->escapeHtmlAttr($alignMobile($mobilePos)) ?> <?= $escaper->escapeHtmlAttr($alignDesktop($desktopPos)) ?>">
+                            <div
+                                class="flex max-w-[335px] md:max-w-[535px] flex-col justify-center gap-7 md:gap-10
+                                    <?php if (str_contains($mobilePos, 'left')): ?>items-start text-start
+                                    <?php elseif (str_contains($mobilePos, 'right')): ?>items-end text-end
+                                    <?php else: ?>items-center text-center<?php endif; ?>
+                                    <?php if (str_contains($desktopPos, 'left')): ?>md:items-start md:text-start
+                                    <?php elseif (str_contains($desktopPos, 'right')): ?>md:items-end md:text-end
+                                    <?php else: ?>md:items-center md:text-center<?php endif; ?>"
+                            >
+                                <?php if ($hasHeading): ?>
+                                    <h2 class="heading text-4xl leading-tight md:text-6xl md:leading-tight <?= $escaper->escapeHtmlAttr($headingClass) ?>">
+                                        <?= $escaper->escapeHtml($heading) ?>
+                                    </h2>
+                                <?php endif; ?>
+                                <?php if ($hasDescription): ?>
+                                    <p class="text-lg font-medium <?= $escaper->escapeHtmlAttr($descriptionClass) ?>">
+                                        <?= $escaper->escapeHtml($description) ?>
+                                    </p>
+                                <?php endif; ?>
+                                <?php if ($hasButton): ?>
+                                    <a
+                                        <?php if ($linkHref): ?>
+                                            href="<?= $escaper->escapeUrl($linkHref) ?>"
+                                            <?php if ($linkTarget): ?>target="<?= $escaper->escapeHtmlAttr($linkTarget) ?>"<?php endif; ?>
+                                        <?php endif; ?>
+                                        class="button <?= $escaper->escapeHtmlAttr($buttonClass) ?>"
+                                        x-element-transition-trigger
+                                    >
+                                        <?= $escaper->escapeHtml($buttonLabel) ?>
+                                    </a>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                        <?php if ($slideClickable): ?>
+                            <a
+                                href="<?= $escaper->escapeUrl($linkHref) ?>"
+                                <?php if ($linkTarget): ?>target="<?= $escaper->escapeHtmlAttr($linkTarget) ?>"<?php endif; ?>
+                                class="absolute inset-0 z-30"
+                                aria-label="<?= $escaper->escapeHtmlAttr($heading ?: __('Voir la slide')) ?>"
+                                x-element-transition-trigger
+                            ></a>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+
+    <?php if ($hasNav && ($showArrows || $showDots)): ?>
+        <div class="hero-slider__nav absolute bottom-6 left-0 right-0 z-30 flex items-center justify-center gap-4" x-cloak>
+            <?php if ($showArrows): ?>
+                <button
+                    class="inline-flex h-10 w-10 items-center justify-center rounded-md border backdrop-blur-sm transition rotate-180"
+                    @click.prevent="showPrevSlide();"
+                    :class="[(<?= $navJs ?>)[currentSlideIndex - 1] === 'dark' ? 'text-fg border-fg/30 bg-white/70' : 'text-white border-white/70 bg-black/30', isPrevBtnDisabled ? 'opacity-40 cursor-not-allowed' : '']"
+                    :disabled="isPrevBtnDisabled"
+                    aria-label="<?= $escaper->escapeHtmlAttr(__('Previous slide')) ?>"
+                    type="button"
+                >
+                    <?= $hyvaicons->renderHtml('chevron', 'fill-current w-5 h-5'); ?>
+                </button>
+            <?php endif; ?>
+
+            <?php if ($showDots): ?>
+                <div class="flex items-center gap-2">
+                    <?php for ($i = 0; $i < $slideCount; $i++): ?>
+                        <button
+                            type="button"
+                            class="h-2 rounded-full transition-all duration-300"
+                            :class="[currentSlideIndex === <?= $i + 1 ?> ? 'w-7 opacity-100' : 'w-2 opacity-50', (<?= $navJs ?>)[currentSlideIndex - 1] === 'dark' ? 'bg-fg' : 'bg-white']"
+                            @click.prevent="goToSlide(<?= $i + 1 ?>)"
+                            aria-label="<?= $escaper->escapeHtmlAttr(__('Go to slide %1', $i + 1)) ?>"
+                        ></button>
+                    <?php endfor; ?>
+                </div>
+            <?php endif; ?>
+
+            <?php if ($showArrows): ?>
+                <button
+                    class="inline-flex h-10 w-10 items-center justify-center rounded-md border backdrop-blur-sm transition"
+                    @click.prevent="showNextSlide();"
+                    :class="[(<?= $navJs ?>)[currentSlideIndex - 1] === 'dark' ? 'text-fg border-fg/30 bg-white/70' : 'text-white border-white/70 bg-black/30', isNextBtnDisabled ? 'opacity-40 cursor-not-allowed' : '']"
+                    :disabled="isNextBtnDisabled"
+                    aria-label="<?= $escaper->escapeHtmlAttr(__('Next slide')) ?>"
+                    type="button"
+                >
+                    <?= $hyvaicons->renderHtml('chevron', 'fill-current w-5 h-5'); ?>
+                </button>
+            <?php endif; ?>
+        </div>
+    <?php endif; ?>
+</div>
