@@ -52,13 +52,13 @@
                     <!-- /ko -->
                 <!-- /ko -->
 
-                <!-- Overlay (overlay_opacity stocké en 0–100). NB : le stage PB convertit
-                     le binding `style:` en règle data-pb-style et n'y sérialise QUE les
-                     valeurs chaîne (les nombres sont ignorés → règle vide → opacity 1 = noir).
-                     On force donc une chaîne. -->
+                <!-- Overlay (overlay_opacity stocké en 0–100, overlay_color hex ou vide = noir).
+                     NB : le stage PB convertit le binding `style:` en règle data-pb-style et
+                     n'y sérialise QUE les valeurs chaîne (les nombres sont ignorés → règle
+                     vide → opacity 1 = noir). On force donc des chaînes partout. -->
                 <div
                     style="position: absolute; inset: 0; background: #000;"
-                    data-bind="style: { opacity: '' + ((Number(overlay_opacity) || 0) / 100) }"
+                    data-bind="style: { opacity: '' + ((Number(overlay_opacity) || 0) / 100), backgroundColor: '' + ((typeof overlay_color !== 'undefined' && overlay_color) || '#000000') }"
                 ></div>
 
                 <!-- Contenu (centré pour l'aperçu). Couleur selon le color scheme de la slide :

@@ -124,6 +124,8 @@ define([
       desktop_content_position: slide.desktop_content_position || "middle-center",
       mobile_content_position: slide.mobile_content_position || "middle-center",
       overlay_opacity: +slide.overlay_opacity / 100 || 0,
+      // Couleur du voile (hex). Vide = noir (rendu historique du template).
+      overlay_color: slide.overlay_color || "",
     };
 
     if (mapped.slide_type === "video") {

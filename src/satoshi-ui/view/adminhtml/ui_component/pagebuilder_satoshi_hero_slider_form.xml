@@ -597,6 +597,36 @@
                     </formElements>
                 </field>
 
+                <field name="overlay_color" sortOrder="165" formElement="colorPicker">
+                    <argument name="data" xsi:type="array">
+                        <item name="config" xsi:type="array">
+                            <item name="default" xsi:type="string"/>
+                        </item>
+                    </argument>
+                    <settings>
+                        <label translate="true">Overlay color</label>
+                        <componentType>colorPicker</componentType>
+                        <placeholder translate="true">No Color</placeholder>
+                        <additionalClasses>
+                            <class name="admin__field-medium">true</class>
+                        </additionalClasses>
+                        <validation>
+                            <rule name="validate-color" xsi:type="boolean">true</rule>
+                        </validation>
+                        <dataScope>overlay_color</dataScope>
+                        <dataType>text</dataType>
+                        <notice translate="true">Couleur du voile posé sur le média. Vide = noir (rendu historique). Régime « clair » du configurateur : ex. #f7f5f1 + text scheme default.</notice>
+                    </settings>
+                    <formElements>
+                        <colorPicker>
+                            <settings>
+                                <colorPickerMode>full</colorPickerMode>
+                                <colorFormat>hex</colorFormat>
+                            </settings>
+                        </colorPicker>
+                    </formElements>
+                </field>
+
                 <field name="overlay_opacity" sortOrder="170" formElement="input">
                     <argument name="data" xsi:type="array">
                         <item name="config" xsi:type="array">

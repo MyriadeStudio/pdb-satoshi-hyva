@@ -69,7 +69,7 @@
 
                 <div style="margin-left: auto;">
                   <!-- ko foreach: { data: $record().elems(), as: 'elem' } -->
-                  <div if="['slide_type','image','mobile_image','video_source','video_image','video_mobile_image','autoplay','loop','muted','heading','description','button_label','button_link','button_target','button_style','text_color_scheme','desktop_content_position','mobile_content_position','overlay_opacity'].indexOf(elem.index) === -1">
+                  <div if="['slide_type','image','mobile_image','video_source','video_image','video_mobile_image','autoplay','loop','muted','heading','description','button_label','button_link','button_target','button_style','text_color_scheme','desktop_content_position','mobile_content_position','overlay_color','overlay_opacity'].indexOf(elem.index) === -1">
                     <div template="elem.template"></div>
                   </div>
                   <!-- /ko -->
@@ -129,7 +129,7 @@
                   <!-- ko foreach: { data: $record().elems(), as: 'elem' } -->
                   <div
                     class="admin__field"
-                    if="['text_color_scheme','desktop_content_position','mobile_content_position','overlay_opacity'].indexOf(elem.index) !== -1"
+                    if="['text_color_scheme','desktop_content_position','mobile_content_position','overlay_color','overlay_opacity'].indexOf(elem.index) !== -1"
                     visible="elem.visible() && elem.formElement !== 'hidden'"
                   >
                     <div class="admin__field-label" style="margin-bottom: 6px; text-align: left !important; float: none !important; width: auto !important; position: static !important;" if="elem.label" html="elem.label"></div>

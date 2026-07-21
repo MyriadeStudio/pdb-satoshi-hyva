@@ -103,6 +103,11 @@ $alignDesktop = static fn(string $pos): string => match ($pos) {
                 $image = $slide['image'] ?? '';
                 $mobileImage = $slide['mobile_image'] ?? '';
                 $overlayOpacity = $slide['overlay_opacity'] ?? 0;
+                // Couleur du voile : vide = noir (bg-black, rendu historique) ; sinon la
+                // couleur saisie en admin (hex du colorPicker) est posée en style inline,
+                // qui l'emporte sur la classe. Permet le régime « voile clair » du
+                // configurateur (ex. #f7f5f1 + text scheme default).
+                $overlayColor = trim((string) ($slide['overlay_color'] ?? ''));
                 $desktopPos = $slide['desktop_content_position'] ?? 'middle-center';
                 $mobilePos = $slide['mobile_content_position'] ?? 'middle-center';
 
@@ -137,7 +142,7 @@ $alignDesktop = static fn(string $pos): string => match ($pos) {
                 ?>
                 <div class="slider__slide">
                     <div class="relative w-full overflow-hidden"<?php if ($colorScheme === 'inverse'): ?> data-scheme="dark"<?php endif; ?> <?= $type === 'video' ? 'x-data="{ loaded: false }"' : '' ?>>
-                        <div class="absolute left-0 top-0 z-10 h-full w-full bg-black" style="opacity: <?= $escaper->escapeHtmlAttr((string) $overlayOpacity) ?>"></div>
+                        <div class="absolute left-0 top-0 z-10 h-full w-full bg-black" style="<?= $overlayColor !== '' ? 'background-color: ' . $escaper->escapeHtmlAttr($overlayColor) . '; ' : '' ?>opacity: <?= $escaper->escapeHtmlAttr((string) $overlayOpacity) ?>"></div>
 
                         <?php if ($type === 'video'): ?>
                             <div class="absolute inset-0 z-[5]" :class="{ 'opacity-0 pointer-events-none': loaded }">
