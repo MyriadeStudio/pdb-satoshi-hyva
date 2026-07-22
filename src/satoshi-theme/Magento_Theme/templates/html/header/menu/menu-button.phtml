@@ -36,7 +36,7 @@ $block->setData('cache_tags', $blockCacheViewModel->collectBlockChildrenCacheTag
         <?= $hyvaicons->renderHtml('menu') ?>
     </div>
     <div
-        class="contents"
+        class="contents text-fg"
         :class="{
             'invisible': !isMenuVisible,
         }"
@@ -45,5 +45,5 @@ $block->setData('cache_tags', $blockCacheViewModel->collectBlockChildrenCacheTag
     >
         <?= $hyvaicons->renderHtml('close') ?>
     </div>
-    <span class="text-md font-semibold max-md:hidden"><?= __('Menu') ?></span>
+    <span class="text-md font-semibold text-fg max-md:hidden"><?= __('Menu') ?></span>
 </button>
