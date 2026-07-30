@@ -112,7 +112,7 @@ if ($layout === 'inline') {
 }
 ?>
 <?php if ($guarantees): ?>
-    <div class="relative flex flex-col gap-8 md:grid md:grid-cols-4 md:gap-14"<?php if ($schemeAttr): ?> data-scheme="dark"<?php endif; ?>>
+    <div class="relative flex flex-col gap-8 md:flex-row content-around md:flex-wrap md:gap-14"<?php if ($schemeAttr): ?> data-scheme="dark"<?php endif; ?>>
         <?php foreach ($guarantees as $guarantee): ?>
             <?php
             // Lien optionnel : si une URL est renseignee, toute la colonne devient
