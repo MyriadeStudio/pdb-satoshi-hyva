@@ -365,6 +365,12 @@
     </fieldset>
 
     <fieldset name="advanced">
+        <!-- Masqué volontairement (héritage upstream conservé ; arbitrage A5 de la note du
+             2026-07-26, cf. decisions.md 2026-08-03) : un text-align hérité serait inerte ici,
+             les classes text-left / text-center dérivées du champ layout (guarantees.phtml)
+             battent l'héritage. Le démasquer créerait un champ sans effet. Pour piloter
+             l'alignement : champs *_css_classes, ou évolution dédiée via la skill
+             pdb-pagebuilder-composant (faire primer text_align sur le layout, cf. B4). -->
         <field name="text_align">
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
