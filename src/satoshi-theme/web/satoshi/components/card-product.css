@@ -39,16 +39,10 @@
 
 /* Le knob charte --card-radius (BO « Card radius ») pilote les arrondis des cartes
    (carte produit, cartes categories/collage, items minicart/wishlist). Les utilitaires
-   figés du markup (rounded-md / rounded-xl — tous deux 12px dans l'échelle aplatie du
-   thème) restent le rendu par défaut. Hors @layer : prime sur les utilities (layered)
-   quelle que soit leur position dans le bundle.
-   --radius-lg est défini LOCALEMENT car la valeur BO par défaut est `var(--radius-lg)`,
-   token non émis par le bundle (référence morte) : sans ce filet, le défaut résoudrait
-   à 0 (cartes carrées). 12px = équivalent visuel de l'existant. */
-.card-hover {
-  --radius-lg: 12px;
-}
-
+   figés du markup (rounded-md / rounded-xl — tous deux 12px dans l'échelle du thème)
+   restent le rendu par défaut via le fallback. Hors @layer : prime sur les utilities
+   (layered) quelle que soit leur position dans le bundle. La valeur BO par défaut,
+   `var(--radius-lg)`, résout via l'échelle --radius-* émise par layout/base.css. */
 .card-hover.rounded-md,
 .card-hover .rounded-md,
 .card-hover .rounded-xl {

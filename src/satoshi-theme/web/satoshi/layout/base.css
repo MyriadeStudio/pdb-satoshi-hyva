@@ -8,9 +8,23 @@
     --font-heading-style: "normal";
     --font-heading-weight: 700;
 
+    /* Échelle radius du thème, miroir de borderRadius (tailwind.config.js : xs/sm/md
+       surchargés) complété des défauts Tailwind v3 (lg/xl). Source unique des tokens
+       --radius-* consommés en var() par utilities.css (famille .btn), les composants
+       (.card du thème enfant) et les défauts BO Pdb_ThemeHyva (card_radius/form_radius
+       = var(--radius-lg)). Historiquement seul --radius-lg était émis, inline via
+       head-styles.phtml ; déplacé ici pour que le bundle soit autoporteur. Les valeurs
+       reproduisent l'existant (--radius-lg = .5rem) : ne pas les changer sans revalider
+       boutons page-builder et cartes. */
+    --radius-xs: 4px;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: .5rem;
+    --radius-xl: .75rem;
+
     /* https://tailwindcss.com/docs/using-with-preprocessors#using-sass-less-or-stylus */
     /* can not use strip-unit with theme function */
-  
+
     --content-wrapper-width: 640;
   
     @screen md {
