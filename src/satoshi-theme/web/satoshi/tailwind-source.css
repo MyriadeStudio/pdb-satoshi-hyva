@@ -24,6 +24,7 @@
 /* TODO: Replace with Prose */
 @import url(components/rte.css);
 @import url(components/card-product.css);
+@import url(components/heading.css);
 @import url(components/link.css);
 @import url(components/page-builder.css);
 @import url(components/progress-bar.css);

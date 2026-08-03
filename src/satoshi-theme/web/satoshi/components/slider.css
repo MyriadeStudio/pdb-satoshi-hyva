@@ -27,10 +27,8 @@
             @apply mx-auto flex items-center justify-between text-fg;
         }
 
-        &__title {
-            @apply text-lg font-bold;
-        }
-
+        /* &__title : famille/graisse/taille désormais portées par `.heading .heading--sm`,
+           classes posées dans slider.phtml (système commun des titres, cf. heading.css). */
         &__actions {
             @apply ml-auto flex gap-3 pt-2 z-20;
         }

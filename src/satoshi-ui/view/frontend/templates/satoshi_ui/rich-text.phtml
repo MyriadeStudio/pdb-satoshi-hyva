@@ -32,7 +32,7 @@ $textColor = 'text-fg';
 $schemeAttr = $colorScheme === 'inverse';
 ?>
 <div class="<?= $escaper->escapeHtmlAttr($textColor) ?>"<?php if ($schemeAttr): ?> data-scheme="dark"<?php endif; ?>>
-    <h2 class="heading mb-3 text-lg md:mb-5">
+    <h2 class="heading heading--sm mb-3 md:mb-5">
         <?= $escaper->escapeHtml($block->getData('heading')) ?>
     </h2>
 
