@@ -237,7 +237,7 @@ $isProductInCart = in_array($productType, ['simple', 'virtual']) && $this->helpe
                                         </span>
                                     <span
                                         x-show="variantQty > 1"
-                                        x-cloak <?php // Replace this with auto display none if variant qty < 2 ?>
+                                        x-cloak <?php /* Replace this with auto display none if variant qty lower than 2 */ ?>
                                             >
                                             <?= $hyvaicons->renderHtml('minus'); ?>
                                         </span>
