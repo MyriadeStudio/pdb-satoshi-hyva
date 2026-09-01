@@ -30,6 +30,7 @@ $productId = $product->getId();
 /** @var SvgIcons $hyvaicons */
 $hyvaicons = $viewModels->require(SvgIcons::class);
 $cartErrMsg = $escaper->escapeHtml($block->getCartErrorMessage());
+$additionalInfo = trim((string) $block->getChildHtml('product.info.additional'));
 ?>
 <h1 class="heading mb-3 ps-4 text-md leading-tight text-fg md:px-0 md:text-4xl max-md:pe-[--price-width]">
     <?= $block->getChildBlock('product.title')->getPageHeading() ?>
@@ -84,14 +85,12 @@ $cartErrMsg = $escaper->escapeHtml($block->getCartErrorMessage());
                 <?php endforeach; ?>
             </dl>
 
-            <!-- Additional info -->
-            <?= $block->getChildHtml("product.info.additional") ?>
         </div>
     </div>
 
     <div>
         <!-- Desktop options -->
-        <div class="animate-on-transition max-md:hidden">
+        <div class="product-options-panel animate-on-transition max-md:hidden">
             <?= $block->getChildHtml('product.info.form') ?>
         </div>
 
@@ -116,6 +115,11 @@ $cartErrMsg = $escaper->escapeHtml($block->getCartErrorMessage());
             x-text="$store.cart.productCartErrorMessage"
         >
         </div>
+        <?php if ($additionalInfo !== ''): ?>
+            <div class="product-store-link mt-3 max-md:px-2">
+                <?= /** @noEscape */ $additionalInfo ?>
+            </div>
+        <?php endif; ?>
     </div>
 </div>
 
@@ -175,7 +179,7 @@ $minHeight = $product->getTypeId() === 'bundle' ? 'min-h-40' : 'min-h-[68px]';
 $productActions = <<<HTML
     <template x-if="\$store.main.isMobile">
         <div class="contents">
-            <div class="max-md:mx-2">
+            <div class="product-options-panel max-md:mx-2">
                 {$options}
                 <div
                     class="min-h-3 mt-2 text-error md:hidden"

@@ -11,7 +11,13 @@ use Satoshi\Theme\Block\Template;
 $title = $block->getLayout()->createBlock('Magento\Theme\Block\Html\Title')->getPageHeading();
 ?>
 
-<div class="cart-main md:content-wrapper mt-[72px] md:mx-auto md:pb-10 max-md:min-h-[calc(100vh-106px)]">
+<div
+  class="
+    cart-main mt-[72px] flex flex-col
+    md:content-wrapper md:mx-auto md:min-h-[calc(100vh-72px)] md:pb-10
+    max-md:min-h-[calc(100vh-106px)]
+  "
+>
   <?=
     $template
       ->setData([
