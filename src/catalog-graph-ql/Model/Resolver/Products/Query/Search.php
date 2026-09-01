@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Satoshi\CatalogGraphQl\Model\Resolver\Products\Query;
 
-use Magento\CatalogGraphQl\Model\Resolver\Products\Query\Search as MagentoSearch;
+use Magento\AdvancedSearch\Model\Client\ClientException;
 use Magento\CatalogGraphQl\Model\Resolver\Products\Query\FieldSelection;
+use Magento\CatalogGraphQl\Model\Resolver\Products\Query\ProductQueryInterface;
 use Magento\CatalogGraphQl\Model\Resolver\Products\Query\Suggestions;
 use Magento\CatalogGraphQl\DataProvider\Product\SearchCriteriaBuilder;
 use Magento\CatalogGraphQl\Model\Resolver\Products\DataProvider\ProductSearch;
@@ -11,7 +14,6 @@ use Magento\CatalogGraphQl\Model\Resolver\Products\Query\Search\QueryPopularity;
 use Magento\CatalogGraphQl\Model\Resolver\Products\SearchResult;
 use Magento\CatalogGraphQl\Model\Resolver\Products\SearchResultFactory;
 use Magento\Framework\Api\Search\SearchCriteriaInterface;
-use Magento\Framework\App\ObjectManager;
 use Magento\Framework\GraphQl\Exception\GraphQlInputException;
 use Magento\Framework\GraphQl\Query\Resolver\ArgumentsProcessorInterface;
 use Magento\Framework\GraphQl\Schema\Type\ResolveInfo;
@@ -19,7 +21,7 @@ use Magento\GraphQl\Model\Query\ContextInterface;
 use Magento\Search\Api\SearchInterface;
 use Magento\Search\Model\Search\PageSizeProvider;
 
-class Search extends MagentoSearch
+class Search implements ProductQueryInterface
 {
     /**
      * @var SearchInterface
@@ -73,9 +75,9 @@ class Search extends MagentoSearch
      * @param FieldSelection $fieldSelection
      * @param ProductSearch $productsProvider
      * @param SearchCriteriaBuilder $searchCriteriaBuilder
-     * @param ArgumentsProcessorInterface|null $argsSelection
-     * @param Suggestions|null $suggestions
-     * @param QueryPopularity|null $queryPopularity
+     * @param ArgumentsProcessorInterface $argsSelection
+     * @param Suggestions $suggestions
+     * @param QueryPopularity $queryPopularity
      */
     public function __construct(
         SearchInterface $search,
@@ -84,9 +86,9 @@ class Search extends MagentoSearch
         FieldSelection $fieldSelection,
         ProductSearch $productsProvider,
         SearchCriteriaBuilder $searchCriteriaBuilder,
-        ?ArgumentsProcessorInterface $argsSelection = null,
-        ?Suggestions $suggestions = null,
-        ?QueryPopularity $queryPopularity = null
+        ArgumentsProcessorInterface $argsSelection,
+        Suggestions $suggestions,
+        QueryPopularity $queryPopularity
     ) {
         $this->search = $search;
         $this->searchResultFactory = $searchResultFactory;
@@ -94,11 +96,9 @@ class Search extends MagentoSearch
         $this->fieldSelection = $fieldSelection;
         $this->productsProvider = $productsProvider;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
-        $this->argsSelection = $argsSelection ?: ObjectManager::getInstance()
-            ->get(ArgumentsProcessorInterface::class);
-        $this->suggestions = $suggestions ?: ObjectManager::getInstance()
-            ->get(Suggestions::class);
-        $this->queryPopularity = $queryPopularity ?: ObjectManager::getInstance()->get(QueryPopularity::class);
+        $this->argsSelection = $argsSelection;
+        $this->suggestions = $suggestions;
+        $this->queryPopularity = $queryPopularity;
     }
 
     /**
@@ -115,59 +115,78 @@ class Search extends MagentoSearch
         ResolveInfo $info,
         ContextInterface $context
     ): SearchResult {
-        $searchCriteria = $this->buildSearchCriteria($args, $info);
+        try {
+            $searchCriteria = $this->buildSearchCriteria($args, $info);
 
-        $realPageSize = $searchCriteria->getPageSize();
-        $realCurrentPage = $searchCriteria->getCurrentPage();
-        //Because of limitations of sort and pagination on search API we will query all IDS
-        $pageSize = $this->pageSizeProvider->getMaxPageSize();
-        $searchCriteria->setPageSize($pageSize);
-        $searchCriteria->setCurrentPage(0);
-        $itemsResults = $this->search->search($searchCriteria);
+            $realPageSize = $searchCriteria->getPageSize();
+            $realCurrentPage = $searchCriteria->getCurrentPage();
+            // Because of limitations of sort and pagination on Search API, query all IDs first.
+            $searchCriteria->setPageSize($this->pageSizeProvider->getMaxPageSize());
+            $searchCriteria->setCurrentPage(0);
+            $itemsResults = $this->search->search($searchCriteria);
 
-        //Address limitations of sort and pagination on search API apply original pagination from GQL query
-        $searchCriteria->setPageSize($realPageSize);
-        $searchCriteria->setCurrentPage($realCurrentPage);
-        $searchResults = $this->productsProvider->getList(
-            $searchCriteria,
-            $itemsResults,
-            $this->fieldSelection->getProductsFieldSelection($info),
-            $context
-        );
+            // Apply the original GraphQL pagination when loading the products.
+            $searchCriteria->setPageSize($realPageSize);
+            $searchCriteria->setCurrentPage($realCurrentPage);
+            $searchResults = $this->productsProvider->getList(
+                $searchCriteria,
+                $itemsResults,
+                $this->fieldSelection->getProductsFieldSelection($info),
+                $context
+            );
 
-        $totalPages = $realPageSize ? ((int)ceil($searchResults->getTotalCount() / $realPageSize)) : 0;
+            $totalPages = $realPageSize ? ((int) ceil($searchResults->getTotalCount() / $realPageSize)) : 0;
 
-        // add query statistics data
-        if (!empty($args['search'])) {
-            $this->queryPopularity->execute($context, $args['search'], (int) $searchResults->getTotalCount());
+            if (!empty($args['search'])) {
+                $this->queryPopularity->execute($context, $args['search'], (int) $searchResults->getTotalCount());
+            }
+
+            $productArray = [];
+            /** @var \Magento\Catalog\Model\Product $product */
+            foreach ($searchResults->getItems() as $product) {
+                $productArray[$product->getId()] = $product->getData();
+                $productArray[$product->getId()]['model'] = $product;
+            }
+
+            $suggestions = [];
+            $totalCount = (int) $searchResults->getTotalCount();
+            if (!empty($args['search'])) {
+                $suggestions = $this->suggestions->execute($context, $args['search']);
+            }
+
+            return $this->searchResultFactory->create(
+                [
+                    'totalCount' => $totalCount,
+                    'productsSearchResult' => $productArray,
+                    'searchAggregation' => $itemsResults->getAggregations(),
+                    'pageSize' => $realPageSize,
+                    'currentPage' => $realCurrentPage,
+                    'totalPages' => $totalPages,
+                    'suggestions' => $suggestions,
+                ]
+            );
+        } catch (\InvalidArgumentException | ClientException) {
+            return $this->createEmptySearchResult($args);
         }
+    }
 
-        $productArray = [];
-        /** @var \Magento\Catalog\Model\Product $product */
-        foreach ($searchResults->getItems() as $product) {
-            $productArray[$product->getId()] = $product->getData();
-            $productArray[$product->getId()]['model'] = $product;
-        }
-
-        $suggestions = [];
-        $totalCount = (int) $searchResults->getTotalCount();
-        if (!empty($args['search'])) {
-            $suggestions = $this->suggestions->execute($context, $args['search']);
-        }
-
+    /**
+     * Return a valid GraphQL result when the search engine rejects a query.
+     */
+    private function createEmptySearchResult(array $args): SearchResult
+    {
         return $this->searchResultFactory->create(
             [
-                'totalCount' => $totalCount,
-                'productsSearchResult' => $productArray,
-                'searchAggregation' => $itemsResults->getAggregations(),
-                'pageSize' => $realPageSize,
-                'currentPage' => $realCurrentPage,
-                'totalPages' => $totalPages,
-                'suggestions' => $suggestions,
+                'totalCount' => 0,
+                'productsSearchResult' => [],
+                'searchAggregation' => null,
+                'pageSize' => (int) ($args['pageSize'] ?? 0),
+                'currentPage' => (int) ($args['currentPage'] ?? 0),
+                'totalPages' => 0,
+                'suggestions' => [],
             ]
         );
     }
-
 
     /**
      * Build search criteria from query input args

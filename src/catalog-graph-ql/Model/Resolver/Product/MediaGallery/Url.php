@@ -37,6 +37,11 @@ class Url extends SourceUrl
     private IsThemeActive $isThemeActive;
 
     /**
+     * @var string[]
+     */
+    private array $placeholderCache = [];
+
+    /**
      * @param ImageFactory $productImageFactory
      * @param PlaceholderProvider $placeholderProvider
      * @param IsThemeActive $isThemeActive
@@ -97,10 +102,6 @@ class Url extends SourceUrl
      */
     private function getImageUrl(string $imageType, ?string $imagePath): string
     {
-        if (!$this->isThemeActive->isSatoshiTheme()) {
-            return parent::getImageUrl($imageType, $imagePath);
-        }
-
         if (empty($imagePath) && !empty($this->placeholderCache[$imageType])) {
             return $this->placeholderCache[$imageType];
         }
@@ -117,5 +118,14 @@ class Url extends SourceUrl
         }
 
         return $image->getUrl();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function _resetState(): void
+    {
+        $this->placeholderCache = [];
+        parent::_resetState();
     }
 }
