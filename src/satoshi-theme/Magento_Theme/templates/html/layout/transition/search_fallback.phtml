@@ -1,3 +1,14 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\View\Element\Template as Block;
+use Satoshi\Theme\Block\Template;
+
+/** @var Block $block */
+/** @var Template $template */
+?>
+
 <template x-fallback-template-type="search">
   <div class="mt-[72px] md:mt-[89px]"></div>
 
@@ -15,6 +26,12 @@
         x-text="hyva.strf('<?= __("Search results for: %0") ?>', `'${$store['transition'].pageData?.search ?? ''}'`)"
       ></h2>
     </div>
-    <div class="min-h-screen"></div>
+
+    <p class="sr-only" role="status"><?= __('Loading search results') ?></p>
+
+    <div class="min-h-screen w-full">
+      <?= $template->setData(['count' => 10])
+          ->render('Magento_Theme::html/layout/transition/skeleton/product-grid.phtml') ?>
+    </div>
   </article>
 </template>

@@ -3,10 +3,12 @@
 declare(strict_types=1);
 
 use Magento\Framework\Escaper;
-use Magento\Framework\View\Element\Template;
+use Magento\Framework\View\Element\Template as Block;
+use Satoshi\Theme\Block\Template;
 
 /** @var Escaper $escaper */
-/** @var Template $block */
+/** @var Block $block */
+/** @var Template $template */
 ?>
 
 <template x-fallback-template-type="category">
@@ -41,6 +43,11 @@ use Magento\Framework\View\Element\Template;
       >
       </div>
     </div>
-    <div class="min-h-screen"></div>
+    <p class="sr-only" role="status"><?= __('Loading products') ?></p>
+
+    <div class="min-h-screen w-full">
+      <?= $template->setData(['count' => 10])
+          ->render('Magento_Theme::html/layout/transition/skeleton/product-grid.phtml') ?>
+    </div>
   </article>
 </template>

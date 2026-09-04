@@ -6,7 +6,29 @@ import nProgress from "nprogress";
 nProgress.configure({ showSpinner: false });
 
 let lastMainContentUpdateUrl = window.location.href;
-const cachedResponses: Record<string, string> = {};
+
+/**
+ * Cache des pages déjà récupérées, partagé par la navigation, le retour
+ * arrière (popstate) et le préchargement. Clé = chemin + query, pour que les
+ * href absolus des liens et les URL relatives de l'historique se rejoignent.
+ */
+type CachedPage = { html: string; at: number };
+const cachedResponses: Record<string, CachedPage> = {};
+const inflightRequests = new Map<string, Promise<string>>();
+
+/** Durée au-delà de laquelle une page en cache est refetchée (prix, stock). */
+const CACHE_TTL_MS = 60_000;
+/** Nombre de pages conservées ; les plus anciennes sont évincées. */
+const CACHE_MAX_ENTRIES = 20;
+
+const cacheKey = (url: string) => {
+    try {
+        const { pathname, search } = new URL(url, window.location.origin);
+        return pathname + search;
+    } catch {
+        return url;
+    }
+};
 
 export const isExternalURL = (url: string) => {
     if (url.startsWith("//")) {
@@ -318,17 +340,20 @@ const pushStateAndNotify = (...args: Parameters<History["pushState"]>) => {
     window.dispatchEvent(pushStateEvent);
 };
 
-export const fetchPage = (url: string) => {
-    // Disable un-fade images (Added here to work with popstate & history.replace)
-    enableFadeInImages();
-
-    return fetch(url).then((res) => {
+const requestPage = (url: string) =>
+    fetch(url).then((res) => {
         if (res.ok || res.status === 404) {
             return res.text();
         }
 
         throw new Error("Failed to get page for transition");
     });
+
+export const fetchPage = (url: string) => {
+    // Disable un-fade images (Added here to work with popstate & history.replace)
+    enableFadeInImages();
+
+    return requestPage(url);
 };
 
 export const enableFadeInImages = () => {
@@ -341,14 +366,72 @@ export const enableFadeInImages = () => {
 };
 
 export const cachePage = (url: string, html: string) => {
-    cachedResponses[url!] = html;
+    cachedResponses[cacheKey(url)] = { html, at: Date.now() };
+
+    const keys = Object.keys(cachedResponses);
+
+    if (keys.length > CACHE_MAX_ENTRIES) {
+        keys.sort((a, b) => cachedResponses[a].at - cachedResponses[b].at)
+            .slice(0, keys.length - CACHE_MAX_ENTRIES)
+            .forEach((key) => delete cachedResponses[key]);
+    }
+};
+
+export const getCachedPage = (url: string): string | null => {
+    const key = cacheKey(url);
+    const entry = cachedResponses[key];
+
+    if (!entry) {
+        return null;
+    }
+
+    if (Date.now() - entry.at > CACHE_TTL_MS) {
+        delete cachedResponses[key];
+        return null;
+    }
+
+    return entry.html;
+};
+
+/**
+ * Récupère une page en réutilisant, dans l'ordre : le cache, une requête déjà
+ * en vol (le préchargement au survol démarre le fetch que le clic attendra),
+ * puis le réseau.
+ */
+export const loadPage = (url: string): Promise<string> => {
+    const cached = getCachedPage(url);
+
+    if (cached !== null) {
+        return Promise.resolve(cached);
+    }
+
+    const key = cacheKey(url);
+
+    const inflight = inflightRequests.get(key);
+
+    if (inflight) {
+        return inflight;
+    }
+
+    const request = requestPage(url)
+        .then((html) => {
+            cachePage(url, html);
+            return html;
+        })
+        .finally(() => {
+            inflightRequests.delete(key);
+        });
+
+    inflightRequests.set(key, request);
+
+    return request;
 };
 
 export const fetchAndCachePage = async (url: string) => {
-    const html = await fetchPage(url);
-    cachePage(url, html);
+    // Disable un-fade images (Added here to work with popstate & history.replace)
+    enableFadeInImages();
 
-    return html;
+    return loadPage(url);
 };
 
 export const replaceMainContentWithTransition = async (
@@ -452,11 +535,55 @@ export const navigateWithTransition = (
 
 const prefetchedLinks = new Set();
 
-const NON_PREFETCHABLE_PATTERNS = [/^\/customer\//];
+/**
+ * Chemins qu'on ne précharge jamais : contenu propre au client, ou URL dont le
+ * simple GET a un effet de bord (ajout au panier, comparaison, déconnexion).
+ */
+const NON_PREFETCHABLE_PATTERNS = [
+    /^\/customer\//,
+    /^\/checkout\//,
+    /^\/wishlist\//,
+    /^\/catalog\/product_compare\//,
+    /^\/sales\//,
+    /^\/paypal\//,
+];
 
 export const shouldPrefetchLink = (link: string): boolean => {
-    const path = new URL(link, window.location.origin).pathname;
-    return !NON_PREFETCHABLE_PATTERNS.some((pattern) => pattern.test(path));
+    let url: URL;
+
+    try {
+        url = new URL(link, window.location.origin);
+    } catch {
+        return false;
+    }
+
+    // `mailto:`, `tel:`, `javascript:`… ne sont pas des pages à précharger.
+    if (url.protocol !== "http:" && url.protocol !== "https:") {
+        return false;
+    }
+
+    // `form_key` / `uenc` signalent une action (add to cart…), pas une page.
+    if (url.searchParams.has("form_key") || url.searchParams.has("uenc")) {
+        return false;
+    }
+
+    return !NON_PREFETCHABLE_PATTERNS.some((pattern) => pattern.test(url.pathname));
+};
+
+/**
+ * En SPA, la navigation passe par `fetch` : précharger un `<link rel=prefetch>`
+ * ne sert à rien, on remplit directement le cache de pages. Le clic qui suit
+ * réutilise la requête déjà en vol au lieu d'en lancer une seconde.
+ */
+export const warmPageCache = (link: string) => {
+    if (!shouldPrefetchLink(link) || getCachedPage(link) !== null) {
+        return;
+    }
+
+    loadPage(link).catch(() => {
+        // Un préchargement qui échoue est sans conséquence : le clic refera
+        // la requête et affichera l'erreur au bon moment.
+    });
 };
 
 export const prefetchLink = (link: string) => {
@@ -520,10 +647,37 @@ function TransitionPlugin(Alpine: AlpineType) {
                 return;
             }
 
+            const isSpa = window.navigationType !== "MPA";
+
             const onHover = () => {
                 if (prefetchedLinks.has(link)) return;
                 prefetchLink(link);
             };
+
+            // En SPA on attend une intention de clic (survol maintenu) avant de
+            // dépenser une requête : un balayage de souris sur une grille de
+            // produits en déclencherait sinon une par carte.
+            let warmTimeoutId: ReturnType<typeof setTimeout> | null = null;
+
+            const onWarmStart = () => {
+                if (warmTimeoutId) return;
+
+                warmTimeoutId = setTimeout(() => {
+                    warmTimeoutId = null;
+                    warmPageCache(link);
+                }, 120);
+            };
+
+            const onWarmCancel = () => {
+                if (!warmTimeoutId) return;
+
+                clearTimeout(warmTimeoutId);
+                warmTimeoutId = null;
+            };
+
+            // Le doigt touche l'écran 100 à 300 ms avant le click : autant
+            // lancer la requête tout de suite, sans délai d'intention.
+            const onWarmNow = () => warmPageCache(link);
 
             const onClick = (e: MouseEvent) => {
                 if (window.navigationType === "MPA") {
@@ -564,22 +718,35 @@ function TransitionPlugin(Alpine: AlpineType) {
             };
 
             el.addEventListener("click", onClick);
-            if (window.navigationType === "MPA") {
+
+            if (!isSpa) {
                 if (isMobile) {
                     prefetchObserver.observe(el);
                 } else {
                     el.addEventListener("mouseover", onHover);
                 }
+            } else if (isMobile) {
+                el.addEventListener("touchstart", onWarmNow, { passive: true });
+            } else {
+                el.addEventListener("mouseover", onWarmStart);
+                el.addEventListener("mouseout", onWarmCancel);
             }
 
             cleanup(() => {
                 el.removeEventListener("click", onClick);
-                if (window.navigationType === "MPA") {
+                onWarmCancel();
+
+                if (!isSpa) {
                     if (isMobile) {
                         prefetchObserver.unobserve(el);
                     } else {
                         el.removeEventListener("mouseover", onHover);
                     }
+                } else if (isMobile) {
+                    el.removeEventListener("touchstart", onWarmNow);
+                } else {
+                    el.removeEventListener("mouseover", onWarmStart);
+                    el.removeEventListener("mouseout", onWarmCancel);
                 }
             });
         },
@@ -614,7 +781,7 @@ function TransitionPlugin(Alpine: AlpineType) {
             nProgress.start();
 
             const { pathname, search } = new URL(window.location.href);
-            const cachedHtml = cachedResponses[pathname + search];
+            const cachedHtml = getCachedPage(pathname + search);
 
             if (cachedHtml) {
                 if (event.state?.isPreview) {

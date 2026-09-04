@@ -146,7 +146,9 @@ export const Search = () =>
         type: "search",
         animate: true,
         data: {
-          q: this.searchTermInput,
+          // Le fallback (search_fallback.phtml / breadcrumbs.phtml) lit
+          // `pageData.search` : toute autre clé afficherait un terme vide.
+          search: this.searchTermInput.trim(),
         },
       });
     },
