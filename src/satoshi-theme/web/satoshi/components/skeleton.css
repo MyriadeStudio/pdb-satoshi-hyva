@@ -1,0 +1,59 @@
+@layer components {
+  /*
+   * Bloc fantôme affiché pendant qu'une navigation SPA récupère son contenu
+   * (fallbacks recherche / catégorie / fiche produit).
+   *
+   * On n'utilise PAS --fade-in-bg (#FDFDFD) : c'est un fond d'attente d'image,
+   * volontairement indiscernable du fond de page, donc invisible en squelette.
+   *
+   * La teinte est dérivée de la couleur de texte, ce qui reste juste en schéma
+   * clair comme sombre sans valeur en dur. L'intensité se règle par site via
+   * --skeleton-strength (redéfinissable dans le :root du thème enfant) sans
+   * toucher à ce fichier ni rebuilder le parent.
+   */
+  .skeleton {
+    /* Repli pour les navigateurs sans color-mix (< 2023). */
+    background-color: #dedede;
+    background-repeat: no-repeat;
+    background-size: 200% 100%;
+    animation: skeleton-sheen 1.4s ease-in-out infinite;
+  }
+
+  @supports (background-color: color-mix(in srgb, red 10%, blue)) {
+    .skeleton {
+      background-color: color-mix(
+        in srgb,
+        var(--color-fg) var(--skeleton-strength, 18%),
+        var(--color-bg)
+      );
+
+      /*
+       * Le balayage est plus clair que le fond : il doit rester nettement en
+       * deçà de --skeleton-strength pour se lire comme un reflet qui passe.
+       */
+      background-image: linear-gradient(
+        90deg,
+        transparent 0%,
+        color-mix(in srgb, var(--color-fg) 7%, var(--color-bg)) 50%,
+        transparent 100%
+      );
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .skeleton {
+      background-image: none;
+      animation: none;
+    }
+  }
+}
+
+@keyframes skeleton-sheen {
+  from {
+    background-position: -150% 0;
+  }
+
+  to {
+    background-position: 250% 0;
+  }
+}

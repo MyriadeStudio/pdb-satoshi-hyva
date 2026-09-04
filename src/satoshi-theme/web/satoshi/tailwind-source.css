@@ -28,6 +28,7 @@
 @import url(components/link.css);
 @import url(components/page-builder.css);
 @import url(components/progress-bar.css);
+@import url(components/skeleton.css);
 
 /* purgecss end ignore */
 @import "tailwindcss/utilities";
