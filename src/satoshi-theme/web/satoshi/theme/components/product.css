@@ -15,7 +15,12 @@
     @apply !mb-0;
   }
 
-  .product-options-wrapper label {
+  /* Le gabarit visé ici est « libellé au-dessus du champ » (option personnalisée Magento).
+     Un label qui ENVELOPPE son contrôle est exclu : sinon `display:block` casse la mise en
+     page des labels-composants (.button des pastilles, .checkbox, .radio) et le
+     `font-semibold`/`text-sm` du label est hérité par l'input qu'il contient. Cas concret :
+     le bloc de configuration Amasty Gift Card, rendu dans .product-options-wrapper. */
+  .product-options-wrapper label:not(:has(input, select, textarea)) {
     @apply mb-2 block text-sm font-semibold leading-tight text-fg;
   }
 

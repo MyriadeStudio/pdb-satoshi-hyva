@@ -26,21 +26,36 @@ $customImageUrl = $giftCardViewModal->getCustomImageUrl();
 $downloadedImage = $customImageUrl ? substr_replace($customImageUrl, '/', strrpos($customImageUrl, '\\'), 1) : '';
 ?>
 
+<?php
+/*
+ * Satoshi override: the sections used to be spaced with `mb-4` and separated by
+ * `border-gray-300` rules that belong to no palette here. Spacing is now a single flow gap on
+ * the container, and each section carries its own tokens. Every section keeps a wrapper element
+ * because a `template x-if` accepts a single root and both price.phtml and images.phtml render
+ * several siblings.
+ *
+ * The breathing room before the add to cart area is a padding, not a margin: the theme zeroes
+ * the bottom margin of the fieldset children (`.product-options-wrapper .fieldset > div` applies
+ * `!mb-0`).
+ */
+?>
 <div
-    class="amcard-general-container"
+    class="amcard-general-container flex flex-col gap-7 pb-7"
     x-init="initProductGiftCard"
     x-data="dataProductGiftCard"
 >
     <template x-if="isGiftCardCombined">
-        <?= /** @noEscape */ $block->fetchView(
-            $block->getTemplateFile(
-                'Amasty_GiftCardHyvaCompatibility::product/view/components/combined.phtml'
-            )
-        ) ?>
+        <div>
+            <?= /** @noEscape */ $block->fetchView(
+                $block->getTemplateFile(
+                    'Amasty_GiftCardHyvaCompatibility::product/view/components/combined.phtml'
+                )
+            ) ?>
+        </div>
     </template>
 
     <template x-if="isGiftCardShowPrices">
-        <div class="mb-4">
+        <div>
             <?= /** @noEscape */ $block->fetchView(
                 $block->getTemplateFile(
                     'Amasty_GiftCardHyvaCompatibility::product/view/components/price.phtml'
@@ -49,7 +64,7 @@ $downloadedImage = $customImageUrl ? substr_replace($customImageUrl, '/', strrpo
         </div>
     </template>
 
-    <div class="mb-4 -interior">
+    <div class="-interior">
         <?= /** @noEscape */ $block->fetchView(
             $block->getTemplateFile(
                 'Amasty_GiftCardHyvaCompatibility::product/view/components/images.phtml'
@@ -57,11 +72,13 @@ $downloadedImage = $customImageUrl ? substr_replace($customImageUrl, '/', strrpo
         ) ?>
     </div>
 
-    <?= /** @noEscape */ $block->fetchView(
-        $block->getTemplateFile(
-            'Amasty_GiftCardHyvaCompatibility::product/view/components/form.phtml'
-        )
-    ) ?>
+    <div>
+        <?= /** @noEscape */ $block->fetchView(
+            $block->getTemplateFile(
+                'Amasty_GiftCardHyvaCompatibility::product/view/components/form.phtml'
+            )
+        ) ?>
+    </div>
 </div>
 
 <?= $block->getChildHtml('amgc.component.price') ?>

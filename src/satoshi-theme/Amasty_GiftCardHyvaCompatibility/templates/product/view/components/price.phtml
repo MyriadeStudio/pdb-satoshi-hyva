@@ -1,0 +1,125 @@
+<?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
+ * @package Gift Card Pro Hyva Compatibility
+ */
+
+declare(strict_types=1);
+
+use Magento\Framework\View\Element\Template;
+use Magento\Framework\Escaper;
+
+/**
+ * @var Template $block
+ * @var Escaper $escaper
+ */
+
+/*
+ * Satoshi override: the stock template hardcodes the Amasty palette (am_blue / am_gray) and
+ * uses utility classes that this theme does not build. The amounts are rendered here with the
+ * theme's own chip pattern (Magento_Swatches::product/swatch-item.phtml): a `.button` label
+ * wrapping a visually hidden radio, `--outline-secondary` at rest, `--outline-primary` when
+ * selected. Colours therefore follow the store's design tokens.
+ *
+ * The radio is nested inside its label instead of being linked through `for`/`id`: the page
+ * renders this component twice (desktop layout and mobile popup), so shared ids pointed the
+ * mobile labels at the desktop inputs. Nesting also makes the vendor keyboard handlers
+ * redundant, since the radio itself receives focus and reacts to space/arrow keys.
+ */
+?>
+<div class="flex w-full flex-col gap-5">
+    <template x-if="isPrices">
+        <fieldset class="w-full">
+            <legend class="mb-3 block font-semibold text-fg">
+                <?= $escaper->escapeHtml(__('Card Value in')) ?>
+                <span x-text="currencyCode"></span>
+            </legend>
+
+            <div class="flex flex-wrap gap-3" role="radiogroup">
+                <template x-for="item in dataPrices">
+                    <label
+                        class="button button--size-sm relative select-none bg-bg has-[input:focus]:focus-ring"
+                        :class="currentPrice == item.value
+                            ? 'button--outline-primary border-2 bg-bg-sunken'
+                            : 'button--outline-secondary'"
+                    >
+                        <input
+                            type="radio"
+                            name="am_giftcard_amount"
+                            class="absolute -z-10 opacity-0"
+                            :value="item.value"
+                            :checked="currentPrice == item.value"
+                            :required="isOptionRequired"
+                            :title="item.price"
+                            :aria-label="item.price"
+                            @change="changeCurrentPrice"
+                        />
+
+                        <span x-text="item.price"></span>
+                    </label>
+                </template>
+            </div>
+        </fieldset>
+    </template>
+
+    <template x-if="isOpenAmountData">
+        <div class="w-full">
+            <label for="other-amount-field" class="mb-3 block font-semibold text-fg">
+                <?= $escaper->escapeHtml(__('Other amount:')) ?>
+            </label>
+
+            <div class="flex gap-3">
+                <input
+                    type="number"
+                    class="input__field min-w-0 flex-1"
+                    id="other-amount-field"
+                    @change="initCustomValidate"
+                    @keyup="initCustomValidate"
+                    :value="customAmount"
+                    :min="inputMin"
+                    :max="inputMax"
+                    :placeholder="getAmountRange"
+                    :required="!currentPrice"
+                />
+
+                <?php
+                /* `isAddButtonDisabled()` is called explicitly: inside an object literal Alpine
+                   does not auto-invoke the getter the way it does for a bare bound value, so the
+                   bare name is a function reference and always truthy. */
+                ?>
+                <button
+                    type="button"
+                    class="button button--filled-primary button--size-sm h-11 shrink-0"
+                    :class="{ 'button--disabled': isAddButtonDisabled() }"
+                    :disabled="isAddButtonDisabled"
+                    @click.prevent="addCustomAmount"
+                >
+                    <span><?= $escaper->escapeHtml(__('Add')) ?></span>
+                </button>
+            </div>
+
+            <template x-if="customAmount">
+                <span
+                    class="input__message mt-2 block text-error"
+                    x-show="!isValueValid"
+                    role="alert"
+                    aria-live="assertive"
+                >
+                    <?= $escaper->escapeHtml(__('Please, enter valid value')) ?>
+                </span>
+            </template>
+        </div>
+    </template>
+</div>
+
+<template x-if="isCustomGiftCardAmount">
+    <input
+        type="text"
+        class="hidden"
+        hidden
+        name="am_giftcard_amount_custom"
+        :value="customAmount"
+        aria-label="<?= $escaper->escapeHtml(__('Custom gift card amount')) ?>"
+    />
+</template>

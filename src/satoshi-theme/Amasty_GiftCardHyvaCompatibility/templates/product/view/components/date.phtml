@@ -1,0 +1,172 @@
+<?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
+ * @package Gift Card Pro Hyva Compatibility
+ */
+
+declare(strict_types=1);
+
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+use Hyva\Theme\Model\ViewModelRegistry;
+use Amasty\GiftCardHyvaCompatibility\ViewModel\Calendar;
+use Satoshi\Theme\ViewModel\SvgIcons;
+
+/** @var Escaper $escaper */
+/** @var Template $block */
+/** @var ViewModelRegistry $viewModels */
+
+/** @var SvgIcons $hyvaicons */
+$hyvaicons = $viewModels->require(SvgIcons::class);
+
+/** @var Calendar $calender  */
+$calender = $viewModels->require(Calendar::class);
+
+/*
+ * Satoshi override: the stock datepicker is drawn with a fixed gray/white palette (bg-white,
+ * border-gray-300, text-gray-800, bg-gray-600) and Heroicons, none of which belong to this
+ * theme. Everything below is expressed with the theme's tokens and its own SVG icon set.
+ *
+ * The `dateValueClass` style helper of the vendor JS is bypassed on purpose: it hardcodes the
+ * same palette, and the state it expresses is available here.
+ */
+?>
+<div
+    class="field date"
+    x-data="dataDatePicker"
+    x-init="initDatePicker"
+>
+    <div class="relative block control">
+        <input
+            type="text"
+            name="am_giftcard_date_delivery"
+            id="am_giftcard_date_delivery"
+            title="<?= $escaper->escapeHtml(__('Delivery Date')) ?>"
+            :value="value"
+            @change="deliveryDateValueChange"
+            @input="deliveryDateValueFilteredChange"
+            @click="datepickerToggle"
+            @keydown="deliveryDateValueKeydownEvent"
+            placeholder="<?= $escaper->escapeHtml(mb_strtoupper($calender->getDateFormat())) ?>"
+            autocomplete="off"
+            class="input__field pr-11"
+        >
+
+        <button
+            type="button"
+            class="absolute inset-y-0 right-0 z-10 flex w-11 items-center justify-center text-lg text-fg-secondary transition-colors md:hover:text-primary"
+            aria-label="<?= $escaper->escapeHtmlAttr(__('Delivery Date')) ?>"
+            @click.prevent="datepickerShow"
+        >
+            <?= $hyvaicons->renderHtml('calendar') ?>
+        </button>
+
+        <div
+            class="absolute left-0 top-full z-10 mt-2 w-full min-w-[19rem] max-w-screen rounded-sm border-1 border-solid border-bg-sunken bg-bg p-4 shadow-lg"
+            x-cloak=""
+            x-transition
+            x-show="showDatepicker"
+            @click.away="datepickerHide"
+        >
+            <div class="mb-3 flex items-center justify-between gap-3">
+                <div class="flex min-w-0 flex-1 gap-2">
+                    <select
+                        name="datepicker_month"
+                        :value="month"
+                        @change="deliveryDateMonthValueChange"
+                        class="input__field h-9 min-w-0 flex-1 px-3 text-sm"
+                        aria-label="<?= $escaper->escapeHtmlAttr(__('Month')) ?>"
+                    >
+                        <template x-for="(monthName, index) in labelsMonthNames">
+                            <option
+                                :value="index"
+                                x-text="monthName"
+                                x-bind:selected="isSelectedMonth"
+                            ></option>
+                        </template>
+                    </select>
+
+                    <select
+                        name="datepicker_year"
+                        :value="year"
+                        @change="deliveryDateYearValueChange"
+                        class="input__field h-9 min-w-0 flex-1 px-3 text-sm"
+                        aria-label="<?= $escaper->escapeHtmlAttr(__('Year')) ?>"
+                    >
+                        <template x-for="option in yearRange">
+                            <option
+                                :value="option"
+                                x-text="option"
+                                x-bind:selected="isSelectedYear"
+                            ></option>
+                        </template>
+                    </select>
+                </div>
+
+                <div class="flex gap-2">
+                    <button
+                        type="button"
+                        class="button button--outline-secondary icon-button icon-button--size-sm"
+                        :class="ifirstMonthClass"
+                        :disabled="isFirstMonth"
+                        :title="labelPrevText"
+                        @click="prevMonth"
+                    >
+                        <?= $hyvaicons->renderHtml('chevron-left') ?>
+                        <span class="sr-only" x-text="labelPrevText"></span>
+                    </button>
+
+                    <button
+                        type="button"
+                        class="button button--outline-secondary icon-button icon-button--size-sm"
+                        :class="lastMonthClass"
+                        :disabled="isLastMonth"
+                        :title="labelNextText"
+                        @click="nextMonth"
+                    >
+                        <?= $hyvaicons->renderHtml('chevron-right') ?>
+                        <span class="sr-only" x-text="labelNextText"></span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="-mx-1 grid grid-cols-7">
+                <template x-for="(day, index) in labelsDayNamesShort" :key="index">
+                    <div class="p-1">
+                        <div
+                            x-text="day"
+                            class="flex h-6 items-center justify-center text-center text-xs font-semibold text-fg-secondary"
+                        ></div>
+                    </div>
+                </template>
+
+                <template x-for="(date, dateIndex) in dayNumbers" :key="dateIndex">
+                    <div
+                        class="p-1"
+                        :style="dateStyle"
+                    >
+                        <button
+                            type="button"
+                            @click.prevent="setDateValue"
+                            x-text="date"
+                            class="flex h-8 w-full cursor-pointer items-center justify-center rounded-full text-center text-sm transition-colors md:hover:bg-bg-sunken"
+                            :class="{
+                                'bg-primary text-primary-on md:hover:bg-primary': isCurrentDate(date),
+                                'bg-bg-sunken font-semibold': isToday(date) && !isCurrentDate(date),
+                                'pointer-events-none text-fg-secondary opacity-40': checkDate(date)
+                            }"
+                        ></button>
+                    </div>
+                </template>
+            </div>
+
+            <button
+                type="button"
+                class="button button--outline-secondary button--size-sm mt-3 w-full"
+                x-text="labelCurrentText"
+                @click.prevent="goToday"
+            ></button>
+        </div>
+    </div>
+</div>

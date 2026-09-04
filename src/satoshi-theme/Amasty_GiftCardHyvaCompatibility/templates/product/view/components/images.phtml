@@ -1,0 +1,227 @@
+<?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
+ * @package Gift Card Pro Hyva Compatibility
+ */
+
+declare(strict_types=1);
+
+use Hyva\Theme\Model\ViewModelRegistry;
+use Magento\Framework\View\Element\Template;
+use Magento\Framework\Escaper;
+use Satoshi\Theme\ViewModel\SvgIcons;
+
+/**
+ * @var Template $block
+ * @var Escaper $escaper
+ * @var ViewModelRegistry $viewModels
+ */
+
+/** @var SvgIcons $hyvaicons */
+$hyvaicons = $viewModels->require(SvgIcons::class);
+
+/*
+ * Satoshi override: the card design picker is restyled with the theme's tokens and icon set.
+ * The stock template used Heroicons, `btn btn-primary`, `bg-blue-700`, `bg-am_blue_light` and
+ * `ring-blue-500`, none of which exist here, so the upload button and the selected-design
+ * highlight rendered unstyled and off-brand.
+ *
+ * Inputs are `sr-only` inside their label rather than `hidden` and linked by id: the page renders
+ * this component twice (desktop layout and mobile popup), so the shared ids pointed the mobile
+ * labels at the desktop inputs, and a `hidden` input cannot receive keyboard focus either.
+ */
+?>
+<template x-if="isDataCustomImageAllowed">
+    <div
+        class="mb-3 block font-semibold text-fg"
+        x-text="imagesTitle"
+        data-selected-label="<?= $escaper->escapeHtmlAttr(__('Upload your own design')) ?>"
+        data-unselected-label="<?= $escaper->escapeHtmlAttr(__('Choose card design')) ?>"
+    ></div>
+</template>
+
+<template x-if="isImages">
+    <div class="mb-3 block font-semibold text-fg">
+        <?= $escaper->escapeHtml(__('Choose card design')) ?>
+    </div>
+</template>
+
+<div @resize.window.debounce="imagesResizeDebounce">
+    <template x-if="isImageChecked">
+        <fieldset>
+            <legend class="sr-only"><?= $escaper->escapeHtml(__('Choose card design')) ?></legend>
+
+            <div class="relative">
+                <div class="relative w-full overflow-x-hidden">
+                    <div
+                        class="js_slides_giftcard_image snap relative flex w-full flex-nowrap overflow-auto"
+                        @scroll.debounce="calcActiveSlides"
+                    >
+                        <template x-for="(image, index) in dataImages">
+                            <label
+                                class="amcard-image-container js_slide_giftcard_image flex w-1/2 shrink-0 cursor-pointer p-1 sm:w-1/4 md:w-1/2 lg:w-1/3 xl:w-1/4"
+                            >
+                                <input
+                                    type="radio"
+                                    name="giftcard-image"
+                                    class="sr-only"
+                                    :value="index"
+                                    :checked="index === parseInt(giftcardImage)"
+                                    @change="setGiftcardImage"
+                                    :aria-label="giftcardImageAriaLabel"
+                                />
+
+                                <img
+                                    class="amcard-image w-full rounded-sm transition-shadow"
+                                    :class="index === parseInt(giftcardImage) ? 'ring-2 ring-primary' : ''"
+                                    :src="imageSrc"
+                                    :data-img-full-src="imageSrc"
+                                    :alt="imageAltValue"
+                                    :data-id="imageDataId"
+                                />
+                            </label>
+                        </template>
+                    </div>
+                </div>
+
+                <template x-if="isPagesCount">
+                    <div class="flex items-center justify-center gap-3 py-4">
+                        <button
+                            type="button"
+                            aria-label="<?= $escaper->escapeHtmlAttr(__('Previous')) ?>"
+                            class="button button--outline-secondary icon-button icon-button--size-sm"
+                            :class="previousButtonClass"
+                            @click.prevent="scrollPrevious"
+                        >
+                            <?= $hyvaicons->renderHtml('chevron-left') ?>
+                        </button>
+
+                        <button
+                            type="button"
+                            aria-label="<?= $escaper->escapeHtmlAttr(__('Next')) ?>"
+                            class="button button--outline-secondary icon-button icon-button--size-sm"
+                            :class="nextButtonClass"
+                            @click.prevent="scrollNext"
+                        >
+                            <?= $hyvaicons->renderHtml('chevron-right') ?>
+                        </button>
+                    </div>
+                </template>
+            </div>
+        </fieldset>
+    </template>
+
+    <input
+        type="text"
+        name="am_giftcard_image"
+        class="amcard-input hidden"
+        :value="giftcardImageId"
+        :required="emptyImageUrlSrc"
+        aria-label="<?= $escaper->escapeHtmlAttr(__('Gift Card Image')) ?>"
+    />
+</div>
+
+<div>
+    <template x-if="isDataCustomImageAllowed">
+        <div x-show="emptyImageUrlSrc">
+            <span
+                x-show="showImagesData"
+                class="mb-3 block font-semibold text-fg"
+            >
+                <?= $escaper->escapeHtml(__('Upload your own design')) ?>
+            </span>
+
+            <div class="flex items-center gap-3">
+                <label class="amcard-label-block-upload button button--outline-secondary button--size-sm mb-0 cursor-pointer has-[input:focus]:focus-ring">
+                    <span class="button__icon button__icon--left" aria-hidden="true">
+                        <?= $hyvaicons->renderHtml('plus') ?>
+                    </span>
+                    <span><?= $escaper->escapeHtml(__('Browse')) ?></span>
+
+                    <?php
+                    /* `id` kept as-is: images_js reads `#customFile` back to refill the input when
+                       a configured cart item carries a custom design. */
+                    ?>
+                    <input
+                        class="sr-only"
+                        id="customFile"
+                        type="file"
+                        name="amgiftcard-userimage-input"
+                        accept=".jpg, .jpeg, .gif, .png"
+                        @change="fileChosen"
+                        :value="customFile"
+                        aria-label="<?= $escaper->escapeHtmlAttr(__('Upload your own design')) ?>"
+                    />
+                </label>
+
+                <template x-if="imagesDataTooltip">
+                    <div class="relative inline-flex">
+                        <button
+                            type="button"
+                            @mouseover.prevent.stop="displayTooltip"
+                            @mouseleave.prevent.stop="hideTooltip"
+                            @click.prevent.stop="toggleTooltip"
+                            class="flex h-6 w-6 items-center justify-center rounded-full border-1 border-solid border-fg-secondary text-sm text-fg-secondary transition-colors md:hover:border-primary md:hover:text-primary"
+                            aria-label="<?= $escaper->escapeHtmlAttr(__('More information')) ?>"
+                        >
+                            <?= $hyvaicons->renderHtml('info') ?>
+                        </button>
+
+                        <div
+                            class="absolute bottom-full left-1/2 z-10 mb-3 w-64 -translate-x-1/2 rounded-sm border-1 border-solid border-bg-sunken bg-bg p-4 text-sm leading-tight text-fg shadow-lg"
+                            x-cloak
+                            x-show="showTooltip"
+                            x-transition
+                            role="tooltip"
+                        >
+                            <span x-text="imagesDataTooltip"></span>
+                        </div>
+                    </div>
+                </template>
+
+                <input
+                    type="hidden"
+                    name="am_giftcard_custom_image"
+                    :value="giftcardImageValue"
+                />
+            </div>
+
+            <template x-if="errorMessage">
+                <span class="input__message mt-2 block text-error" x-text="errorMessage"></span>
+            </template>
+        </div>
+    </template>
+
+    <template x-if="imageUrlSrc">
+        <div class="amcard-customer-image flex gap-5 rounded-sm bg-bg-sunken p-4">
+            <div class="amcard-container w-1/2 max-w-[115px]">
+                <img
+                    class="amcard-image w-full cursor-pointer rounded-sm"
+                    :class="giftcardImage === '' ? 'ring-2 ring-primary' : ''"
+                    :src="imageUrlSrc"
+                    @click.prevent="setCustomImageToGallery"
+                    :alt="imageUrlAlt"
+                />
+            </div>
+
+            <div class="flex w-1/2 flex-col justify-between gap-3">
+                <span class="font-semibold text-fg">
+                    <?= $escaper->escapeHtml(__('Your Image')) ?>
+                </span>
+
+                <p class="truncate text-sm text-fg-secondary" x-text="imageUrlName"></p>
+
+                <button
+                    type="button"
+                    class="flex max-w-fit cursor-pointer items-center gap-2 text-sm text-fg-secondary transition-colors md:hover:text-primary"
+                    @click.prevent="clearCustomImage"
+                    title="<?= $escaper->escapeHtmlAttr(__('Delete')) ?>"
+                >
+                    <?= $hyvaicons->renderHtml('trash') ?>
+                    <span><?= $escaper->escapeHtml(__('Delete')) ?></span>
+                </button>
+            </div>
+        </div>
+    </template>
+</div>

@@ -1,0 +1,72 @@
+<?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
+ * @package Gift Card Pro Hyva Compatibility
+ */
+
+declare(strict_types=1);
+
+use Hyva\Theme\Model\ViewModelRegistry;
+use Magento\Framework\View\Element\Template;
+use Magento\Framework\Escaper;
+use Satoshi\Theme\ViewModel\SvgIcons;
+
+/**
+ * @var Template $block
+ * @var Escaper $escaper
+ * @var ViewModelRegistry $viewModels
+ */
+
+/** @var SvgIcons $hyvaicons */
+$hyvaicons = $viewModels->require(SvgIcons::class);
+
+/*
+ * Satoshi override: the card type choice uses the theme's `.checkbox` component instead of bare
+ * inputs, so it matches the rest of the product page. The checkboxes are nested in their label
+ * rather than linked by `for`: this markup is emitted once and printed twice by the theme
+ * (desktop layout and mobile popup), so every `id` it carries ends up duplicated.
+ */
+?>
+<div>
+    <span class="mb-3 block font-semibold text-fg">
+        <?= $escaper->escapeHtml(__('Want to send a physical gift card or prefer to keep things digital?')) ?>
+    </span>
+
+    <div class="flex flex-wrap gap-x-7 gap-y-3">
+        <label class="checkbox mb-0">
+            <input
+                type="checkbox"
+                class="checkbox__input"
+                @change="checkboxPhysicalChangeEvent"
+                :checked="isPhysicalChecked"
+                value="2"
+            />
+            <span class="checkbox__control" aria-hidden="true">
+                <?= $hyvaicons->renderHtml('checkmark') ?>
+            </span>
+            <span class="checkbox__label"><?= $escaper->escapeHtml(__('Physical Gift Card')) ?></span>
+        </label>
+
+        <label class="checkbox mb-0">
+            <input
+                type="checkbox"
+                class="checkbox__input"
+                @change="checkboxEgiftChangeEvent"
+                :checked="isEGiftChecked"
+                value="1"
+            />
+            <span class="checkbox__control" aria-hidden="true">
+                <?= $hyvaicons->renderHtml('checkmark') ?>
+            </span>
+            <span class="checkbox__label"><?= $escaper->escapeHtml(__('e-Gift Card')) ?></span>
+        </label>
+    </div>
+
+    <input
+        type="hidden"
+        name="am_giftcard_type"
+        required="required"
+        :value="giftCardCurrentType"
+    />
+</div>

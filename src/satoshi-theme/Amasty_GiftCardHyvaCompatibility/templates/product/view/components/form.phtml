@@ -1,0 +1,191 @@
+<?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
+ * @package Gift Card Pro Hyva Compatibility
+ */
+
+declare(strict_types=1);
+
+use Hyva\Theme\Model\ViewModelRegistry;
+use Magento\Framework\View\Element\Template;
+use Magento\Framework\Escaper;
+use Satoshi\Theme\ViewModel\SvgIcons;
+
+/**
+ * @var Template $block
+ * @var Escaper $escaper
+ * @var ViewModelRegistry $viewModels
+ */
+
+/** @var SvgIcons $hyvaicons */
+$hyvaicons = $viewModels->require(SvgIcons::class);
+
+/*
+ * Satoshi override: the stock template styles its fields with utility classes this theme does
+ * not build (bare `input`, `btn`), so the gift card form rendered unstyled next to the rest of
+ * the product page. Fields use the theme's `.input__field` contract and the preview action uses
+ * a `.button`, so both follow the store's design tokens.
+ *
+ * Labels wrap their control instead of pointing at it with `for`: this markup is emitted once
+ * and printed twice by the theme (desktop layout and mobile popup), so every `id` it carries
+ * ends up duplicated in the document and a `for` attribute resolves to the first copy only.
+ */
+?>
+<div class="flex flex-col gap-5">
+    <template x-if="isShowSenderName">
+        <label class="block w-full">
+            <span class="mb-3 block font-semibold text-fg">
+                <?= $escaper->escapeHtml(__('Your Name')) ?>
+                <span class="text-error" aria-hidden="true">*</span>
+            </span>
+
+            <input
+                type="text"
+                class="input__field"
+                name="am_giftcard_sender_name"
+                :value="sender"
+                @change="senderChangeEvent"
+                placeholder="<?= $escaper->escapeHtmlAttr(__('Enter Sender Name')) ?>"
+                required="required"
+                aria-required="true"
+            />
+        </label>
+    </template>
+
+    <template x-if="isShowRecipientName">
+        <label class="block w-full">
+            <span class="mb-3 block font-semibold text-fg">
+                <?= $escaper->escapeHtml(__('Recipient Name')) ?>
+                <span class="text-error" aria-hidden="true">*</span>
+            </span>
+
+            <input
+                type="text"
+                class="input__field"
+                name="am_giftcard_recipient_name"
+                :value="recipient"
+                @change="recipientChangeEvent"
+                placeholder="<?= $escaper->escapeHtmlAttr(__('Enter Recipient Name')) ?>"
+                required="required"
+                aria-required="true"
+            />
+        </label>
+    </template>
+
+    <template x-if="isShowRecipientEmail">
+        <label class="block w-full">
+            <span class="mb-3 block font-semibold text-fg">
+                <?= $escaper->escapeHtml(__('Recipient Email')) ?>
+                <span class="text-error" aria-hidden="true">*</span>
+            </span>
+
+            <input
+                type="email"
+                class="input__field"
+                name="am_giftcard_recipient_email"
+                :value="emailField"
+                @change="recipientEmailChangeEvent"
+                placeholder="<?= $escaper->escapeHtmlAttr(__('Enter Recipient Email')) ?>"
+                required="required"
+                aria-required="true"
+                spellcheck="false"
+                autocapitalize="off"
+            />
+        </label>
+    </template>
+
+    <template x-if="isShowRecipientPhone">
+        <div class="w-full">
+            <label class="block">
+                <span class="mb-3 block font-semibold text-fg">
+                    <?= $escaper->escapeHtml(__('Recipient Phone')) ?>
+                </span>
+
+                <input
+                    type="tel"
+                    class="input__field"
+                    name="mobilenumber"
+                    minlength="9"
+                    maxlength="14"
+                    pattern="[0-9]{11}"
+                    :value="mobilenumber"
+                    @change="mobilenumberChangeEvent"
+                    autocomplete="off"
+                    placeholder="<?= $escaper->escapeHtmlAttr(__('Enter Recipient Phone')) ?>"
+                />
+            </label>
+
+            <span class="input__message mt-2 block">
+                <?= $escaper->escapeHtml(__('Enter Number With Country code &'.
+                    ' without any sign. e.g:-(91xxxxxxx09)')) ?>
+            </span>
+        </div>
+    </template>
+
+    <template x-if="isShowMessage">
+        <div class="w-full">
+            <label class="block">
+                <span class="mb-3 block font-semibold text-fg">
+                    <?= $escaper->escapeHtml(__('Message')) ?>
+                </span>
+
+                <textarea
+                    class="input__field h-auto resize-y py-3 leading-normal"
+                    name="am_giftcard_message"
+                    cols="30"
+                    rows="3"
+                    :value="message"
+                    @change="messageChangeEvent"
+                    maxlength="300"
+                    placeholder="<?= $escaper->escapeHtmlAttr(__('Enter your message')) ?>"
+                    x-text="preconfiguredMessageValue"
+                ></textarea>
+            </label>
+
+            <template x-if="isMessages">
+                <span class="input__message mt-2 block">
+                    (<span x-text="remaining"></span> <?= $escaper->escapeHtml(__('characters remaining')) ?>)
+                </span>
+            </template>
+        </div>
+    </template>
+
+    <template x-if="isPreviewGiftCard">
+        <div class="w-full">
+            <button
+                type="button"
+                class="button button--outline-secondary button--size-sm"
+                :class="{ 'button--disabled': isLoading }"
+                :disabled="isLoading"
+                @click.prevent.stop="openGiftPreview"
+            >
+                <span class="button__icon button__icon--left" aria-hidden="true">
+                    <?= $hyvaicons->renderHtml('eye') ?>
+                </span>
+                <span><?= $escaper->escapeHtml(__('Preview Gift Card')) ?></span>
+            </button>
+
+            <div class="amcard-preview"></div>
+        </div>
+    </template>
+</div>
+
+<template x-if="isShowDatepicker">
+<?= /** @noEscape */ $block->fetchView(
+    $block->getTemplateFile(
+        'Amasty_GiftCardHyvaCompatibility::product/view/components/datepicker.phtml'
+    )
+) ?>
+</template>
+
+<?= /** @noEscape */ $block->fetchView(
+    $block->getTemplateFile(
+        'Hyva_Theme::ui/loading.phtml'
+    )
+) ?>
+<?= /** @noEscape */ $block->fetchView(
+    $block->getTemplateFile(
+        'Amasty_GiftCardHyvaCompatibility::product/view/components/dialog.phtml'
+    )
+) ?>

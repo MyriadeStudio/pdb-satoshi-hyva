@@ -1,0 +1,107 @@
+<?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
+ * @package Gift Card Pro Hyva Compatibility
+ */
+
+declare(strict_types=1);
+
+use Magento\Framework\View\Element\Template;
+use Magento\Framework\Escaper;
+
+/**
+ * @var Template $block
+ * @var Escaper $escaper
+ */
+
+/*
+ * Satoshi override: the delivery schedule uses the theme's `.radio` component and an
+ * `.input__field` select instead of bare inputs. Controls are nested in their label rather than
+ * linked by `for`, because this markup is emitted once and printed twice by the theme (desktop
+ * layout and mobile popup), so every `id` it carries ends up duplicated.
+ *
+ * The two radios also carried `value="0"` / `value="1"` immediately overridden by
+ * `:value="scheduleDelivery"`, so both ended up with the same value and "Send later" could never
+ * turn `scheduleDelivery` to 1 (the delivery date fields stayed hidden). The static values are
+ * kept and the selected state is bound with `:checked` instead. `isScheduleDelivery()` is called
+ * explicitly there: Alpine only auto-invokes a getter when it is the whole bound expression, so
+ * `!isScheduleDelivery` would negate a function reference and always be false.
+ */
+?>
+<div class="mt-7">
+    <span class="mb-3 block font-semibold text-fg">
+        <?= $escaper->escapeHtml(__('Schedule delivery')) ?>
+    </span>
+
+    <fieldset>
+        <legend class="sr-only"><?= $escaper->escapeHtml(__('Schedule delivery options')) ?></legend>
+
+        <div class="mb-5 flex flex-wrap gap-x-7 gap-y-3">
+            <label class="radio mb-0">
+                <input
+                    type="radio"
+                    name="is_date_delivery"
+                    class="radio__input"
+                    value="0"
+                    :checked="!isScheduleDelivery()"
+                    @change="scheduleDeliveryChangeEvent"
+                />
+                <span class="radio__control h-5 w-5" aria-hidden="true"></span>
+                <span class="radio__label ml-3"><?= $escaper->escapeHtml(__('Send now')) ?></span>
+            </label>
+
+            <label class="radio mb-0">
+                <input
+                    type="radio"
+                    name="is_date_delivery"
+                    class="radio__input"
+                    value="1"
+                    :checked="isScheduleDelivery()"
+                    @change="scheduleDeliveryChangeEvent"
+                />
+                <span class="radio__control h-5 w-5" aria-hidden="true"></span>
+                <span class="radio__label ml-3"><?= $escaper->escapeHtml(__('Send later')) ?></span>
+            </label>
+        </div>
+    </fieldset>
+
+    <div x-show="isScheduleDelivery" x-cloak class="flex flex-col gap-5">
+        <div>
+            <?php
+            /* The input this points at lives in date.phtml, hence the `for` here. */
+            ?>
+            <label
+                class="mb-3 block font-semibold text-fg"
+                for="am_giftcard_date_delivery"
+            >
+                <?= $escaper->escapeHtml(__('Delivery Date')) ?>
+            </label>
+
+            <?= /** @noEscape */ $block->fetchView(
+                $block->getTemplateFile(
+                    'Amasty_GiftCardHyvaCompatibility::product/view/components/date.phtml'
+                )
+            ) ?>
+        </div>
+
+        <label class="block">
+            <span class="mb-3 block font-semibold text-fg">
+                <?= $escaper->escapeHtml(__('Timezone')) ?>
+            </span>
+
+            <select
+                name="am_giftcard_date_delivery_timezone"
+                class="input__field max-w-full"
+            >
+                <template x-for="timezone in timezones">
+                    <option
+                        :value="timezoneValue"
+                        x-text="timezoneLabel"
+                        x-bind:selected="isTimezoneSelected"
+                    ></option>
+                </template>
+            </select>
+        </label>
+    </div>
+</div>
