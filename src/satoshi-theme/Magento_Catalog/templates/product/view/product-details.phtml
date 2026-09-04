@@ -37,9 +37,12 @@ $galleryOptionVideoLoop = $storeConfig->getStoreConfig('catalog/product_video/vi
 $product = $block->getProduct();
 $productName = $product->getName();
 if ($product) {
-    $price = $product->getPrice();
-    $finalPrice = $product->getData('final_price');
-    if ($price && $finalPrice) {
+    // @OVERRIDE START — getPrice() renvoie une chaine ("0.0000" pour une carte
+    // cadeau Amasty), toujours truthy en PHP : caster avant de tester puis diviser.
+    $price = (float) $product->getPrice();
+    $finalPrice = (float) $product->getData('final_price');
+    // @OVERRIDE END
+    if ($price > 0 && $finalPrice > 0) {
         $difference = $price - $finalPrice;
         $discountPercentage = round(($difference * 100.0) / $price);
     }
