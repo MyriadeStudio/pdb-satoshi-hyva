@@ -17,6 +17,19 @@ use Magento\Framework\View\Element\Template;
 /** @var ViewModelRegistry $viewModels */
 
 ?>
+<?php
+/*
+ * Hyva declares its AlpineJS plugins as child blocks of this one (see the module layout
+ * default_hyva.xml). Satoshi ships its own bundle of plugins in assets/app.js -- intersect
+ * included -- so the children are deliberately not rendered as a whole here, to avoid
+ * registering the same directives twice.
+ *
+ * The htmldialog plugin is the exception: nothing in app.js provides it, so every Hyva modal
+ * built on a native dialog element (hyva.modal + x-htmldialog) stayed closed forever. Third
+ * party Hyva compatibility modules rely on it, so render that one child explicitly.
+ */
+?>
+<?= $block->getChildHtml('alpine-plugin-htmldialog') ?>
 <!-- Inject satoshi custom js logic -->
 <script type="module"
         src="<?= $escaper->escapeUrl($block->getViewFileUrl('assets/app.js')) ?>"

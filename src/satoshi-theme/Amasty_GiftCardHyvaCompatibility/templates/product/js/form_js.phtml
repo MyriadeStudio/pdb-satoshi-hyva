@@ -1,0 +1,219 @@
+<?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
+ * @package Gift Card Pro Hyva Compatibility
+ */
+
+declare(strict_types=1);
+
+use Magento\Framework\View\Element\Template;
+use Magento\Framework\Escaper;
+use Hyva\Theme\Model\ViewModelRegistry;
+use Amasty\GiftCardHyvaCompatibility\ViewModel\GraphQlQueries;
+use Hyva\GraphqlViewModel\ViewModel\GraphqlViewModel;
+use Hyva\Theme\ViewModel\Store as StoreViewModel;
+
+/**
+ * @var Template $block
+ * @var Escaper $escaper
+ * @var ViewModelRegistry $viewModels
+ */
+
+/** @var GraphqlViewModel $viewModelGraphQl */
+$viewModelGraphQl = $viewModels->require(GraphqlViewModel::class);
+/** @var GraphQlQueries $viewModelQueries */
+$viewModelQueries = $viewModels->require(GraphQlQueries::class);
+/** @var StoreViewModel $viewModelStore */
+$viewModelStore = $viewModels->require(StoreViewModel::class);
+?>
+<script>
+    'use strict';
+
+    function giftCardForm() {
+        return {
+            isLoading: false,
+            max: 300,
+            message: '',
+            sender: '',
+            recipient: '',
+            emailField: '',
+            mobilenumber: '',
+
+            isShowField(name) {
+                if (this.giftCardData.allowedFields.indexOf(name) !== -1) {
+                    return true;
+                }
+
+                return false;
+            },
+
+            remaining() {
+                return this.max - this.message.length;
+            },
+
+            openGiftPreview() {
+                /* Satoshi override: the form is resolved per instance in initProductGiftCard(),
+                   and the theme has no #product-addtocart-button: submit buttons are linked to
+                   their form through the form="..." attribute. requestSubmit() runs the native
+                   constraint validation and reports the first invalid field. */
+                if (!this.form) {
+                    return;
+                }
+
+                if (!this.form.checkValidity()) {
+                    this.form.requestSubmit();
+
+                    return;
+                }
+
+                this.isLoading = true;
+                return this.useQuery(
+                    this.amGiftCardPreview, this.getFormData()).then(result => {
+                        if (!result?.data.amGiftCardPreview) {
+                            return result;
+                        }
+
+                        /* Satoshi override: the product page renders the gift card form twice
+                           (desktop layout and mobile popup), so #giftcard-preview-dialog and the
+                           modal exist twice. Scope both to the current component instance,
+                           otherwise the content lands in the wrong dialog and both modals open. */
+                        const previewNode = document.createElement('div'),
+                            $previewDialog = this.$root.querySelector('#giftcard-preview-dialog'),
+                            $previewModal = this.$root.querySelector('[data-amcard-preview-modal]');
+
+                        if (!$previewDialog || !$previewModal) {
+                            return result;
+                        }
+
+                        previewNode.innerHTML = result.data.amGiftCardPreview.content;
+                        $previewDialog.innerHTML = previewNode.querySelector('table').outerHTML;
+
+                        $previewModal.dispatchEvent(new CustomEvent('open-gift-card-modal'));
+                    }).finally(() => {
+                        this.isLoading = false;
+                    });
+            },
+
+            amGiftCardPreview: <?= /** @noEscape */ json_encode(
+                $viewModelGraphQl->query(
+                    'am_giftcard_code_preview',
+                    'query amGiftCardPreview(
+                        $amount: Float,
+                        $customAmount: Float,
+                        $sender: String,
+                        $recipient: String,
+                        $message: String,
+                        $image: Int,
+                        $customImage: String,
+                        $hyvaFlag: Int,
+                        $emailTemplate: Int
+                    ) {'
+                    .$viewModelQueries->getGiftCardPreview().
+                    '}'
+                )
+            ) ?>,
+
+            useQuery(query, variables) {
+                return fetch(BASE_URL + "graphql", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Store': '<?= /* @noEscape */ $viewModelStore->getStoreCode() ?>'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({query: query, variables: variables}),
+                }).then(response => response.json()).catch(() => {
+                    dispatchMessages([{
+                        type: 'error',
+                        text: '<?= $escaper->escapeHtml(__("Something went wrong. Please try again later.")); ?>'
+                    }], 5000);
+                })
+            },
+
+            getFormData() {
+                const images = this.imagesData.images,
+                    query = {
+                        amount: this.currentPrice ? parseFloat(this.currentPrice) : 0,
+                        customAmount: this.customAmount ? parseFloat(this.customAmount) : 0,
+                        sender: this.sender,
+                        recipient: this.recipient,
+                        message: this.message,
+                        hyvaFlag: 1
+                    };
+
+                if (this.giftCardData.amEmailTemplate) {
+                    query.emailTemplate = this.giftCardData.amEmailTemplate;
+                }
+
+                if (this.giftcardImage !== '') {
+                    query.image = images[this.giftcardImage].id;
+                } else if (this.imageUrl.src) {
+                    query.customImage = this.imageUrl.src;
+                }
+
+                return query;
+            },
+
+            senderChangeEvent(event) {
+                return this.sender = this.$el.value
+            },
+
+            recipientChangeEvent(event) {
+                return this.recipient = this.$el.value
+            },
+
+            recipientEmailChangeEvent(event) {
+                return this.emailField = this.$el.value
+            },
+
+            mobilenumberChangeEvent(event) {
+                return this.mobilenumber = this.$el.value
+            },
+
+            messageChangeEvent(event) {
+                return this.message = this.$el.value
+            },
+
+            isShowSenderName() {
+                return this.isShowField('am_giftcard_sender_name')
+            },
+
+            isShowRecipientName() {
+                return this.isShowField('am_giftcard_recipient_name')
+                    && (!this.giftCardData.isPhysicalGift || this.giftCardData.isEGift)
+            },
+
+            isShowRecipientEmail() {
+                return !this.giftCardData.isPhysicalGift || this.giftCardData.isEGift
+            },
+
+            isShowRecipientPhone() {
+                return this.isShowField('mobilenumber')
+                    && (!this.giftCardData.isPhysicalGift || this.giftCardData.isEGift)
+            },
+
+            isShowMessage() {
+                return this.isShowField('am_giftcard_message')
+            },
+
+            isMessages() {
+                return this.message.length
+            },
+
+            isPreviewGiftCard() {
+                return this.giftCardData.isEGift
+                    || this.giftCardData.giftCardType == this.giftCardData.cardTypes.virtual
+            },
+
+            isShowDatepicker() {
+                return this.isShowField('am_giftcard_date_delivery')
+            },
+
+            preconfiguredMessageValue() {
+                return this.getPreconfiguredValue('am_giftcard_message')
+            }
+        }
+    }
+</script>
+<?php isset($hyvaCsp) && $hyvaCsp->registerInlineScript() ?>

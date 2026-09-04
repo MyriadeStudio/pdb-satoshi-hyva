@@ -1,0 +1,93 @@
+<?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
+ * @package Gift Card Pro Hyva Compatibility
+ */
+
+declare(strict_types=1);
+
+use Hyva\Theme\Model\ViewModelRegistry;
+use Hyva\Theme\ViewModel\Modal;
+use Hyva\Theme\ViewModel\HeroiconsOutline;
+use Magento\Framework\View\Element\Template;
+use Magento\Framework\Escaper;
+
+/**
+ * @var ViewModelRegistry $viewModels
+ * @var Template $block
+ * @var Escaper $escaper
+ */
+
+/** @var Modal $modalViewModel */
+$modalViewModel = $viewModels->require(Modal::class);
+
+ /** @var HeroiconsOutline $heroicons */
+$heroicons = $viewModels->require(HeroiconsOutline::class);
+?>
+<?php
+/*
+ * Satoshi override: the product page renders the gift card form twice (desktop layout and
+ * mobile popup), so this modal exists twice. The open/close events are therefore dispatched
+ * on this wrapper by the owning gift card component instead of on the window, otherwise both
+ * native dialogs open at once and only one of them can be closed again.
+ */
+?>
+<div
+    x-data="initGiftCardModal"
+    data-amcard-preview-modal
+    @open-gift-card-modal="showGiftCardModal"
+    @close-gift-card-modal="hideGiftCardModal"
+>
+    <?= /* @noEscape */ $modalViewModel->createModal()
+        ->withDialogRefName('giftcard')
+        ->withContent('<div class="flex justify-end">
+            <div @click="closeGiftCardModal"
+            class="text-center mb-4 text-base relative cursor-pointer"
+            @keydown.space.prevent="closeGiftCardModal"
+            tabindex="0">
+            ' .$heroicons->xHtml().'
+            </div></div><div id="giftcard-preview-dialog"></div>
+            <div class="actions-toolbar">
+            <div class="primary"><button type="button" class="action btn btn-primary primary"
+                @click="closeGiftCardModal">
+                <span>'.$escaper->escapeHtml(__('Ok')).'</span>
+            </button></div></div>
+        ')
+        ->positionCenter()
+        ->addDialogClass('w-full md:w-3/4 lg:w-1/2 relative mt-4 mb-4 md:max-h-am-85 lg:max-h-am-85 p-6');
+    ?>
+</div>
+<script>
+    function initGiftCardModal() {
+        return Object.assign({}, hyva.modal({
+            dialog: 'giftcard'
+        }), {
+            /* Satoshi override: the option key hyva.modal() reads is `dialog`, not `name`
+               (see above); with `name` the component fell back to the default dialog name. */
+            init() {},
+
+            closeGiftCardModal() {
+                this.$root.dispatchEvent(new CustomEvent('close-gift-card-modal'));
+            },
+
+            hideGiftCardModal() {
+                return this.hide('giftcard')
+            },
+
+            showGiftCardModal() {
+                return this.show('giftcard')
+            }
+        })
+    }
+
+    window.addEventListener(
+        'alpine:init',
+        () => Alpine.data(
+            'initGiftCardModal',
+            initGiftCardModal
+        ),
+        {once: true}
+    );
+</script>
+<?php isset($hyvaCsp) && $hyvaCsp->registerInlineScript() ?>

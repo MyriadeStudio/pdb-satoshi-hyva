@@ -1,0 +1,311 @@
+<?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
+ * @package Gift Card Pro Hyva Compatibility
+ */
+
+declare(strict_types=1);
+
+use Magento\Framework\View\Element\Template;
+use Magento\Framework\Escaper;
+
+/**
+ * @var Template $block
+ * @var Escaper $escaper
+ */
+?>
+<script>
+    'use strict';
+
+    function giftCardImages() {
+        return {
+            isCustomImageChecked: false,
+            giftcardImage: 0,
+            showTooltip: false,
+            customFile: null,
+            imageUrl: {src: '', name: ''},
+            errorMessage: '',
+            maxSizeUserImage: 1572864,
+            extentionsUserImage: [
+                'image/png',
+                'image/jpeg',
+                'image/gif'
+            ],
+            incorrectSizeMessage: '<?= $escaper->escapeHtml(__("The image couldn`t be uploaded because " .
+                    "it exceeds 1,5 Mb, the maximum allowed size for uploads.")) ?>',
+            incorrectTypeMessage: '<?= $escaper->escapeHtml(__("The image couldn`t be uploaded, " .
+                    "only files with the following extensions are allowed: jpg, gif, png")) ?>',
+
+            setImage() {
+                const idx = parseInt(this.giftcardImage);
+
+                /* Satoshi override: the gallery of this theme has no #thumbs element, and the
+                   unguarded access threw during initProductGiftCard(), which aborted the rest of
+                   the init (preconfigured sender, recipient and email were never applied). */
+                const thumbs = document.getElementById('thumbs');
+
+                if (thumbs) {
+                    thumbs.style.display = 'none';
+                }
+
+                if (this.imagesData.images[idx]?.src) {
+                    this.setGalleryImage(this.imagesData.images[idx].src);
+                } else {
+                    window.dispatchEvent(new Event('reset-gallery'));
+                }
+            },
+
+            setGalleryImage(src) {
+                const images = [
+                    {
+                        caption: '',
+                        full: src,
+                        img: src,
+                        isMain: true,
+                        position: '0',
+                        thumb: src,
+                        type: 'image',
+                        videoUrl: null
+                    }
+                ];
+
+                images && window.dispatchEvent(new CustomEvent(
+                    'update-gallery',
+                    { detail: images }
+                ));
+            },
+
+            setDefaultImage() {
+                this.setImage();
+
+                if (this.getPreconfiguredValue('am_giftcard_image') === 'custom' 
+                        && this.imagesData.downloadedImage) {
+                    this.imageUrl = {
+                        src: this.imagesData.downloadedImage,
+                        name: this.getPreconfiguredValue('am_giftcard_custom_image')
+                    }
+
+                    this.setCustomImageToGallery();
+
+                    const fileInput = document.getElementById('customFile');
+
+                    this.getImgURL(this.imagesData.downloadedImage, (imgBlob) => {
+                        // Load img blob to input
+                        // WIP: UTF8 character error
+                        const fileName = this.getPreconfiguredValue('am_giftcard_custom_image'),
+                            file = new File(
+                                [imgBlob],
+                                fileName,
+                                {
+                                    type:imgBlob.type,
+                                    lastModified:new Date().getTime()
+                                },
+                                'utf-8'
+                            ),
+                            container = new DataTransfer();
+
+                        container.items.add(file);
+                        fileInput.files = container.files;
+                    });
+                }
+            },
+
+            getImgURL(url, callback) {
+                const xhr = new XMLHttpRequest();
+
+                xhr.onload = () => { callback(xhr.response) };
+                xhr.open('GET', url);
+                xhr.responseType = 'blob';
+                xhr.send();
+            },
+
+            fileChosen(event) {
+                if (! event.target.files.length) return;
+
+                this.customFile = this.$el.value;
+
+                const file = event.target.files[0];
+
+                this.errorMessage = this.getFileValidation(file);
+                if (!this.errorMessage) {
+                    this.imageUrl.name = file.name;
+                    this.fileToDataUrl(file, src => {
+                        this.imageUrl.src = src;
+                        this.setCustomImageToGallery()
+                    });
+                } else {
+                    this.clearCustomImage();
+                }
+            },
+
+            getFileValidation(file) {
+                if (file.size > this.maxSizeUserImage) {
+                    return this.incorrectSizeMessage;
+                }
+
+                if (this.extentionsUserImage.indexOf(file.type) === -1) {
+                    return this.incorrectTypeMessage;
+                }
+
+                return '';
+            },
+
+            fileToDataUrl(file, callback) {
+                let reader = new FileReader();
+
+                reader.readAsDataURL(file);
+                reader.onload = e => callback(e.target.result);
+            },
+
+            clearCustomImage() {
+                this.customFile = '';
+                this.giftcardImage = 0;
+                this.imageUrl = {src: '', name: ''};
+
+                setTimeout(() => {
+                    this.setImage();
+                }, 0);
+            },
+
+            setCustomImageToGallery() {
+                this.giftcardImage = '';
+                this.setGalleryImage(this.imageUrl.src);
+            },
+
+            imageAltValue() {
+                return this.image.alt || `Image option ${this.index + 1}`
+            },
+
+            giftcardImageAriaLabel() {
+                return `Select image ${this.index + 1}`
+            },
+
+            setGiftcardImage(event) {
+                this.giftcardImage = this.$el.value;
+                return this.setImage();
+            },
+
+            previousButtonClass() {
+                return {
+                    'opacity-25 pointer-events-none' : this.active === 0
+                }
+            },
+
+            nextButtonClass() {
+                return {
+                    'opacity-25 pointer-events-none' : this.active >= this.itemCount-this.pageSize
+                }
+            },
+
+            giftcardImageClass() {
+                return {
+                    ' flex ring-2 ring-blue-500/50' : this.giftcardImage === ''
+                }
+            },
+
+            imagesClass() {
+                return {
+                    'flex ring-2 ring-blue-500/50': this.index === parseInt(this.giftcardImage)
+                }
+            },
+            
+            imageDataId() {
+                return this.image.id
+            },
+
+            dataImages() {
+                return this.imagesData.images
+            },
+
+            imageId() {
+                return 'image-option-' + this.index
+            },
+
+            imageUrlSrc() {
+                return this.imageUrl.src
+            },
+
+            emptyImageUrlSrc() {
+                return !this.imageUrl.src
+            },
+
+            imageUrlAlt() {
+                return this.imageUrl.alt
+            },
+
+            isDataCustomImageAllowed() {
+                return this.imagesData.isCustomImageAllowed
+            },
+
+            isImages() {
+                return !this.imagesData.isCustomImageAllowed && this.imagesData.images.length > 1
+            },
+
+            isImageChecked() {
+                return this.imagesData.images.length > 1 || this.isCustomImageChecked
+            },
+            
+            isPagesCount() {
+                return this.itemCount > this.pageSize
+            },
+            
+            customFileClick(event) {
+                return document.getElementById('customFile')?.click()
+            },
+            
+            toggleTooltip(event) {
+                return this.showTooltip = !this.showTooltip
+            },
+
+            selectImageOption(event) {
+                return document.getElementById('image-option-' + this.index)?.click()
+            },
+            
+            hideTooltip() {
+                return this.showTooltip = false
+            },
+
+            displayTooltip() {
+                return this.showTooltip = true
+            },
+
+            imagesResizeDebounce() {
+                const self = this;
+                this.calcPageSize();
+                this.$nextTick( function() { self.calcActiveSlides(); });
+            },
+            
+            showImagesData() {
+                return this.imagesData.images.length > 1
+            },
+
+            imageSrc() {
+                return this.image.src
+            },
+
+            imagesDataTooltip() {
+                return this.imagesData.tooltip
+            },
+
+            imageUrlName() {
+                return this.imageUrl.name
+            },
+
+            imagesTitle() {
+                return this.imagesData.images.length === 1 && !this.isCustomImageChecked
+                    ? `${this.$el.dataset.selectedLabel}`
+                    : `${this.$el.dataset.unselectedLabel}`
+            },
+
+            giftcardImageId() {
+                return this.imagesData.images[this.giftcardImage]?.id
+            },
+
+            giftcardImageValue() {
+                return this.getPreconfiguredValue('am_giftcard_custom_image')
+            }
+        }
+    }
+</script>
+<?php isset($hyvaCsp) && $hyvaCsp->registerInlineScript() ?>

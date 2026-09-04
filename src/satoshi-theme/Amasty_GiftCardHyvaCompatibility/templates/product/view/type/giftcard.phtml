@@ -1,0 +1,305 @@
+<?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
+ * @package Gift Card Pro Hyva Compatibility
+ */
+
+declare(strict_types=1);
+
+use Hyva\Theme\Model\ViewModelRegistry;
+use Magento\Framework\View\Element\Template;
+use Magento\Framework\Escaper;
+use Amasty\GiftCardHyvaCompatibility\ViewModel\GiftCardViewModal;
+
+/**
+ * @var ViewModelRegistry $viewModels
+ * @var Template $block
+ * @var Escaper $escaper
+ */
+
+/** @var GiftCardViewModal $GiftCardViewModal */
+$giftCardViewModal = $viewModels->require(GiftCardViewModal::class);
+
+$product = $giftCardViewModal->getProduct();
+$customImageUrl = $giftCardViewModal->getCustomImageUrl();
+$downloadedImage = $customImageUrl ? substr_replace($customImageUrl, '/', strrpos($customImageUrl, '\\'), 1) : '';
+?>
+
+<div
+    class="amcard-general-container"
+    x-init="initProductGiftCard"
+    x-data="dataProductGiftCard"
+>
+    <template x-if="isGiftCardCombined">
+        <?= /** @noEscape */ $block->fetchView(
+            $block->getTemplateFile(
+                'Amasty_GiftCardHyvaCompatibility::product/view/components/combined.phtml'
+            )
+        ) ?>
+    </template>
+
+    <template x-if="isGiftCardShowPrices">
+        <div class="mb-4">
+            <?= /** @noEscape */ $block->fetchView(
+                $block->getTemplateFile(
+                    'Amasty_GiftCardHyvaCompatibility::product/view/components/price.phtml'
+                )
+            ) ?>
+        </div>
+    </template>
+
+    <div class="mb-4 -interior">
+        <?= /** @noEscape */ $block->fetchView(
+            $block->getTemplateFile(
+                'Amasty_GiftCardHyvaCompatibility::product/view/components/images.phtml'
+            )
+        ) ?>
+    </div>
+
+    <?= /** @noEscape */ $block->fetchView(
+        $block->getTemplateFile(
+            'Amasty_GiftCardHyvaCompatibility::product/view/components/form.phtml'
+        )
+    ) ?>
+</div>
+
+<?= $block->getChildHtml('amgc.component.price') ?>
+
+<?php
+/**
+ * Includes Scripts
+ */
+?>
+<?= /** @noEscape */ $block->fetchView(
+    $block->getTemplateFile(
+        'Amasty_GiftCardHyvaCompatibility::product/js/price_js.phtml'
+    )
+) ?>
+<?= /** @noEscape */ $block->fetchView(
+    $block->getTemplateFile(
+        'Amasty_GiftCardHyvaCompatibility::product/js/form_js.phtml'
+    )
+) ?>
+<?= /** @noEscape */ $block->fetchView(
+    $block->getTemplateFile(
+        'Amasty_GiftCardHyvaCompatibility::product/js/images_js.phtml'
+    )
+) ?>
+<?= /** @noEscape */ $block->fetchView(
+    $block->getTemplateFile(
+        'Amasty_GiftCardHyvaCompatibility::product/js/datepicker_js.phtml'
+    )
+) ?>
+<?= /** @noEscape */ $block->fetchView(
+    $block->getTemplateFile(
+        'Amasty_GiftCardHyvaCompatibility::product/js/slider_js.phtml'
+    )
+) ?>
+<?= /** @noEscape */ $block->fetchView(
+    $block->getTemplateFile(
+        'Amasty_GiftCardHyvaCompatibility::product/js/combined_js.phtml'
+    )
+) ?>
+<?= /** @noEscape */ $block->fetchView(
+    $block->getTemplateFile(
+        'Amasty_GiftCardHyvaCompatibility::product/js/date_js.phtml'
+    )
+) ?>
+
+<script>
+    'use strict';
+
+    function dataProductGiftCard() {
+        return {
+            preconfiguredValues: <?= /* @noEscape */ $giftCardViewModal->getDefaultValues() ?>,
+            /* Satoshi override: the add to cart form is resolved in initProductGiftCard(),
+               because this theme renders one form per layout with ids of the shape
+               product_addtocart_form_{productId}_{desktop|mobile}. */
+            form: null,
+            datepicker: {
+                timezones: <?= /* @noEscape */ $giftCardViewModal->getListTimezones() ?>
+            },
+            imagesData: {
+                images: <?= /* @noEscape */ $giftCardViewModal->getImages() ?>,
+                isCustomImageAllowed: <?= /* @noEscape */ (int)$giftCardViewModal->getAllowUsersUploadImages() ?>,
+                tooltip: '<?= $escaper->escapeHtml($giftCardViewModal->getTooltipContent()) ?>',
+                downloadedImage: '<?= $escaper->escapeHtml($downloadedImage) ?>'
+            },
+            giftCardData: {
+                giftCardType: '<?= /* @noEscape */ $product->getAmGiftcardType() ?>',
+                previewUrl: '<?= $escaper->escapeUrl($giftCardViewModal->getUrl('amgcard/preview/getPreviewContent')) ?>', <?php //phpcs:ignore ?>
+                allowedFields: <?= /* @noEscape */ $giftCardViewModal->getAvailableOptions() ?>,
+                isShowPrices: '<?= /* @noEscape */ $giftCardViewModal->isShowPrices() ?>',
+                amEmailTemplate: <?= /* @noEscape */ (int)$product->getAmEmailTemplate() ?>,
+                isEGift: false,
+                isPhysicalGift: false,
+                currentCardType: '',
+                cardTypes: {
+                    combined: 3,
+                    printed: 2,
+                    virtual: 1
+                },
+            },
+            priceData: {
+                prices: <?= /** @noEscape */ $giftCardViewModal->getPredefinedAmountsJson() ?>,
+                currencyCode: '<?= $escaper->escapeHtmlAttr($giftCardViewModal->getCurrencyCode()) ?>',
+                feeType: '<?= $escaper->escapeHtmlAttr($product->getAmGiftcardFeeType()) ?>',
+                feeValue: '<?= $escaper->escapeHtmlAttr($product->getAmGiftcardFeeValue()) ?>',
+                feeStatus: '<?= $escaper->escapeHtmlAttr($product->getAmGiftcardFeeEnable()) ?>',
+                feeValueConverted: '<?= $escaper->escapeHtmlAttr($giftCardViewModal->getFeeValueConverted()) ?>',
+                productId: '<?= $escaper->escapeHtmlAttr($product->getId()) ?>',
+                customMinAmountCurrency: '<?= /** @noEscape */ $giftCardViewModal->convertAndFormatCurrency((float)$product->getAmOpenAmountMin(), false) ?>', <?php //phpcs:ignore ?>
+                customMaxAmountCurrency: '<?= /** @noEscape */ $giftCardViewModal->convertAndFormatCurrency((float)$product->getAmOpenAmountMax(), false) ?>', <?php //phpcs:ignore ?>
+                customMinAmount: '<?= $escaper->escapeHtmlAttr($giftCardViewModal->convertAndRoundCurrency((float)$product->getAmOpenAmountMin())) ?>', <?php //phpcs:ignore ?>
+                customMaxAmount: '<?= $escaper->escapeHtmlAttr($giftCardViewModal->convertAndRoundCurrency((float)$product->getAmOpenAmountMax())) ?>', <?php //phpcs:ignore ?>
+                isOpenAmount: '<?= $escaper->escapeHtmlAttr((bool)$product->getAmAllowOpenAmount()) ?>',
+                isSinglePrice: '<?= /* @noEscape */ $giftCardViewModal->isSinglePrice() ?>'
+            },
+
+            initProductGiftCard() {
+                /* Satoshi override: bind this instance to the form that wraps it. */
+                this.form = this.$root.closest('form')
+                    || document.getElementById('product_addtocart_form');
+
+                if (this.giftCardData.isShowPrices) {
+                    this.prepareCustomAmountRange();
+                } else {
+                    if (!this.priceData.isOpenAmount && this.priceData.prices.length === 1) {
+                        setTimeout(() => {
+                            this.prepareSingleAmount();
+                        }, 0);
+                    }
+                }
+
+                if (this.form) {
+                    this.form.setAttribute('enctype', 'multipart/form-data');
+                }
+
+                this.giftCardData.currentCardType = this.getCurrentCardType();
+                this.giftCardData.isPhysicalGift = this.giftCardData.giftCardType
+                                                == this.giftCardData.cardTypes.printed;
+                this.getGiftCardType();
+                this.setPreconfiguredValue();
+
+                setTimeout(() => {
+                    this.initSliderComponent();
+                    this.setDefaultImage();
+
+                    this.sender = this.getPreconfiguredValue('am_giftcard_sender_name');
+                    this.recipient = this.getPreconfiguredValue('am_giftcard_recipient_name');
+                    this.emailField = this.getPreconfiguredValue('am_giftcard_recipient_email');
+                    this.mobilenumber = this.getPreconfiguredValue('mobilenumber');
+                }, 0);
+            },
+
+            getCurrentCardType() {
+                let value = 0;
+
+                if (this.giftCardData.isEGift) {
+                    value += 1;
+                }
+
+                if (this.giftCardData.isPhysicalGift) {
+                    value += 2;
+                }
+
+                return value || '';
+            },
+
+            getGiftCardType() {
+                const name = 'am_giftcard_type',
+                    type = +this.preconfiguredValues[name];
+
+                switch (type) {
+                    case this.giftCardData.cardTypes.virtual:
+                        this.giftCardData.isEGift = true;
+                        break;
+                    case this.giftCardData.cardTypes.printed:
+                        this.giftCardData.isPhysicalGift =true;
+                        break;
+                    case this.giftCardData.cardTypes.combined:
+                        this.giftCardData.isPhysicalGift = true;
+                        this.giftCardData.isEGift = true;
+                        break;
+                }
+            },
+
+            getPreconfiguredValue(name) {
+                if (this.preconfiguredValues[name]) {
+                    return this.preconfiguredValues[name];
+                }
+
+                return '';
+            },
+
+            changeCurrentCardType() {
+                this.giftCardData.currentCardType = this.getCurrentCardType();
+            },
+
+            setPreconfiguredValue() {
+                if (this.preconfiguredValues.length !== 0) {
+                    this.recipient = this.getPreconfiguredValue('am_giftcard_recipient_name');
+                    this.sender = this.getPreconfiguredValue('am_giftcard_sender_name');
+                    this.giftCardData.currentCardType = this.getPreconfiguredValue('am_giftcard_type');
+
+                    if (parseInt(this.getPreconfiguredValue('is_date_delivery'))) {
+                        this.scheduleDelivery = '1';
+                    }
+
+                    if (this.getPreconfiguredValue('am_giftcard_amount') === 'custom') {
+                        this.customAmount = this.getPreconfiguredValue('am_giftcard_amount_custom');
+
+                        setTimeout(() => {
+                            this.addCustomAmount();
+                        }, 0);
+                    } else {
+                        this.currentPrice = this.getPreconfiguredValue('am_giftcard_amount');
+
+                        setTimeout(() => {
+                            this.changeCurrentPrice();
+                        }, 0);
+                    }
+
+                    if (this.getPreconfiguredValue('am_giftcard_image') !== 'custom') {
+                        const imageId = this.getPreconfiguredValue('am_giftcard_image');
+
+                        this.imagesData.images.map((image, i) => {
+                            if (image.id === parseInt(imageId)) {
+                                this.giftcardImage = i;
+                            }
+                        });
+
+                        this.setImage();
+                    }
+                }
+            },
+
+            isGiftCardCombined() {
+                return this.giftCardData.giftCardType == this.giftCardData.cardTypes.combined
+            },
+
+            isGiftCardShowPrices() {
+                return this.giftCardData.isShowPrices
+            },
+
+            // Inclusion Components
+            ...giftCardPrices(),
+            ...giftCardForm(),
+            ...giftCardImages(),
+            ...giftCardSlider(),
+            ...giftCardDatepicker(),
+            ...giftCardCombined()
+        }
+    }
+
+    window.addEventListener(
+        'alpine:init',
+        () => Alpine.data(
+            'dataProductGiftCard',
+            dataProductGiftCard
+        ),
+        {once: true}
+    );
+</script>
+<?php isset($hyvaCsp) && $hyvaCsp->registerInlineScript() ?>

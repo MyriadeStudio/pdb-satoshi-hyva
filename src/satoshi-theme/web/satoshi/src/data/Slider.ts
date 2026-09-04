@@ -33,6 +33,7 @@ export type SliderType = {
 
   configureAndStart(config: SliderConfig): void;
   play(): void;
+  stopAutoplay(): void;
   start(): void;
   debouncedHandleManualScroll: () => void;
   debounce: (func: Function, wait: number) => (...args: any[]) => void;
@@ -74,12 +75,20 @@ export const Slider = () =>
         return;
       }
 
-      if (this.autoplayInterval) {
-        window.clearInterval(this.autoplayInterval);
-      }
+      this.stopAutoplay();
 
       this.autoplayInterval = window.setInterval(() => {
-        if (this.currentSlideIndex < this.$refs.slider.childElementCount) {
+        // Le slider peut avoir quitté le DOM (composant démonté, template x-if
+        // replié) alors que l'intervalle tourne encore : on l'arrête au lieu de
+        // déréférencer une ref absente.
+        const slider = this.$refs.slider as HTMLElement | undefined;
+        if (!slider) {
+          this.stopAutoplay();
+
+          return;
+        }
+
+        if (this.currentSlideIndex < slider.childElementCount) {
           this.goToSlide(this.currentSlideIndex + 1);
         } else {
           this.goToSlide(1);
@@ -126,10 +135,7 @@ export const Slider = () =>
         return;
       }
       root.addEventListener("mouseenter", () => {
-        if (this.autoplayInterval) {
-          window.clearInterval(this.autoplayInterval);
-          this.autoplayInterval = null;
-        }
+        this.stopAutoplay();
       });
       root.addEventListener("mouseleave", () => {
         this.play();
@@ -206,10 +212,19 @@ export const Slider = () =>
       window.addEventListener("pointercancel", endDrag);
     },
 
+    stopAutoplay() {
+      if (this.autoplayInterval) {
+        window.clearInterval(this.autoplayInterval);
+        this.autoplayInterval = null;
+      }
+    },
+
     destroy() {
       if (this.resizeObserver) {
         this.resizeObserver.disconnect();
       }
+
+      this.stopAutoplay();
     },
 
     updateCachedValues() {
