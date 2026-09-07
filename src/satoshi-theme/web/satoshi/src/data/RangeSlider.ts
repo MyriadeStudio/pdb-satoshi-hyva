@@ -9,6 +9,7 @@ export type RangeSliderType = {
   currentMinValue: number;
   currentMaxValue: number;
   rangeMinSpace: number;
+  isDragging: boolean;
   priceFilterTimeout: ReturnType<typeof setTimeout> | null;
 
   init(): void;
@@ -34,6 +35,7 @@ export const RangeSlider = (
     currentMinValue: Number(minRange) || 0,
     currentMaxValue: Number(maxRange),
     rangeMinSpace: RANGE_MIN_SPACE,
+    isDragging: false,
     priceFilterTimeout: null,
 
     init() {
@@ -53,7 +55,11 @@ export const RangeSlider = (
         this.currentMaxValue = this.currentMinValue + this.rangeMinSpace;
       }
 
-      // Debounce ApplyFilter to prevent it from being called too frequently
+      // Applying mid-drag would navigate and re-render the filter block under the cursor,
+      // snapping the thumb back. While dragging, only the clamping above runs; the filter is
+      // applied once on release. The debounce still covers the Min/Max number inputs.
+      if (this.isDragging) return;
+
       if (this.priceFilterTimeout) {
         clearTimeout(this.priceFilterTimeout);
       }
@@ -76,12 +82,23 @@ export const RangeSlider = (
       const isLeft = side === 'left';
       const isRight = side === 'right';
 
+      // Alpine binds $el to the element the expression was evaluated on — here the thumb
+      // itself, not the component root. Scoping the lookup to this instance (rather than a
+      // document-wide one) matters because the filter set is rendered twice: desktop and
+      // mobile portal. closest() covers the thumb; querySelector() the root, if ever called
+      // from JS rather than from the @mousedown expression.
+      const container =
+        this.$el.closest(`.${RANGE_SLIDER_CONTAINER_CLASS}`) ??
+        this.$el.querySelector(`.${RANGE_SLIDER_CONTAINER_CLASS}`);
+
+      if (!container) return;
+
+      this.isDragging = true;
+
       const onMouseOrTouchMove = (evt: MouseEvent | TouchEvent) => {
-        const sliderRect = (document.querySelector(`.${RANGE_SLIDER_CONTAINER_CLASS}`) as Element).getBoundingClientRect();
-
-        if (!sliderRect) return;
-
-        let x = evt instanceof TouchEvent ? evt.touches[0].clientX : evt.clientX; // Handle both mouse and touch
+        const sliderRect = container.getBoundingClientRect();
+        // `instanceof TouchEvent` throws on desktop Firefox, where TouchEvent is undefined.
+        const x = "touches" in evt ? evt.touches[0].clientX : evt.clientX;
         const pos = (x - sliderRect.left) / sliderRect.width;
         const newValue = Math.round(pos * (this.maxRange - this.minRange) + this.minRange);
 
@@ -102,6 +119,8 @@ export const RangeSlider = (
         } else if (isRight) {
           this.isRightThumbActive = false;
         }
+        this.isDragging = false;
+        this.applyPriceFilter();
         document.removeEventListener('mousemove', onMouseOrTouchMove);
         document.removeEventListener('mouseup', onMouseOrTouchUp);
         document.removeEventListener('touchmove', onMouseOrTouchMove);

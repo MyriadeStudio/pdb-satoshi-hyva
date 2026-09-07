@@ -1,0 +1,148 @@
+<?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
+ * @package Shop By Hyva Compatibility
+ */
+
+declare(strict_types=1);
+
+use Hyva\Theme\Model\ViewModelRegistry;
+use Magento\Framework\Escaper;
+use Amasty\Shopby\Block\Navigation\FilterRenderer;
+use Amasty\ShopbyBase\Model\FilterSetting;
+use Amasty\ShopbyHyvaCompatibility\ViewModel\ProductListAjax;
+
+/** @var Escaper $escaper */
+/** @var ViewModelRegistry $viewModels */
+/** @var FilterSetting $filterSetting */
+/** @var FilterRenderer $block */
+/** @var ProductListAjax $productListAjax */
+$productListAjax = $viewModels->require(ProductListAjax::class);
+
+/**
+ * These variables are assigned in Amasty\Shopby\Block\Navigation\FilterRenderer
+ *
+ * @var array $fromToConfig
+ */
+
+$uniqId = "_" . uniqid();
+$filterCode = $filterSetting->getAttributeCode();
+$max = ceil($fromToConfig['max']);
+$min = floor($fromToConfig['min']);
+$sliderStyle = $block->getSliderStyle();
+$sliderColor = $block->getSliderColor();
+$hideDigitsAfterDot = $filterSetting->getHideZeros();
+$expandedMode = $filterSetting->getData('is_expanded');
+$isCurrencyUnitLabel = $filterSetting->getData('units_label_use_currency_symbol');
+$isAjaxButtonEnabled = $block->collectFilters();
+$filterName = $block->getFilter()->getName();
+// phpcs:disable Generic.Files.LineLength.TooLong
+
+/*
+ * Surcharge Satoshi. Amasty publie la configuration de ce composant via un
+ * <script> frère qui définit initRanges<uniqId>(). Or Satoshi rend le jeu de
+ * filtres deux fois, chacun dans un <template x-if> (desktop / popup mobile) :
+ * seul le template instancié exécute son script, l'autre copie garde un x-data
+ * pointant vers une fonction jamais définie. Dès qu'elle est instanciée à son
+ * tour (bascule mobile/desktop, ouverture du popup, swap SPA), on obtient
+ * « initRanges_… is not defined » puis toute la cascade des bindings.
+ *
+ * La configuration n'étant que de la donnée, on la porte directement dans
+ * l'attribut x-data : plus aucun script à exécuter au bon moment.
+ */
+$sliderConfig = [
+    'options' => [
+        'style' => (string) $sliderStyle,
+        'colors' => ['main' => (string) $sliderColor],
+        'collectFilters' => (int) $isAjaxButtonEnabled,
+        'template' => (string) $fromToConfig['template'],
+        'currencySymbol' => (string) $fromToConfig['currencySymbol'],
+        'currencyPosition' => (string) $fromToConfig['currencyPosition'],
+        'isCurrencyUnitLabel' => (string) $isCurrencyUnitLabel,
+        'step' => (float) $fromToConfig['step'],
+        'from' => (string) $fromToConfig['from'],
+        'to' => (string) $fromToConfig['to'],
+        'deltaFrom' => (string) $fromToConfig['deltaFrom'],
+        'deltaTo' => (string) $fromToConfig['deltaTo'],
+        'curRate' => (string) $fromToConfig['curRate'],
+        'min' => (float) $min,
+        'max' => (float) $max,
+        'url' => (string) $block->getSliderUrlTemplate(),
+        'code' => (string) $filterSetting->getAttributeModel()->getAttributeCode(),
+        'isAddFromWidget' => $filterSetting->getAddFromToWidget() ? 1 : 0,
+        'hideDigitsAfterDot' => $hideDigitsAfterDot ? 1 : 0,
+    ],
+    'code' => (string) $block->getFilter()->getRequestVar(),
+    'uniqId' => (string) $uniqId,
+    'ariaText' => (string) __('Filter %1 in sidebar', $filterName),
+    'filterName' => (string) $filterName,
+    'filterCode' => (string) $filterCode,
+    'isAjax' => (int) $productListAjax->isAjaxSettingEnabled(),
+];
+$sliderConfigJson = json_encode($sliderConfig, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+?>
+<div id="ranges<?= $escaper->escapeJs($uniqId) ?>"
+     x-data="deepMerge({}, initRanges(), <?= $escaper->escapeHtmlAttr($sliderConfigJson) ?>)"
+     x-init="amShopbyFilterSlider($el)"
+     x-bind="eventListeners"
+     x-spread="eventListeners"
+     class="amshopby-slider-wrapper am-filter <?= $escaper->escapeHtmlAttr($sliderStyle) ?>"
+    <?= $expandedMode ? "data-amshopby-expanded=" . $escaper->escapeHtml($expandedMode) : "data-amshopby-expanded='0'"; ?>>
+    <div class="items am-filter-items-<?= $escaper->escapeHtmlAttr($filterCode) ?>">
+        <form data-amshopby-filter="<?= $escaper->escapeHtmlAttr($filterCode) ?>"
+              data-amshopby-filter-request-var="<?= $escaper->escapeHtmlAttr($block->getFilter()->getRequestVar()) ?>"
+              :aria-label="ariaText"
+              <?= $fromToConfig['from'] || $fromToConfig['to'] ? 'class="amshopby-link-selected text-black"' : '' ?>>
+            <div id="am-shopby-filter-<?= $escaper->escapeHtmlAttr($filterCode . $uniqId) ?>"
+                 class="p-4 amshopby-slider-container mt-2 amshopby_currency_rate <?= $escaper->escapeHtmlAttr($sliderStyle) ?>"
+                 data-am-js="slider-container"
+                 data-min="<?= $escaper->escapeHtmlAttr($min) ?>"
+                 data-max="<?= $escaper->escapeHtmlAttr($max) ?>"
+                 data-rate="<?= /* @noEscape */ $fromToConfig['curRate'] ?>"
+                 role="group"
+                 aria-labelledby="amslider-id-<?= $escaper->escapeHtmlAttr($filterCode . $uniqId) ?>"
+            >
+                <input data-amshopby-slider-id="value"
+                       type="hidden"
+                       :value="currentInputValues"
+                       :aria-label="ariaText"
+                       data-digits-after-dot="<?= /* @noEscape */ $hideDigitsAfterDot ? '1' : '0' ?>"
+                       id="amslider-id-<?= $escaper->escapeHtmlAttr($filterCode . $uniqId) ?>"
+                       name="amshopby[<?= $escaper->escapeHtmlAttr($block->getFilter()->getRequestVar()) ?>][]"/>
+                <div data-amshopby-slider-id="slider" class="am-slider"></div>
+                <template x-if="!options.isAddFromWidget">
+                    <div data-amshopby-slider-id="display"
+                         class="amshopby-slider-display mt-5 flex justify-center"
+                         data-am-js="slider-display">
+                        <span class="current-min-value inline-flex">
+                            <template x-if="!+options.currencyPosition">
+                                <span :class="+options.isCurrencyUnitLabel ? '' : 'mr-1'"
+                                      x-text="options.currencySymbol"></span>
+                            </template>
+                            <span x-text="_parseValue(currentMin * +options.curRate)"></span>
+                            <template x-if="+options.currencyPosition">
+                                <span class="ml-1" x-text="options.currencySymbol"></span>
+                            </template>
+                        </span>
+                        <span class="current-value-delimeter mx-1">-</span>
+                        <span class="current-min-value inline-flex">
+                            <template x-if="!+options.currencyPosition">
+                                <span :class="+options.isCurrencyUnitLabel ? '' : 'mr-1'"
+                                      x-text="options.currencySymbol"></span>
+                            </template>
+                            <span x-text="_parseValue(currentMax * +options.curRate)"></span>
+                            <template x-if="+options.currencyPosition">
+                                <span class="ml-1" x-text="options.currencySymbol"></span>
+                            </template>
+                        </span>
+                    </div>
+                </template>
+            </div>
+        </form>
+    </div>
+
+    <?php if ($filterSetting->getAddFromToWidget()): ?>
+        <?= /* @noEscape */ $block->getFromToWidget('slider') ?>
+    <?php endif; ?>
+</div>

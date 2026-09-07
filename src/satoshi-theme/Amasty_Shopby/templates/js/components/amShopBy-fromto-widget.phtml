@@ -1,0 +1,131 @@
+<?php
+/**
+ * Méthodes du widget « from/to » d'Amasty, extraites de
+ * Amasty_ShopbyHyvaCompatibility::layer/widget/fromto.phtml.
+ *
+ * Amasty les redéfinissait à l'identique dans un <script> propre à chaque
+ * instance, nommé avec un uniqid. Or Satoshi rend le jeu de filtres deux fois
+ * (desktop / popup mobile), chacun dans un <template x-if> : seul le template
+ * instancié exécute son script, l'autre copie référence une fonction jamais
+ * définie. Ces méthodes ne dépendent d'aucune instance, on les déclare une
+ * seule fois, en enfant de amshopby.js.main, hors de tout <template>.
+ *
+ * @var Magento\Framework\View\Element\Template $block
+ */
+
+declare(strict_types=1);
+
+// phpcs:disable Generic.Files.LineLength.TooLong
+?>
+<script>
+    function amShopbyFromToWidget() {
+        return {
+            rangesElement: false,
+            currentInputValues: '',
+
+                amShopbyFilterRanges(element) {
+                    this.filterWrapperCheck(element);
+                    this.rangesElement = element;
+                    this.currentMin = this.options.from && this.options.from >= this.options.min
+                        ? this.options.from
+                        : this.options.min;
+                    this.currentMax = this.options.to && this.options.to <= this.options.max
+                        ? this.options.to
+                        : this.options.max;
+
+                    this.currentMin = this._parseValue(this.currentMin);
+                    this.currentMax = this._parseValue(this.currentMax);
+
+                    this.widgetMinValue = this._parseValue(this.currentMin * +this.options.curRate);
+                    this.widgetMaxValue = this._parseValue(this.currentMax * +this.options.curRate);
+
+                    if (this.options.to || this.options.from) {
+                        this.currentInputValues = this._parseValue(this.options.from)
+                            + "-" + this._parseValue(this.options.to);
+                    }
+
+                    this.generateValues();
+                },
+
+                /**
+                 *
+                 * @param el
+                 */
+                calcWidgetMin(el) {
+                    this.currentMin = el.value / +this.options.curRate;
+                    this.widgetMinValue = this._parseValue(this.currentMin * +this.options.curRate);
+                    this.generateValues();
+                },
+
+                /**
+                 *
+                 * @param el
+                 */
+                calcWidgetMax(el) {
+                    this.currentMax = el.value / +this.options.curRate;
+                    this.widgetMaxValue = this._parseValue(this.currentMax * +this.options.curRate);
+                    this.generateValues();
+                },
+
+                /**
+                 *
+                 * @param flag
+                 */
+                setValue(flag) {
+                    this.currentInputValues = this._parseValue(this.currentMin)
+                        + "-" + this._parseValue(this.currentMax);
+                    window.dispatchEvent(new CustomEvent('amSetButtonPosition', {detail: {element: this.rangesElement}}));
+                    switch (flag) {
+                        case 'min':
+                            if (parseFloat(this.currentMin) > parseFloat(this.options.min)) {
+                                this.applyFilter();
+                            }
+                            break;
+                        case 'max':
+                            if (parseFloat(this.currentMax) > parseFloat(this.options.min)) {
+                                this.applyFilter();
+                            }
+                            break;
+                    }
+                },
+
+                /**
+                 *
+                 */
+                applyFilter() {
+                    document.querySelectorAll(
+                        '.price-ranges input[type="radio"], .price-ranges input[type="checkbox"]'
+                    ).forEach(input => {
+                        input.checked = false;
+                    });
+
+                    if (this.isAjax) {
+                        this._dispatchEventsForAjax(this._generateSearchHref());
+                    } else {
+                        window.location.href = this._generateSearchHref();
+                    }
+                },
+
+                /**
+                 *
+                 * @param searchParams
+                 * @private
+                 */
+                _dispatchEventsForAjax(searchParams) {
+                    const { to, from } = this.options;
+
+                    this.currentInputValues = (this.currentMin === Number(to) && this.currentMax === Number(from))
+                        ? ''
+                        : `${this._parseValue(this.currentMin)}-${this._parseValue(this.currentMax)}`;
+
+                    window.dispatchEvent(new CustomEvent('amSliderValuesUpdated', {
+                        detail: {
+                            searchParams: searchParams,
+                            values: this.currentInputValues,
+                            element: this.$el.closest('.range')
+                        }
+                    }));
+                }
+        }
+    }
+</script>

@@ -1,0 +1,149 @@
+<?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
+ * @package Shop By Hyva Compatibility
+ */
+
+declare(strict_types=1);
+
+use Hyva\Theme\Model\ViewModelRegistry;
+use Magento\Framework\Escaper;
+use Amasty\Shopby\Block\Navigation\Widget\FromTo;
+use Amasty\ShopbyBase\Model\FilterSetting;
+use Amasty\ShopbyHyvaCompatibility\ViewModel\ProductListAjax;
+
+/** @var Escaper $escaper */
+/** @var FromTo $block */
+/** @var ViewModelRegistry $viewModels */
+/** @var FilterSetting $filterSetting */
+
+/** @var ProductListAjax $productListAjax */
+$productListAjax = $viewModels->require(ProductListAjax::class);
+
+$uniqId = "_" . uniqid();
+$filterCode = $escaper->escapeHtml($filterSetting->getAttributeCode());
+$min = $escaper->escapeHtml($fromToConfig['min']);
+$max = $escaper->escapeHtml($fromToConfig['max']);
+$from = $fromToConfig['from'];
+$to = $fromToConfig['to'];
+$step = $fromToConfig['step'];
+$fromToType = $block->getWidgetType();
+$hideDigitsAfterDot = $filterSetting->getHideZeros();
+$filterMode = $filterSetting->getDisplayMode();
+$isShowOnlyWidget = $filterSetting->getDisplayMode() === 0 || $filterSetting->getDisplayMode() === 3;
+$expandedMode = $filterSetting->getData('is_expanded');
+$filterName = $block->getFilter()->getName();
+// phpcs:disable Generic.Files.LineLength.TooLong
+
+/*
+ * Surcharge Satoshi : la config part dans l'attribut x-data et les méthodes
+ * viennent de amShopbyFromToWidget(), déclaré une seule fois par
+ * Amasty_Shopby::js/components/amShopBy-fromto-widget.phtml. Amasty publiait
+ * les deux via un <script> frère nommé avec un uniqid ; ce script ne s'exécute
+ * pas quand la copie qui le porte reste dans un <template x-if> non instancié
+ * (Satoshi rend les filtres deux fois : desktop et popup mobile).
+ */
+$fromToConfigData = [
+    'options' => [
+        'collectFilters' => (int) $block->collectFilters(),
+        'template' => (string) $fromToConfig['template'],
+        'currencySymbol' => (string) $fromToConfig['currencySymbol'],
+        'currencyPosition' => (string) $fromToConfig['currencyPosition'],
+        'step' => (float) $fromToConfig['step'],
+        'from' => (string) $fromToConfig['from'],
+        'to' => (string) $fromToConfig['to'],
+        'deltaFrom' => (string) $fromToConfig['deltaFrom'],
+        'deltaTo' => (string) $fromToConfig['deltaTo'],
+        'curRate' => (string) $fromToConfig['curRate'],
+        'min' => (float) $min,
+        'max' => (float) $max,
+        'url' => (string) $block->getSliderUrlTemplate(),
+        'code' => (string) $filterSetting->getAttributeModel()->getAttributeCode(),
+        'isAddFromWidget' => $filterSetting->getAddFromToWidget() ? 1 : 0,
+        'hideDigitsAfterDot' => $hideDigitsAfterDot ? 1 : 0,
+    ],
+    'code' => (string) $block->getFilter()->getRequestVar(),
+    'uniqId' => (string) $uniqId,
+    'filterCode' => (string) $filterCode,
+    'filterName' => (string) $filterName,
+    'ariaText' => (string) __('Filter %1 in sidebar', $filterName),
+    'isAjax' => (int) $productListAjax->isAjaxSettingEnabled(),
+];
+$fromToConfigJson = json_encode($fromToConfigData, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+?>
+<div id="am-filter-widget-<?= /* @noEscape */ $filterCode . $uniqId ?>"
+     class="amshopby-fromto-wrap filter-option mt-4 am-filter-items-<?= /* @noEscape */ $filterCode ?>
+     <?= $escaper->escapeHtmlAttr($isShowOnlyWidget ? 'am-filter mt-4' : ''); ?>"
+     data-am-js="fromto-widget"
+     x-data="<?= $isShowOnlyWidget ? 'deepMerge({}, initRanges(), amShopbyFromToWidget(), ' . $escaper->escapeHtmlAttr($fromToConfigJson) . ')' : '' ?>"
+     x-init="<?= $isShowOnlyWidget ? 'amShopbyFilterRanges($el)' : '' ?>"
+    <?= $isShowOnlyWidget ? "data-amshopby-expanded='" . $escaper->escapeHtml($expandedMode ?? '0') . "'" : '' ?>
+>
+    <form data-amshopby-filter="<?= /* @noEscape */ $filterCode ?>"
+          data-amshopby-filter-request-var="<?= /* @noEscape */ $block->getFilter()->getRequestVar() ?>"
+          :aria-label="ariaText"
+          <?= $from || $to ? 'class="amshopby-link-selected text-black"' : '' ?>>
+        <input :value="currentInputValues"
+               type="hidden"
+               data-amshopby-fromto="value"
+               data-digits-after-dot="<?= /* @noEscape */ $hideDigitsAfterDot ? '1' : '0' ?>"
+               name="amshopby[<?= $escaper->escapeHtml($block->getFilter()->getRequestVar()) ?>][]"/>
+        <div class="range am-fromto-widget amshopby_currency_rate flex flex-wrap justify-center px-4"
+             data-rate="<?= /* @noEscape */ $fromToConfig['curRate'] ?>">
+            <div class="amshopby-input-wrapper flex-grow relative"
+                 role="group"
+                 aria-labelledby="fromfield-id-<?= $escaper->escapeJs($uniqId) ?>"
+            >
+                <input class="am-filter-price -from input-text form-input text-center appearance-none w-full"
+                       data-amshopby-fromto="from"
+                       type="number"
+                       id="fromfield-id-<?= $escaper->escapeJs($uniqId) ?>"
+                       aria-label="<?= $escaper->escapeHtmlAttr(__('From')) ?>"
+                       placeholder="<?= $escaper->escapeHtmlAttr(__('From')) ?>"
+                       x-ref="widgetMin"
+                       :value="widgetMinValue"
+                    <?php if ($block->collectFilters()): ?>
+                        @input.debounce.250ms="calcWidgetMin($refs.widgetMin);setValue('min')"
+                    <?php else: ?>
+                        @input.debounce.250ms="calcWidgetMin($refs.widgetMin)"
+                    <?php endif; ?>
+                       :min="options.min"
+                       :max="options.max"
+                />
+                <span class="amshopby-currency absolute bg-white -top-3 left-2"><?= $escaper->escapeHtml($fromToConfig['currencySymbol']) ?></span>
+            </div>
+            <span class="delimiter flex justify-center items-center px-2">-</span>
+            <div class="amshopby-input-wrapper flex-grow"
+                 role="group"
+                 aria-labelledby="tofield-id-<?= $escaper->escapeJs($uniqId) ?>"
+            >
+                <input class="am-filter-price -to input-text form-input text-center appearance-none w-full"
+                       data-amshopby-fromto="to"
+                       type="number"
+                       id="tofield-id-<?= $escaper->escapeJs($uniqId) ?>"
+                       aria-label="<?= $escaper->escapeHtmlAttr(__('To')) ?>"
+                       placeholder="<?= $escaper->escapeHtmlAttr(__('To')) ?>"
+                       x-ref="widgetMax"
+                       :value="widgetMaxValue"
+                    <?php if ($block->collectFilters()): ?>
+                        @input.debounce.250ms="calcWidgetMax($refs.widgetMax);setValue('max');"
+                    <?php else: ?>
+                        @input.debounce.250ms="calcWidgetMax($refs.widgetMax)"
+                    <?php endif; ?>
+                       :min="options.min"
+                       :max="options.max"
+                />
+            </div>
+            <?php if (!$block->collectFilters()): ?>
+                <button type="button"
+                        data-amshopby-fromto="go"
+                        @click.prevent.stop="applyFilter()"
+                        class="am-filter-go btn btn-primary w-full justify-center mt-4"
+                        title="<?= $escaper->escapeHtmlAttr(__('Apply filter')) ?>">
+                    <?= $escaper->escapeHtml(__('Apply')) ?>
+                </button>
+            <?php endif; ?>
+        </div>
+    </form>
+</div>

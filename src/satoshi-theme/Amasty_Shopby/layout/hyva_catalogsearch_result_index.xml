@@ -1,14 +1,6 @@
 <?xml version="1.0"?>
-<!--
-/**
- * @author Amasty Team
- * @copyright Copyright (c) Amasty (https://www.amasty.com)
- * @package Shop By Hyva Compatibility
- */
- -->
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
-    <referenceBlock name="amshopby.catalog.topnav" remove="true" />
     <referenceBlock name="amshopby.js.main">
         <block name="satoshi.amshopby.js.fromto-widget"
                template="Amasty_Shopby::js/components/amShopBy-fromto-widget.phtml"/>
