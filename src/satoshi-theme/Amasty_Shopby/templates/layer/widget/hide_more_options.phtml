@@ -1,0 +1,16 @@
+<?php
+/**
+ * Satoshi : widget « Afficher (n) plus » d'Amasty neutralisé.
+ *
+ * Le composant Alpine amShopbyFilterHideMoreOptions() s'appuie sur le markup
+ * d'Amasty (.filter-options-content, .item, .am-filter) que le thème Satoshi
+ * n'émet pas : il réécrit intégralement le rendu des filtres
+ * (Amasty_Shopby::layer/filter/default.phtml). initHideMore() plantait donc sur
+ * un element.closest(...) null, et un bouton chevron sans libellé restait
+ * affiché. Le repli des longues listes d'options est déjà assuré par
+ * l'accordéon Satoshi.
+ *
+ * @var Magento\Framework\View\Element\Template $block
+ */
+
+declare(strict_types=1);

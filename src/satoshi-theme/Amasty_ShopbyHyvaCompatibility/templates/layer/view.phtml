@@ -62,6 +62,10 @@ if ($sorter) {
     }
 }
 ?>
+<?php /* Helpers JS globaux d'Amasty (deepMerge, initRanges, amShopbyFilterHideMoreOptions...) :
+         requis par les templates de filtres non surchargés (layer/filter/slider.phtml,
+         layer/widget/hide_more_options.phtml, layer/widget/fromto.phtml). */ ?>
+<?= /* @noEscape */ $block->getChildHtml('amshopby.js.main') ?>
 <!-- Desktop filters -->
 <div
     class="hidden w-[275px] max-w-[275px] overflow-hidden transition-all motion-reduce:transition-none md:block"
