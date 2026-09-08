@@ -1,0 +1,47 @@
+/*
+ * Slider des filtres Amasty (noUiSlider) aligné sur l'apparence du slider de
+ * prix Satoshi, défini dans components/range-slider.css : rail d'un pixel,
+ * poignées rondes ouvertes, couleurs prises dans les tokens du thème.
+ *
+ * Volontairement hors de @layer components : les classes .noUi-* sont posées
+ * par noUiSlider au runtime, elles n'apparaissent dans aucun template et
+ * Tailwind les purgerait du CSS compilé.
+ *
+ * Les sélecteurs passent par .am-slider.noUi-target pour dépasser en
+ * spécificité nouislider.min.css, injecté dans le head après la feuille du
+ * thème. Les !important ne visent que les propriétés posées en style inline
+ * par applyStyles(), qui colorie les poignées selon le réglage du BO.
+ */
+
+.am-slider.noUi-target {
+  @apply my-8 h-px rounded-none border-0 bg-primary-lighter shadow-none;
+}
+
+.am-slider.noUi-target .noUi-connects {
+  @apply rounded-none;
+}
+
+.am-slider.noUi-target .noUi-connect {
+  @apply !bg-primary;
+}
+
+.am-slider.noUi-target .noUi-handle {
+  @apply h-8 w-8 rounded-full border !border-primary !bg-bg shadow-none transition-transform duration-200;
+  top: -16px;
+  right: -16px;
+}
+
+.am-slider.noUi-target .noUi-handle::before,
+.am-slider.noUi-target .noUi-handle::after {
+  @apply hidden;
+}
+
+.am-slider.noUi-target .noUi-handle.noUi-active {
+  @apply scale-[1.15] shadow-none;
+}
+
+/* Les valeurs sont déjà lisibles dans les champs from/to sous le rail ; les
+   info-bulles natives débordent de l'accordéon et font doublon. */
+.am-slider.noUi-target .noUi-tooltip {
+  @apply hidden;
+}

@@ -106,7 +106,11 @@ $fromToConfigJson = json_encode($fromToConfigData, JSON_UNESCAPED_UNICODE | JSON
                     <?php if ($block->collectFilters()): ?>
                         @input.debounce.250ms="calcWidgetMin($refs.widgetMin);setValue('min')"
                     <?php else: ?>
+                        <?php /* Sans bouton d'application, la saisie clavier doit filtrer d'elle-même :
+                                 recalcul pendant la frappe, application à la sortie du champ ou sur
+                                 Entrée. Sur @input, chaque pause de frappe déclencherait une navigation. */ ?>
                         @input.debounce.250ms="calcWidgetMin($refs.widgetMin)"
+                        @change="calcWidgetMin($refs.widgetMin);setValue('min')"
                     <?php endif; ?>
                        :min="options.min"
                        :max="options.max"
@@ -127,23 +131,20 @@ $fromToConfigJson = json_encode($fromToConfigData, JSON_UNESCAPED_UNICODE | JSON
                        x-ref="widgetMax"
                        :value="widgetMaxValue"
                     <?php if ($block->collectFilters()): ?>
-                        @input.debounce.250ms="calcWidgetMax($refs.widgetMax);setValue('max');"
+                        @input.debounce.250ms="calcWidgetMax($refs.widgetMax);setValue('max')"
                     <?php else: ?>
+                        <?php /* Sans bouton d'application, la saisie clavier doit filtrer d'elle-même :
+                                 recalcul pendant la frappe, application à la sortie du champ ou sur
+                                 Entrée. Sur @input, chaque pause de frappe déclencherait une navigation. */ ?>
                         @input.debounce.250ms="calcWidgetMax($refs.widgetMax)"
+                        @change="calcWidgetMax($refs.widgetMax);setValue('max')"
                     <?php endif; ?>
                        :min="options.min"
                        :max="options.max"
                 />
             </div>
-            <?php if (!$block->collectFilters()): ?>
-                <button type="button"
-                        data-amshopby-fromto="go"
-                        @click.prevent.stop="applyFilter()"
-                        class="am-filter-go btn btn-primary w-full justify-center mt-4"
-                        title="<?= $escaper->escapeHtmlAttr(__('Apply filter')) ?>">
-                    <?= $escaper->escapeHtml(__('Apply')) ?>
-                </button>
-            <?php endif; ?>
+            <?php /* Bouton « Appliquer » retiré : le slider filtre au relâchement de la poignée
+                     et les champs à la sortie du champ, comme le slider de prix du thème. */ ?>
         </div>
     </form>
 </div>
