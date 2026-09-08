@@ -68,8 +68,8 @@ $filterName = (string)($block->getData('filter_name') ?: 'Price');
 
             <div class="range-slider-track">
                 <div class="range-slider-track-filled" :style="{
-                    left: `${ ((currentMinValue - minRange) * 100) / (maxRange - minRange) }%`,
-                    right: `${ ((maxRange - currentMaxValue) * 100) / (maxRange - minRange) }%`
+                    left: `${ minRatio() * 100 }%`,
+                    right: `${ (1 - maxRatio()) * 100 }%`
                 }"></div>
             </div>
         </div>
@@ -80,7 +80,7 @@ $filterName = (string)($block->getData('filter_name') ?: 'Price');
             class="range-slider-thumb range-slider-thumb_left cursor-pointer"
             :class="{ 'active': isLeftThumbActive }"
             :style="{
-                left: `calc(${((currentMinValue - minRange) * 100) / (maxRange - minRange) }% - (32px * ${ ((currentMinValue - minRange) ) / (maxRange - minRange)}))`,
+                left: `calc(${ minRatio() * 100 }% - (32px * ${ minRatio() }))`,
             }"
             aria-label="<?= __('From') ?>"
             :aria-valuemin="minRange"
@@ -101,7 +101,7 @@ $filterName = (string)($block->getData('filter_name') ?: 'Price');
             class="range-slider-thumb range-slider-thumb_right cursor-pointer"
             :class="{ 'active': isRightThumbActive }"
             :style="{
-                right: `calc(${((maxRange - currentMaxValue) * 100) / (maxRange - minRange) }% - (32px * ${ ((maxRange - currentMaxValue) ) / (maxRange - minRange)}))`,
+                right: `calc(${ (1 - maxRatio()) * 100 }% - (32px * ${ 1 - maxRatio() }))`,
             }"
             aria-label="<?= __('To') ?>"
             :aria-valuemin="minRange"

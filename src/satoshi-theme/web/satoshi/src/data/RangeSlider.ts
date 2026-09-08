@@ -13,6 +13,10 @@ export type RangeSliderType = {
   priceFilterTimeout: ReturnType<typeof setTimeout> | null;
 
   init(): void;
+  valueToRatio(value: number): number;
+  ratioToValue(ratio: number): number;
+  minRatio(): number;
+  maxRatio(): number;
   updateThumbPositions(): void;
   applyPriceFilter(): void;
   onThumbDrag(side: 'left' | 'right'): void;
@@ -40,6 +44,45 @@ export const RangeSlider = (
 
     init() {
       this.setActiveRangeValuesFromURL();
+    },
+
+    /*
+     * Échelle logarithmique. Sur un catalogue où un article isolé à 24 469 €
+     * côtoie un gros du fond sous 1 000 €, une échelle linéaire tasse presque
+     * tout le catalogue dans les premiers pixels du rail. Le décalage de 1
+     * évite log(0) et permet une borne basse à 0 : minRange donne 0, maxRange
+     * donne 1, et la fonction reste strictement croissante entre les deux.
+     */
+    valueToRatio(value) {
+      const span = this.maxRange - this.minRange;
+
+      if (span <= 0) {
+        return 0;
+      }
+
+      const offset = Math.max(value - this.minRange, 0);
+
+      return Math.min(Math.log(offset + 1) / Math.log(span + 1), 1);
+    },
+
+    ratioToValue(ratio) {
+      const span = this.maxRange - this.minRange;
+
+      if (span <= 0) {
+        return this.minRange;
+      }
+
+      const clamped = Math.min(Math.max(ratio, 0), 1);
+
+      return this.minRange + Math.exp(clamped * Math.log(span + 1)) - 1;
+    },
+
+    minRatio() {
+      return this.valueToRatio(this.currentMinValue);
+    },
+
+    maxRatio() {
+      return this.valueToRatio(this.currentMaxValue);
     },
 
     updateThumbPositions() {
@@ -100,7 +143,7 @@ export const RangeSlider = (
         // `instanceof TouchEvent` throws on desktop Firefox, where TouchEvent is undefined.
         const x = "touches" in evt ? evt.touches[0].clientX : evt.clientX;
         const pos = (x - sliderRect.left) / sliderRect.width;
-        const newValue = Math.round(pos * (this.maxRange - this.minRange) + this.minRange);
+        const newValue = Math.round(this.ratioToValue(pos));
 
         if (isLeft) {
           this.isLeftThumbActive = true;
