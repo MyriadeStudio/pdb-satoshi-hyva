@@ -35,14 +35,25 @@ $estimated_width = $text_length * 12;
 
 <?php if ($logoSrc): ?>
     <!-- Desktop logo -->
+    <!--
+        `initialHeight` est la hauteur naturelle du logo, mémorisée pour pouvoir y revenir
+        quand le header cesse d'être rétréci. Elle était lue une seule fois à l'init Alpine :
+        si l'image n'était pas encore chargée, clientHeight valait 0 et le repli 56 restait
+        figé pour toute la vie de la page. On la mesure donc au moment où l'image est
+        réellement disponible — tout de suite si elle vient du cache, au `load` sinon.
+        La classe `height-[56px]` a été retirée : elle ne produit aucune règle (la syntaxe
+        Tailwind serait `h-[56px]`), elle n'a donc jamais rien fait.
+    -->
     <img
         src="<?= $escaper->escapeUrl($logoSrc) ?>"
         alt="<?= $escaper->escapeHtmlAttr($block->getLogoAlt() ? $block->getLogoAlt() : $storeName) ?>"
         width="<?= $escaper->escapeHtmlAttr($logoWidth ?? 200) ?>"
         height="<?= $escaper->escapeHtmlAttr($logoHeight ?? 200) ?>"
-        class="height-[56px] w-full transition-all max-md:hidden"
+        class="w-full transition-all max-md:hidden"
         style="max-width: <?= $logoWidth > 500 ? 500 : $logoWidth ?>px"
-        x-data="{ initialHeight: $el.clientHeight || 56 }"
+        x-data="{ initialHeight: 56 }"
+        x-init="$el.complete && (initialHeight = $el.clientHeight || 56)"
+        @load="initialHeight = $el.clientHeight || 56"
         :style="{
             'max-height': (initialHeight >= 56 && $store.main.isHeaderShadowVisible) ? '56px' : `${initialHeight}px`
         }"
