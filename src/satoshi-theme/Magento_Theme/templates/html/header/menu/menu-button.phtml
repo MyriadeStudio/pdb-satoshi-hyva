@@ -45,5 +45,11 @@ $block->setData('cache_tags', $blockCacheViewModel->collectBlockChildrenCacheTag
     >
         <?= $hyvaicons->renderHtml('close') ?>
     </div>
+    <?php /* text-md est VOULU et ne doit pas etre retire : le bouton porte .button (16px) ET
+             .icon-button (20px, importe apres donc gagnant) pour dimensionner le picto. Sans
+             text-md ici, le libelle passerait a 20px. Corollaire : une regle de taille posee sur
+             le bouton n atteint jamais ce libelle : pour le retailler, changer la classe de taille
+             ci-dessous plutot que d en poser une sur le bouton. Piege releve note du 03/09,
+             point 6 : 5 vagues de recette sur holt-erard. */ ?>
     <span class="text-md font-semibold text-fg max-md:hidden"><?= __('Menu') ?></span>
 </button>
