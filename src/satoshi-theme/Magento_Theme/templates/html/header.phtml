@@ -141,7 +141,11 @@ $hyvaicons = $viewModels->require(SvgIcons::class);
     <div id="end-of-header"></div>
 </header>
 
-<div class="pointer-events-none sticky top-[88px] z-30 h-[1px] max-md:hidden"
+<?php /* `header-floating-logo` : crochet de ciblage stable pour cette couche.
+   Elle est un frère POSTÉRIEUR du header et vit dans sa propre strate (z-30) ;
+   les thèmes enfants ont besoin de la viser sans dépendre de ses utilitaires,
+   qui changent au gré du markup. Voir pdb-header-vars.css de Pdb2026/satoshi. */ ?>
+<div class="header-floating-logo pointer-events-none sticky top-[88px] z-30 h-[1px] max-md:hidden"
      :style="`opacity: ${$store.main.opacityOnZoom}`"
 >
     <div
