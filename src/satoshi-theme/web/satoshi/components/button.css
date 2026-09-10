@@ -36,10 +36,31 @@
   
     &--outline {
       &-primary {
-        @apply border-1 border-solid border-primary-darker bg-transparent text-primary-darker;
-  
+        /* Contrat de tokens : mêmes `--btn-*` que outline-secondary. Les valeurs par
+           défaut reprennent exactement l'ancien jeu d'utilitaires (bordure et texte
+           primary-darker, fond transparent ; survol primary-lighter) — le rendu ne
+           change pas. Ce qui change : la couleur du bouton filaire devient réglable
+           par redéfinition de tokens, au lieu d'être figée dans les utilitaires. */
+        --btn-fg: var(--color-primary-darker);
+        --btn-border: var(--color-primary-darker);
+        --btn-bg: transparent;
+        --btn-fg-hover: var(--color-primary-on);
+        --btn-border-hover: var(--color-primary-lighter);
+        --btn-bg-hover: var(--color-primary-lighter);
+
+        @apply border-1 border-solid;
+        color: var(--btn-fg);
+        border-color: var(--btn-border);
+        background-color: var(--btn-bg);
+
         &:not(.button--disabled) {
-          @apply md:hover:border-primary-lighter md:hover:bg-primary-lighter md:hover:text-primary-on;
+          @screen md {
+            &:hover {
+              color: var(--btn-fg-hover);
+              border-color: var(--btn-border-hover);
+              background-color: var(--btn-bg-hover);
+            }
+          }
         }
       }
   

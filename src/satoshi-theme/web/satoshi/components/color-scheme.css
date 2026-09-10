@@ -59,9 +59,12 @@
    `.button--quiet` (boutons catégories, 0,1,0) et les défauts de variante. Le
    survol/group-hover lit les tokens `--btn-*-hover`, donc il est couvert d'office.
 
-   outline-PRIMARY : pas encore tokenisé (flèches de slider icon-button, et
-   instances qui figent `bg-bg` en !important). On garde l'override !important
-   historique en attendant sa conversion.
+   outline-PRIMARY : tokenisé lui aussi (button.css). Le `!important` subsiste,
+   mais il ne fige plus une couleur : la VALEUR vient des tokens, donc reste
+   redéfinissable par site. Il n'est là que pour battre les utilitaires Tailwind
+   figés sur certaines instances (`bg-bg` sur la wishlist et la recherche,
+   `bg-bg-sunken` sur les swatches) — la couche `utilities` bat la couche
+   `components` quelle que soit la spécificité, un token seul n'y suffirait pas.
    --------------------------------------------------------------------------- */
 
 /* outline-secondary — redéfinition des tokens (couvre rest + hover + group-hover). */
@@ -75,29 +78,30 @@
     --btn-bg-hover: color-mix(in srgb, var(--color-fg-inverse) 14%, transparent);
 }
 
-/* outline-primary — override historique (en attendant la tokenisation). */
+/* outline-primary — redéfinition des tokens, comme outline-secondary. Le
+   `!important` ne porte plus une couleur en dur : il applique le token, pour
+   battre les utilitaires `bg-*` figés sur certaines instances (cf. en-tête). */
 /* Repos : texte clair, bordure claire discrète, fond transparent. */
 [data-scheme="dark"] .button--outline-primary,
 .slider--on-dark .button--outline-primary {
-    color: var(--color-fg-inverse) !important;
-    border-color: color-mix(
-        in srgb,
-        var(--color-fg-inverse) 35%,
-        transparent
-    ) !important;
-    background-color: transparent !important;
+    --btn-fg: var(--color-fg-inverse);
+    --btn-border: color-mix(in srgb, var(--color-fg-inverse) 35%, transparent);
+    --btn-bg: transparent;
+    --btn-fg-hover: var(--color-fg-inverse);
+    --btn-border-hover: var(--color-fg-inverse);
+    --btn-bg-hover: color-mix(in srgb, var(--color-fg-inverse) 14%, transparent);
+
+    color: var(--btn-fg) !important;
+    border-color: var(--btn-border) !important;
+    background-color: var(--btn-bg) !important;
 }
 
 /* Survol, hors état désactivé : voile clair translucide, jamais de fond blanc. */
 [data-scheme="dark"] .button--outline-primary:not(.button--disabled):hover,
 .slider--on-dark .button--outline-primary:not(.button--disabled):hover {
-    color: var(--color-fg-inverse) !important;
-    border-color: var(--color-fg-inverse) !important;
-    background-color: color-mix(
-        in srgb,
-        var(--color-fg-inverse) 14%,
-        transparent
-    ) !important;
+    color: var(--btn-fg-hover) !important;
+    border-color: var(--btn-border-hover) !important;
+    background-color: var(--btn-bg-hover) !important;
 }
 
 /* -----------------------------------------------------------------------------
