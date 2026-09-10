@@ -1,0 +1,30 @@
+@layer components {
+  /* Habillage du pied de page.
+   *
+   * L'arrondi haut et le fond de la bande etaient deux utilitaires figes sur le
+   * template (`rounded-t-2xl md:bg-surface`). Un utilitaire Tailwind vit dans la
+   * couche `utilities`, qui bat la couche `components` quelle que soit la
+   * specificite : un site ne pouvait les changer qu'en les combattant depuis son
+   * custom_css. Ils passent par des tokens, aux memes valeurs qu'avant — le rendu
+   * ne change pas, mais la bande devient reglable :
+   *
+   *   .footer { --footer-radius: 0; --footer-bg-md: transparent; }
+   *
+   * Question de Philemon du 31/07 (« pourquoi le fond fonce du footer est-il
+   * arrondi ? ») : c'est --footer-radius qui arrondit le wrapper, pas le bloc CMS
+   * pose dedans. Le bloc, lui, est simplement rogne par cet arrondi.
+   */
+  .footer {
+    --footer-radius: 1rem;
+    --footer-bg: transparent;
+    --footer-bg-md: var(--color-surface);
+
+    border-top-left-radius: var(--footer-radius);
+    border-top-right-radius: var(--footer-radius);
+    background-color: var(--footer-bg);
+
+    @screen md {
+      background-color: var(--footer-bg-md);
+    }
+  }
+}
