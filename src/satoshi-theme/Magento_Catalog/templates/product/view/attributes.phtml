@@ -24,10 +24,20 @@ $product = $block->getProduct();
 ?>
 
 
+<?php
+    /* `expanded_by_default` : argument de layout sur le bloc product.attributes. Premier
+       parametre d'Accordion(), comme le fait deja coupon.phtml. Le panneau garde son
+       `max-height: 0` en dur (anti-FOUC) ; c'est _update() d'Accordion qui pose la hauteur
+       reelle a l'init, ouvert ou ferme — meme mecanique que description.phtml, qui tourne
+       en Accordion(true, 300) depuis toujours. */
+    $expandedByDefault = $block->hasData('expanded_by_default')
+        ? (bool) $block->getData('expanded_by_default')
+        : false;
+?>
 <?php if ($attributes = $block->getAdditionalData()): ?>
     <div
         class="animate-on-transition mx-4 mb-8 flex flex-col overflow-hidden rounded-md border-1 border-bg-sunken bg-surface px-4 md:mx-0 md:px-5"
-        x-data="Accordion(false, 300)"
+        x-data="Accordion(<?= $expandedByDefault ? 'true' : 'false' ?>, 300)"
     >
         <button
             class="group flex w-full items-center justify-between gap-3 py-4 text-start"

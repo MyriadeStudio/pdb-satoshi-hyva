@@ -89,7 +89,17 @@ if (!$inStock) {
 
     <div class="flex flex-grow flex-wrap justify-stretch gap-3 bg-bg relative">
         <!-- Quantity Controls -->
-        <?php if ($block->shouldRenderQuantity()): ?>
+        <?php
+            /* `show_qty` : argument de layout sur le bloc product.actions. Defaut true —
+               rien ne change sans intervention. A false, le selecteur entier disparait,
+               champ compris : le formulaire ne poste plus `qty` et Magento retient 1.
+               Complete shouldRenderQuantity(), qui est une decision de TYPE de produit
+               (coeur Magento) et non une preference de site.
+               Les deux rendus secondaires passent par addData() et non setData(), sans
+               quoi ils effaceraient l'argument pose en layout (cf. product-info.phtml). */
+            $showQty = $block->hasData('show_qty') ? (bool) $block->getData('show_qty') : true;
+        ?>
+        <?php if ($showQty && $block->shouldRenderQuantity()): ?>
             <div class="contents <?= !$isPopup ? 'max-md:hidden' : '' ?>">
                 <!-- Minus or remove -->
                 <button
