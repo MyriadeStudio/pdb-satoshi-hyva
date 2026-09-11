@@ -68,7 +68,17 @@
     @apply text-transparent;
   }
 
-  svg {
+  /* Style d'icone du theme : `fill-current` + `stroke-0` + 1em de cote.
+     Il convient aux icones du thème, tracees en aplat — mais PAS aux icones Lucide
+     des contenus CMS, qui sont tracees au trait (`fill="none"` + `stroke`). Sur
+     celles-ci, `fill: currentColor` et `stroke-width: 0` produisent une tache pleine.
+     La parade jusqu'ici etait de poser `fill-none stroke-current stroke-2 h-7 w-7` sur
+     CHAQUE svg de contenu ; on scope la regle a la place.
+
+     `:where()` ne pese rien dans la specificite : la regle reste a 0,0,1, exactement
+     comme avant — aucune autre regle ne change de vainqueur. `.pdb-icon-raw` est
+     l'echappatoire explicite pour un svg hors contenu CMS qui veut ses attributs. */
+  svg:not(:where([data-content-type] *, .pdb-icon-raw, .pdb-icon-raw *)) {
     @apply icon;
   }
 
