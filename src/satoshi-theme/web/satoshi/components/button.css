@@ -18,8 +18,15 @@
   
     &--filled {
       &-primary {
-        @apply bg-primary text-text-on-primary-bg;
-  
+        /* La couleur du texte suit le token de charte `--color-primary-on`, reglable par
+           site en BO. Elle etait figee sur l'utilitaire `text-text-on-primary-bg`, un
+           #FFFFFF en dur du tailwind.config : sur une couleur primaire claire le libelle
+           devenait illisible (releve sur bijouteriedumonaco, or pale #d2c693).
+           Repli #fff = le comportement d'avant si le token n'est pas emis. */
+        @apply bg-primary;
+
+        color: var(--color-primary-on, #fff);
+
         &:not(.button--disabled) {
           @apply md:hover:bg-primary-lighter;
         }
