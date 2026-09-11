@@ -31,18 +31,39 @@ $logoSrc = $logoPathResolver && method_exists($logoPathResolver, 'getLogoSrc')
 $text_length = strlen($storeName);
 $estimated_width = $text_length * 12;
 
+/* Largeur effective du logo desktop : `w-full` borne par ce max-width. Emis seulement
+   si une largeur est configuree (sinon la declaration serait invalide et ignoree). */
+$logoMaxWidth = $logoWidth ? min((int) $logoWidth, 500) : 0;
+
+/* Hauteur que prend le logo une fois sa largeur bornee. Calculee ICI pour etre juste des
+   le premier rendu : sans elle, la premiere peinture utilise la hauteur naturelle puis
+   Alpine la corrige, ce qui se voit comme un saut de taille. */
+$logoNaturalHeight = ($logoMaxWidth && $logoWidth && $logoHeight)
+    ? (int) round(((int) $logoHeight) * ($logoMaxWidth / (int) $logoWidth))
+    : 56;
+
 ?>
 
 <?php if ($logoSrc): ?>
     <!-- Desktop logo -->
     <!--
-        `initialHeight` est la hauteur naturelle du logo, mémorisée pour pouvoir y revenir
-        quand le header cesse d'être rétréci. Elle était lue une seule fois à l'init Alpine :
-        si l'image n'était pas encore chargée, clientHeight valait 0 et le repli 56 restait
-        figé pour toute la vie de la page. On la mesure donc au moment où l'image est
-        réellement disponible — tout de suite si elle vient du cache, au `load` sinon.
-        La classe `height-[56px]` a été retirée : elle ne produit aucune règle (la syntaxe
-        Tailwind serait `h-[56px]`), elle n'a donc jamais rien fait.
+        `initialHeight` est la hauteur d'affichage du logo quand le header n'est PAS rétréci ;
+        le binding y revient dès que l'ombre du header disparaît.
+
+        Elle ne peut pas se mesurer sur le rendu. Le binding ci-dessous pose `max-height` à
+        partir d'`initialHeight` AVANT toute mesure : lire `clientHeight` renvoie donc une
+        hauteur déjà bridée par la valeur qu'on cherche à établir, et `initialHeight` reste
+        collé à son point de départ. Un logo plus haut que ce point de départ était plafonné
+        à vie, et on voyait le rendu naturel sauter vers cette valeur dès l'init d'Alpine
+        (constaté sur bijouxrotolo, logo 85x110 affiché à 56).
+
+        On part donc de l'intrinsèque, que le CSS ne contraint pas : `naturalWidth` /
+        `naturalHeight`, ramenés à la largeur effective (`max-width`). Et la valeur initiale
+        est calculée côté PHP depuis la configuration du logo, pour être juste dès la
+        première peinture — plus de saut.
+
+        Sans largeur de logo configurée, on ne connaît pas la largeur d'affichage : on garde
+        alors l'ancien repli de 56.
     -->
     <img
         src="<?= $escaper->escapeUrl($logoSrc) ?>"
@@ -50,10 +71,18 @@ $estimated_width = $text_length * 12;
         width="<?= $escaper->escapeHtmlAttr($logoWidth ?? 200) ?>"
         height="<?= $escaper->escapeHtmlAttr($logoHeight ?? 200) ?>"
         class="w-full transition-all max-md:hidden"
-        style="max-width: <?= $logoWidth > 500 ? 500 : $logoWidth ?>px"
-        x-data="{ initialHeight: 56 }"
-        x-init="$el.complete && (initialHeight = $el.clientHeight || 56)"
-        @load="initialHeight = $el.clientHeight || 56"
+        <?php if ($logoMaxWidth): ?>style="max-width: <?= (int) $logoMaxWidth ?>px"<?php endif; ?>
+        x-data="{
+            maxWidth: <?= (int) $logoMaxWidth ?>,
+            initialHeight: <?= (int) $logoNaturalHeight ?>,
+            measure(el) {
+                if (this.maxWidth && el.naturalWidth) {
+                    this.initialHeight = Math.round(el.naturalHeight * this.maxWidth / el.naturalWidth);
+                }
+            }
+        }"
+        x-init="$el.complete && measure($el)"
+        @load="measure($el)"
         :style="{
             'max-height': (initialHeight >= 56 && $store.main.isHeaderShadowVisible) ? '56px' : `${initialHeight}px`
         }"
