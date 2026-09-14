@@ -26,6 +26,8 @@ use Satoshi\Core\Helper\IsThemeActive;
  */
 class Add extends SourceAdd
 {
+    use CartButtonResult;
+
     /**
      * @var ProductRepositoryInterface
      */
@@ -116,7 +118,7 @@ class Add extends SourceAdd
 
             /** Check product availability */
             if (!$product) {
-                return $this->goBack();
+                return $this->isCartButtonRequest() ? $this->createCartButtonResult() : $this->goBack();
             }
 
             $this->cart->addProduct($product, $params);
@@ -180,6 +182,10 @@ class Add extends SourceAdd
      */
     protected function goToCart()
     {
+        if ($this->isCartButtonRequest()) {
+            return $this->createCartButtonResult();
+        }
+
         $resultRedirect = $this->resultRedirectFactory->create();
         $resultRedirect->setUrl($this->getCartUrl());
         return $resultRedirect;

@@ -23,6 +23,7 @@ use Satoshi\Core\Helper\IsThemeActive;
  */
 class UpdatePost extends SourceUpdatePost
 {
+    use CartButtonResult;
 
     /**
      * @var IsThemeActive
@@ -96,7 +97,7 @@ class UpdatePost extends SourceUpdatePost
                 $this->_updateShoppingCart();
         }
 
-        return $this->_goBack();
+        return $this->isCartButtonRequest() ? $this->createCartButtonResult() : $this->_goBack();
     }
 
     /**

@@ -140,6 +140,8 @@ export const CartStore = <CartStoreType>{
     const formData = new FormData();
     formData.append("form_key", window.hyva.getFormKey());
     formData.append("uenc", window.hyva.getUenc());
+    // Only #cart-button is read from the response: ask for it instead of the redirect to the cart page
+    formData.append("satoshi_cart_button", "1");
     this.cartItems.forEach((item) => {
       formData.append(`cart[${item.item_id}][qty]`, item.qty.toString());
     });
@@ -228,6 +230,8 @@ export const CartStore = <CartStoreType>{
     const formData = new FormData(form);
     formData.append("uenc", window.hyva.getUenc());
     formData.append("form_key", window.hyva.getFormKey());
+    // Only #cart-button and #apply-coupon are read from the response
+    formData.append("satoshi_cart_button", "1");
 
     fetch(form.action, {
       method: "POST",

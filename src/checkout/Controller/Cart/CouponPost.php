@@ -6,6 +6,8 @@ use Magento\Checkout\Controller\Cart\CouponPost as CoreCouponPost;
 
 class CouponPost extends CoreCouponPost
 {
+    use CartButtonResult;
+
     /**
      * @var \Satoshi\Core\Helper\IsThemeActive
      */
@@ -69,7 +71,7 @@ class CouponPost extends CoreCouponPost
 
         $codeLength = strlen($couponCode);
         if (!$codeLength && !strlen($oldCouponCode)) {
-            return $this->_goBack();
+            return $this->isCartButtonRequest() ? $this->createCartButtonResult(true) : $this->_goBack();
         }
 
         try {
@@ -143,6 +145,6 @@ class CouponPost extends CoreCouponPost
             $this->_objectManager->get(\Psr\Log\LoggerInterface::class)->critical($e);
         }
 
-        return $this->_goBack();
+        return $this->isCartButtonRequest() ? $this->createCartButtonResult(true) : $this->_goBack();
     }
 }
