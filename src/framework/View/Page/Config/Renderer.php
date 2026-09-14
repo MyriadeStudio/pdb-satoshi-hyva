@@ -73,8 +73,6 @@ class Renderer extends SourceRenderer
         $result .= $this->renderTitle();
         $result .= '<!-- end-page-meta -->';
         $this->prepareFavicon();
-        $result .= $this->renderAssets($this->getAvailableResultGroups());
-        $result .= $this->pageConfig->getIncludes();
         return $result;
     }
 }
