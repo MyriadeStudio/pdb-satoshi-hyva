@@ -29,8 +29,10 @@ $isCartPage = $block->getData('isCartPage');
             '-translate-y-[2.5rem] pointer-events-none': !isTotalsExpanded
         }"
         <?php if (!$isCartPage): ?>
+            <?php /* Collapsed: only the 2.5rem shadow shows above the grand total. Clipping half of the panel let the
+                     summary lines show below the checkout button once the panel got taller (shipping, tax, discount). */ ?>
             :style="{
-                'clip-path': isTotalsExpanded ? 'inset(0 0 0 0)' : 'inset(0 0 50% 0)'
+                'clip-path': isTotalsExpanded ? 'inset(0 0 0 0)' : 'inset(0 0 calc(100% - 2.5rem) 0)'
             }"
         <?php endif; ?>
     >
