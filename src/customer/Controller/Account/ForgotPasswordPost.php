@@ -91,6 +91,12 @@ class ForgotPasswordPost extends SourceForgotPasswordPost
                 $this->session->setErrorMessage(__('We\'re unable to send the password reset email.'));
                 return $resultRedirect->setPath('*/*/forgotpassword');
             }
+            // Invalidate the current session as the core controller does. The success message is
+            // carried by the customer session (the theme renders no page messages), so reopen a
+            // session under a fresh id: without it, PHP would revive the destroyed id from the cookie.
+            $this->session->destroy(['send_expire_cookie']);
+            session_id(session_create_id());
+            $this->session->start();
             $this->session->setSuccessMessage($this->getSuccessMessage($email));
             return $resultRedirect->setPath('*/*/');
         } else {
