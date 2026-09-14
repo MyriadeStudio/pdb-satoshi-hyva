@@ -19,7 +19,6 @@ use Magento\Framework\GraphQl\Query\Resolver\ArgumentsProcessorInterface;
 use Magento\Framework\GraphQl\Schema\Type\ResolveInfo;
 use Magento\GraphQl\Model\Query\ContextInterface;
 use Magento\Search\Api\SearchInterface;
-use Magento\Search\Model\Search\PageSizeProvider;
 
 class Search implements ProductQueryInterface
 {
@@ -32,11 +31,6 @@ class Search implements ProductQueryInterface
      * @var SearchResultFactory
      */
     private $searchResultFactory;
-
-    /**
-     * @var PageSizeProvider
-     */
-    private $pageSizeProvider;
 
     /**
      * @var FieldSelection
@@ -71,7 +65,6 @@ class Search implements ProductQueryInterface
     /**
      * @param SearchInterface $search
      * @param SearchResultFactory $searchResultFactory
-     * @param PageSizeProvider $pageSize
      * @param FieldSelection $fieldSelection
      * @param ProductSearch $productsProvider
      * @param SearchCriteriaBuilder $searchCriteriaBuilder
@@ -82,7 +75,6 @@ class Search implements ProductQueryInterface
     public function __construct(
         SearchInterface $search,
         SearchResultFactory $searchResultFactory,
-        PageSizeProvider $pageSize,
         FieldSelection $fieldSelection,
         ProductSearch $productsProvider,
         SearchCriteriaBuilder $searchCriteriaBuilder,
@@ -92,7 +84,6 @@ class Search implements ProductQueryInterface
     ) {
         $this->search = $search;
         $this->searchResultFactory = $searchResultFactory;
-        $this->pageSizeProvider = $pageSize;
         $this->fieldSelection = $fieldSelection;
         $this->productsProvider = $productsProvider;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
@@ -102,7 +93,10 @@ class Search implements ProductQueryInterface
     }
 
     /**
-     * Extended to always return suggestions if requested
+     * Return product search results using Search API
+     *
+     * Same flow as the core 2.4.8 resolver (paginated search, suggestions only without results), plus an
+     * empty result when the search engine rejects the query instead of an internal error.
      *
      * @param array $args
      * @param ResolveInfo $info
@@ -117,17 +111,7 @@ class Search implements ProductQueryInterface
     ): SearchResult {
         try {
             $searchCriteria = $this->buildSearchCriteria($args, $info);
-
-            $realPageSize = $searchCriteria->getPageSize();
-            $realCurrentPage = $searchCriteria->getCurrentPage();
-            // Because of limitations of sort and pagination on Search API, query all IDs first.
-            $searchCriteria->setPageSize($this->pageSizeProvider->getMaxPageSize());
-            $searchCriteria->setCurrentPage(0);
             $itemsResults = $this->search->search($searchCriteria);
-
-            // Apply the original GraphQL pagination when loading the products.
-            $searchCriteria->setPageSize($realPageSize);
-            $searchCriteria->setCurrentPage($realCurrentPage);
             $searchResults = $this->productsProvider->getList(
                 $searchCriteria,
                 $itemsResults,
@@ -135,7 +119,9 @@ class Search implements ProductQueryInterface
                 $context
             );
 
-            $totalPages = $realPageSize ? ((int) ceil($searchResults->getTotalCount() / $realPageSize)) : 0;
+            $totalPages = $searchCriteria->getPageSize()
+                ? ((int) ceil($searchResults->getTotalCount() / $searchCriteria->getPageSize()))
+                : 0;
 
             if (!empty($args['search'])) {
                 $this->queryPopularity->execute($context, $args['search'], (int) $searchResults->getTotalCount());
@@ -150,7 +136,7 @@ class Search implements ProductQueryInterface
 
             $suggestions = [];
             $totalCount = (int) $searchResults->getTotalCount();
-            if (!empty($args['search'])) {
+            if ($totalCount === 0 && !empty($args['search'])) {
                 $suggestions = $this->suggestions->execute($context, $args['search']);
             }
 
@@ -159,8 +145,8 @@ class Search implements ProductQueryInterface
                     'totalCount' => $totalCount,
                     'productsSearchResult' => $productArray,
                     'searchAggregation' => $itemsResults->getAggregations(),
-                    'pageSize' => $realPageSize,
-                    'currentPage' => $realCurrentPage,
+                    'pageSize' => $args['pageSize'],
+                    'currentPage' => $args['currentPage'],
                     'totalPages' => $totalPages,
                     'suggestions' => $suggestions,
                 ]
