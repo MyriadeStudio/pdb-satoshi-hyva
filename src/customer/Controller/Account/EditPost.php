@@ -23,7 +23,6 @@ use Magento\Customer\Model\CustomerExtractor;
 use Magento\Customer\Model\Session;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\Escaper;
-use Magento\Framework\Exception\FileSystemException;
 use Magento\Framework\Exception\InputException;
 use Magento\Framework\Exception\InvalidEmailOrPasswordException;
 use Magento\Framework\Exception\LocalizedException;
@@ -31,7 +30,6 @@ use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Exception\SessionException;
 use Magento\Framework\Exception\State\UserLockedException;
 use Magento\Framework\Filesystem;
-use Magento\Framework\App\Filesystem\DirectoryList;
 use Satoshi\Core\Helper\IsThemeActive;
 
 class EditPost extends SourceEditPost
@@ -61,11 +59,6 @@ class EditPost extends SourceEditPost
      * @var AddressRegistry
      */
     private $addressRegistry;
-
-    /**
-     * @var Filesystem
-     */
-    private $filesystem;
 
     /**
      * @var SessionCleanerInterface
@@ -120,7 +113,6 @@ class EditPost extends SourceEditPost
     {
         $this->escaper = $escaper ?: ObjectManager::getInstance()->get(Escaper::class);
         $this->addressRegistry = $addressRegistry ?: ObjectManager::getInstance()->get(AddressRegistry::class);
-        $this->filesystem = $filesystem ?: ObjectManager::getInstance()->get(Filesystem::class);
         $this->sessionCleaner = $sessionCleaner ?: ObjectManager::getInstance()->get(SessionCleanerInterface::class);
         $this->accountConfirmation = $accountConfirmation ?: ObjectManager::getInstance()->get(AccountConfirmation::class);
         $this->customerUrl = $customerUrl ?: ObjectManager::getInstance()->get(Url::class);
@@ -189,11 +181,6 @@ class EditPost extends SourceEditPost
         if ($validFormKey && $this->getRequest()->isPost()) {
             $customer = $this->getCustomerDataObject($this->session->getCustomerId());
             $customerCandidate = $this->populateNewCustomerDataObject($this->_request, $customer);
-
-            $attributeToDelete = $this->_request->getParam('delete_attribute_value');
-            if ($attributeToDelete !== null) {
-                $this->deleteCustomerFileAttribute($customerCandidate, $attributeToDelete);
-            }
 
             try {
                 // whether a customer enabled change email option
@@ -391,44 +378,6 @@ class EditPost extends SourceEditPost
         foreach ($customer->getAddresses() as $address) {
             $addressModel = $this->addressRegistry->retrieve($address->getId());
             $addressModel->setShouldIgnoreValidation(true);
-        }
-    }
-
-    /**
-     * Removes file attribute from customer entity and file from filesystem
-     *
-     * @param CustomerInterface $customerCandidateDataObject
-     * @param string $attributeToDelete
-     * @return void
-     * @throws FileSystemException
-     */
-    private function deleteCustomerFileAttribute(
-        CustomerInterface $customerCandidateDataObject,
-        string $attributeToDelete
-    ) : void {
-        if ($attributeToDelete !== '') {
-            if (strpos($attributeToDelete, ',') !== false) {
-                $attributes = explode(',', $attributeToDelete);
-            } else {
-                $attributes[] = $attributeToDelete;
-            }
-            foreach ($attributes as $attr) {
-                $attributeValue = $customerCandidateDataObject->getCustomAttribute($attr);
-                if ($attributeValue!== null) {
-                    if ($attributeValue->getValue() !== '') {
-                        $mediaDirectory = $this->filesystem->getDirectoryWrite(DirectoryList::MEDIA);
-                        $fileName = $attributeValue->getValue();
-                        $path = $mediaDirectory->getAbsolutePath('customer' . $fileName);
-                        if ($fileName && $mediaDirectory->isFile($path)) {
-                            $mediaDirectory->delete($path);
-                        }
-                        $customerCandidateDataObject->setCustomAttribute(
-                            $attr,
-                            ''
-                        );
-                    }
-                }
-            }
         }
     }
 }
