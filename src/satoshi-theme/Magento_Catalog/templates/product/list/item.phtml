@@ -43,7 +43,11 @@ $productName = $product ? (string) $product->getName() : '';
 $imageUrl = $this->helper(Image::class)->init($product, 'product_page_image_medium')
     ->getUrl();
 $placeholderImageUrl = $this->helper(Image::class)->getDefaultPlaceholderUrl('image');
-$loading = $block->getData('loading');
+// Loading hints. The list flags its first products through image_custom_attributes, which is part of the
+// item cache key; a caller may set a value for the whole renderer; every other card loads lazily.
+$imageCustomAttributes = ($product ? $product->getData('image_custom_attributes') : null) ?? [];
+$loading = $imageCustomAttributes['loading'] ?? $block->getData('loading') ?: 'lazy';
+$fetchPriority = $imageCustomAttributes['fetchpriority'] ?? null;
 $breadcrumbs = $block->getData('breadcrumbs') ?? [];
 
 $itemDetailsRenderer = $product ? $block->getDetailsRenderer($product->getTypeId()) : null;
@@ -180,9 +184,7 @@ if ($product) {
                 class="pointer-events-none invisible absolute hidden h-0 w-0 md:block"
                 src="<?= $escaper->escapeUrl($imageUrl) ?>"
                 alt=""
-                <?php if ($loading): ?>
-                    loading="<?= $escaper->escapeHtmlAttr($loading) ?>"
-                <?php endif; ?>
+                loading="<?= $escaper->escapeHtmlAttr($loading) ?>"
             />
 
             <div class="relative overflow-hidden rounded-md bg-[--fade-in-bg]" x-element-transition-src="img"
@@ -196,8 +198,9 @@ if ($product) {
                             class="mix-blend-darken object-center max-h-full md:group-hover:scale-105 <?= $isContain ? 'object-contain rounded-md p-[2%]' : 'object-cover h-full w-full' ?>"
                             src="<?= $escaper->escapeUrl($imageUrl) ?>"
                             alt="<?= $escaper->escapeHtmlAttr($product->getName()) ?>"
-                            <?php if ($loading): ?>
-                                loading="<?= $escaper->escapeHtmlAttr($loading) ?>"
+                            loading="<?= $escaper->escapeHtmlAttr($loading) ?>"
+                            <?php if ($fetchPriority): ?>
+                                fetchpriority="<?= $escaper->escapeHtmlAttr($fetchPriority) ?>"
                             <?php endif; ?>
                         />
                     </div>
@@ -211,9 +214,7 @@ if ($product) {
                             width=""
                             height=""
                             alt=""
-                            <?php if ($loading): ?>
-                                loading="<?= $escaper->escapeHtmlAttr($loading) ?>"
-                            <?php endif; ?>
+                            loading="<?= $escaper->escapeHtmlAttr($loading) ?>"
                         />
                     </div>
                 <?php endif ?>
