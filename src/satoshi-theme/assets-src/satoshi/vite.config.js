@@ -9,7 +9,9 @@ export default defineConfig({
         styles: path.resolve(__dirname, "tailwind-source.css"),
       },
       output: {
-        dir: path.resolve(__dirname, "../"),
+        // The tooling lives outside web/ so that static content deploy never publishes it
+        // (node_modules, sources, lockfile): only the built files are written into web/.
+        dir: path.resolve(__dirname, "../../web"),
         entryFileNames: "assets/[name].js",
         chunkFileNames: "assets/[name].js",
         assetFileNames: "css/[name].[ext]",
