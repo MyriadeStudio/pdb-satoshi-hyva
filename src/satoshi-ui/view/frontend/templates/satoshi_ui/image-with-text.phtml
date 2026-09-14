@@ -52,7 +52,7 @@ $buttonClass = match ($buttonStyle) {
                 <?php if ($block->getData('mobile_image')): ?>
                     <source media="(max-width: 767px)" srcset="<?= $escaper->escapeUrl($block->getData('mobile_image')) ?>">
                 <?php endif; ?>
-                <img src="<?= $escaper->escapeUrl($block->getData('image')) ?>" alt="<?= $escaper->escapeHtmlAttr($block->getData('heading')) ?>" class="w-full">
+                <img src="<?= $escaper->escapeUrl($block->getData('image')) ?>" alt="<?= $escaper->escapeHtmlAttr($block->getData('heading')) ?>" class="w-full" loading="lazy">
             </picture>
         </div>
     <?php endif; ?>

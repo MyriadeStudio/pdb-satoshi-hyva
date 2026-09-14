@@ -89,6 +89,7 @@ $headingClass = $colorScheme === 'inverse' ? 'text-fg-inverse' : 'text-primary';
                             src="<?= $escaper->escapeUrl($imageUrl) ?>"
                             alt="<?= $escaper->escapeHtmlAttr($subheading) ?>"
                             class="h-[calc(640px/1.816)] md:h-[calc(768px/1.816)] lg:h-[calc(1024px/1.816)] xl:h-[calc(1280px/1.816)] 2xl:h-[calc(1536px/1.816)] w-full object-cover"
+                            loading="lazy"
                         />
                     </picture>
                 </div>
