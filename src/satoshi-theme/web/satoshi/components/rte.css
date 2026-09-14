@@ -91,59 +91,41 @@
       margin: 2.33em 0;
     }
 
-    article,
-    aside,
-    nav,
-    section {
-      h1 {
-        font-size: 1.5em;
-        font-weight: bold;
-        margin: 0.83em 0;
-      }
+    /*
+     * Sectioning h1 sizes, one level per nesting depth. Written with :is() rather than nested
+     * selector lists: nesting four selectors five levels deep expanded to thousands of
+     * combinations under both roots (about 190 kB of the compiled stylesheet).
+     */
+    :is(article, aside, nav, section) h1 {
+      font-size: 1.5em;
+      font-weight: bold;
+      margin: 0.83em 0;
+    }
 
-      article,
-      aside,
-      nav,
-      section {
-        h1 {
-          font-size: 1.17em;
-          font-weight: bold;
-          margin: 1em 0;
-        }
+    :is(article, aside, nav, section) :is(article, aside, nav, section) h1 {
+      font-size: 1.17em;
+      font-weight: bold;
+      margin: 1em 0;
+    }
 
-        article,
-        aside,
-        nav,
-        section {
-          h1 {
-            font-size: 1em;
-            font-weight: bold;
-            margin: 1.33em 0;
-          }
+    :is(article, aside, nav, section) :is(article, aside, nav, section) :is(article, aside, nav, section) h1 {
+      font-size: 1em;
+      font-weight: bold;
+      margin: 1.33em 0;
+    }
 
-          article,
-          aside,
-          nav,
-          section {
-            h1 {
-              font-size: 0.83em;
-              font-weight: bold;
-              margin: 1.67em 0;
-            }
+    :is(article, aside, nav, section) :is(article, aside, nav, section) :is(article, aside, nav, section)
+      :is(article, aside, nav, section) h1 {
+      font-size: 0.83em;
+      font-weight: bold;
+      margin: 1.67em 0;
+    }
 
-            article,
-            aside,
-            nav,
-            section {
-              h1 {
-                font-size: 0.67em;
-                font-weight: bold;
-                margin: 2.33em 0;
-              }
-            }
-          }
-        }
-      }
+    :is(article, aside, nav, section) :is(article, aside, nav, section) :is(article, aside, nav, section)
+      :is(article, aside, nav, section) :is(article, aside, nav, section) h1 {
+      font-size: 0.67em;
+      font-weight: bold;
+      margin: 2.33em 0;
     }
 
     table {
@@ -192,18 +174,12 @@
       padding: 0 0 0 40px;
     }
 
-    ul,
-    ol {
-      ul {
-        list-style-type: circle;
-      }
+    :is(ul, ol) ul {
+      list-style-type: circle;
+    }
 
-      ul,
-      ol {
-        ul {
-          list-style-type: square;
-        }
-      }
+    :is(ul, ol) :is(ul, ol) ul {
+      list-style-type: square;
     }
 
     dd {
@@ -214,16 +190,8 @@
       margin: 1em 0;
     }
 
-    ul,
-    ol,
-    menu,
-    dl {
-      ul,
-      ol,
-      menu,
-      dl {
-        margin: 0;
-      }
+    :is(ul, ol, menu, dl) :is(ul, ol, menu, dl) {
+      margin: 0;
     }
 
     legend {
