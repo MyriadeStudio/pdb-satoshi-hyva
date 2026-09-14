@@ -22,8 +22,6 @@ class ListItem implements ArgumentInterface
     ) {
         $renderer->setProduct($product);
         $renderer->setIsReadonly($isReadonly);
-        $cacheKey = 'product_details_' . $product->getId() . '_readonly_' . ($isReadonly ? 'yes' : 'no');
-        $renderer->setCacheKey($cacheKey);
 
         return $renderer->toHtml();
     }

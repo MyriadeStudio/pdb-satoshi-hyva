@@ -116,4 +116,17 @@ class Configurable extends SourceConfigurable
 
         return $this->jsonEncoder->encode($config);
     }
+
+    /**
+     * Get Key for caching block content
+     *
+     * A product card renders the details twice, for the quick buy popup and read-only: keep them apart.
+     * The inherited key already varies on store, currency, customer group and product.
+     *
+     * @return string
+     */
+    public function getCacheKey()
+    {
+        return parent::getCacheKey() . '-' . ($this->getIsReadonly() ? 'readonly' : 'popup');
+    }
 }

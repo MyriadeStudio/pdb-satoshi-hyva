@@ -249,7 +249,8 @@ class Category extends ProductsList
      */
     public function getCacheKeyInfo()
     {
-        return [
+        // The products list key already varies on store, theme, customer group, tax rates and currency
+        return array_merge(parent::getCacheKeyInfo(), [
             'SATOSHI_CATEGORY_WIDGET',
             $this->getData('heading'),
             $this->getData('category_id'),
@@ -258,6 +259,6 @@ class Category extends ProductsList
             $this->getData('max_products_count'),
             $this->currencyViewModel->getCurrentCurrencyCode(),
             $this->getRequest()->getFullActionName(),
-        ];
+        ]);
     }
 }

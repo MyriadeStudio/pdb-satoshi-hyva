@@ -9,8 +9,13 @@ use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Block\Product\Context;
 use Magento\Catalog\Helper\Image;
+use Magento\Catalog\Model\Category as CategoryModel;
+use Magento\Catalog\Model\Product as ProductModel;
+use Magento\Customer\Model\Context as CustomerContext;
+use Magento\Framework\App\Http\Context as HttpContext;
 use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Data\Wysiwyg\Normalizer;
+use Magento\Framework\DataObject\IdentityInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Serialize\Serializer\Json;
@@ -20,7 +25,7 @@ use Magento\Widget\Block\BlockInterface;
 /**
  * Collage widget block
  */
-class Collage extends Template implements BlockInterface
+class Collage extends Template implements BlockInterface, IdentityInterface
 {
     /**
      * @var string
@@ -53,10 +58,16 @@ class Collage extends Template implements BlockInterface
     private $normalizer;
 
     /**
+     * @var HttpContext
+     */
+    private $httpContext;
+
+    /**
      * @param  Context  $context
      * @param  CategoryRepositoryInterface  $categoryRepository
      * @param  ProductRepositoryInterface  $productRepository
      * @param  Image  $imageHelper
+     * @param  HttpContext  $httpContext
      * @param  Json|null  $serializer
      * @param  Normalizer|null  $normalizer
      * @param  array  $data
@@ -66,6 +77,7 @@ class Collage extends Template implements BlockInterface
         CategoryRepositoryInterface $categoryRepository,
         ProductRepositoryInterface $productRepository,
         Image $imageHelper,
+        HttpContext $httpContext,
         ?Json $serializer = null,
         ?Normalizer $normalizer = null,
         array $data = []
@@ -73,6 +85,7 @@ class Collage extends Template implements BlockInterface
         $this->categoryRepository = $categoryRepository ?? ObjectManager::getInstance()->get(CategoryRepositoryInterface::class);
         $this->productRepository = $productRepository ?? ObjectManager::getInstance()->get(ProductRepositoryInterface::class);
         $this->imageHelper = $imageHelper ?: ObjectManager::getInstance()->get(Image::class);
+        $this->httpContext = $httpContext;
         $this->serializer = $serializer ?: ObjectManager::getInstance()->get(Json::class);
         $this->normalizer = $normalizer ?: ObjectManager::getInstance()->get(Normalizer::class);
         parent::__construct(
@@ -157,13 +170,40 @@ class Collage extends Template implements BlockInterface
     }
 
     /**
+     * Extends the template key (store, template, base URL): the collage renders prices, so the
+     * key also varies on currency, customer group and tax rates.
+     *
      * @return array
      */
     public function getCacheKeyInfo()
     {
-        return [
+        return array_merge(parent::getCacheKeyInfo(), [
             'SATOSHI_COLLAGE_WIDGET',
+            $this->_storeManager->getStore()->getCurrentCurrencyCode(),
+            $this->httpContext->getValue(CustomerContext::CONTEXT_GROUP),
+            $this->serializer->serialize($this->httpContext->getValue('tax_rates')),
             $this->getData('collage_items')
-        ];
+        ]);
+    }
+
+    /**
+     * Cache tags of the categories and products shown, so that saving one purges the widget
+     *
+     * @return string[]
+     */
+    public function getIdentities()
+    {
+        $identities = [];
+        foreach ($this->getCollage() ?: [] as $item) {
+            if (($item['item_type'] ?? '') === 'item_category') {
+                if (!empty($item['item_category'])) {
+                    $identities[] = CategoryModel::CACHE_TAG . '_' . $item['item_category'];
+                }
+            } elseif (!empty($item['item_product'])) {
+                $identities[] = ProductModel::CACHE_TAG . '_' . $item['item_product'];
+            }
+        }
+
+        return $identities;
     }
 }

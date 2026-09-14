@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace Satoshi\SatoshiUi\Block\Widget;
 
 use Magento\Catalog\Block\Product\Context;
+use Magento\Catalog\Model\Category as CategoryModel;
 use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory;
 use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Data\Wysiwyg\Normalizer;
+use Magento\Framework\DataObject\IdentityInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Serialize\Serializer\Json;
@@ -18,7 +20,7 @@ use Magento\Widget\Block\BlockInterface;
 /**
  * Shop the look widget block
  */
-class Categories extends Template implements BlockInterface
+class Categories extends Template implements BlockInterface, IdentityInterface
 {
     /**
      * @var string
@@ -126,11 +128,13 @@ class Categories extends Template implements BlockInterface
     }
 
     /**
+     * Extends the template key, which carries the store: category names and URLs are store scoped
+     *
      * @return array
      */
     public function getCacheKeyInfo()
     {
-        return [
+        return array_merge(parent::getCacheKeyInfo(), [
             'SATOSHI_CATEGORIES_WIDGET',
             $this->getData('categories'),
             $this->getData('auto_resize_items'),
@@ -138,6 +142,24 @@ class Categories extends Template implements BlockInterface
             $this->getData('view_all_button'),
             $this->getData('heading'),
             $this->getData('text_color_scheme'),
-        ];
+        ]);
+    }
+
+    /**
+     * Cache tags of the categories shown, so that saving one purges the widget
+     *
+     * @return string[]
+     */
+    public function getIdentities()
+    {
+        $ids = $this->getData('categories') ? $this->decode($this->getData('categories')) : [];
+        $identities = [];
+        foreach ($ids ?: [] as $id) {
+            if (!empty($id['category_id'])) {
+                $identities[] = CategoryModel::CACHE_TAG . '_' . $id['category_id'];
+            }
+        }
+
+        return $identities;
     }
 }
