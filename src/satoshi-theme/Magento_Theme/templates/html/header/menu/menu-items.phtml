@@ -26,10 +26,6 @@ $menuItems = $block->getData('menuItems');
 $breadcrumbs = $block->getData('breadcrumbs') ?? [];
 $url = $block->getData('url');
 $level = $block->getData('level') ?? 1;
-if (!$menuItems) {
-    $menuItems = $viewModelNavigation->getNavigation(4);
-    $block->setData('cache_tags', $viewModelNavigation->getIdentities());
-}
 
 // @OVERRIDE START — Pdb_Menu : au niveau racine, si pdb_menu/general/enabled=1,
 // le menu est piloté par le bloc CMS nav_main_menu (widgets Pdb\Menu MenuItem)
@@ -44,6 +40,13 @@ if ($id === 'all') {
     $pdbMenuBlockId = (string) ($storeConfig->getStoreConfig('pdb_menu/general/cms_block_identifier') ?: 'nav_main_menu');
 }
 // @OVERRIDE END
+
+// L'arbre des catégories (collection sur 4 niveaux + réécritures d'URL) n'est chargé que s'il est
+// affiché : avec Pdb_Menu actif, il était calculé à chaque rendu puis ignoré.
+if (!$menuItems && !$pdbMenuEnabled) {
+    $menuItems = $viewModelNavigation->getNavigation(4);
+    $block->setData('cache_tags', $viewModelNavigation->getIdentities());
+}
 
 ?>
 <div
