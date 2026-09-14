@@ -1,3 +1,4 @@
+import Alpine from "alpinejs";
 import persist from "@alpinejs/persist";
 import morph from "@alpinejs/morph";
 
@@ -100,3 +101,9 @@ document.addEventListener("alpine:init", () => {
     Alpine.data("Wishlist", Wishlist);
     Alpine.data("ImageZoom", ImageZoom);
 });
+
+// Alpine is bundled here instead of being loaded from a CDN: no third party script on every page and
+// a single Alpine version for the core and its plugins. Start it the way Alpine's CDN build does, once
+// this module has run, so that every alpine:init listener registered before is honoured.
+window.Alpine = Alpine;
+queueMicrotask(() => Alpine.start());
