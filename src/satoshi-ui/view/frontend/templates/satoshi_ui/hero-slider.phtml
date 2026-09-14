@@ -94,8 +94,12 @@ $alignDesktop = static fn(string $pos): string => match ($pos) {
             x-ref="slider"
             @scroll="handleManualScroll"
         >
-            <?php foreach ($slides as $slide): ?>
+            <?php foreach (array_values($slides) as $slideIndex => $slide): ?>
                 <?php
+                // Seule la première slide est visible au chargement : elle porte l'image LCP. Les
+                // suivantes chargent leur média à l'approche et ne lisent leur vidéo qu'une fois affichées.
+                $isFirstSlide = $slideIndex === 0;
+                $mediaLoadingAttributes = $isFirstSlide ? 'loading="eager" fetchpriority="high"' : 'loading="lazy"';
                 $type = ($slide['slide_type'] ?? 'image') === 'video' ? 'video' : 'image';
                 $heading = $slide['heading'] ?? '';
                 $description = $slide['description'] ?? '';
@@ -150,7 +154,7 @@ $alignDesktop = static fn(string $pos): string => match ($pos) {
                                     <?php if ($mobileImage): ?>
                                         <source media="(max-width: 767px)" srcset="<?= $escaper->escapeUrl($mobileImage) ?>">
                                     <?php endif; ?>
-                                    <img src="<?= $escaper->escapeUrl($image) ?>" class="h-full w-full object-cover object-center" loading="eager" fetchpriority="high" alt="">
+                                    <img src="<?= $escaper->escapeUrl($image) ?>" class="h-full w-full object-cover object-center" <?= /* @noEscape */ $mediaLoadingAttributes ?> alt="">
                                 </picture>
                             </div>
                             <?php if (str_ends_with($videoUrl, '.mp4') || str_ends_with($videoUrl, '.webm')): ?>
@@ -158,13 +162,17 @@ $alignDesktop = static fn(string $pos): string => match ($pos) {
                                 <video
                                     class="absolute left-0 top-0 z-0 h-full w-full object-cover object-center bg-cover bg-center"
                                     <?= ($muted || $autoplay) ? 'muted' : '' ?>
-                                    <?= $autoplay ? 'autoplay' : '' ?>
+                                    <?= $autoplay && $isFirstSlide ? 'autoplay' : '' ?>
                                     <?= $loop ? 'loop' : '' ?>
                                     playsinline
-                                    preload="auto"
-                                    x-init="$el.muted = true;<?php if ($autoplay): ?> $el.play().catch(Boolean); var _kick = function () { $el.play().catch(Boolean); }; document.addEventListener('touchstart', _kick, { once: true, passive: true }); document.addEventListener('click', _kick, { once: true });<?php endif; ?> if ($el.readyState !== 0 && $el.readyState !== 1) { loaded = true }"
+                                    preload="<?= $isFirstSlide ? 'auto' : 'none' ?>"
+                                    x-init="$el.muted = true;<?php if ($autoplay && $isFirstSlide): ?> $el.play().catch(Boolean); var _kick = function () { $el.play().catch(Boolean); }; document.addEventListener('touchstart', _kick, { once: true, passive: true }); document.addEventListener('click', _kick, { once: true });<?php endif; ?> if ($el.readyState !== 0 && $el.readyState !== 1) { loaded = true }"
+                                    <?php if ($autoplay && !$isFirstSlide): ?>
+                                        x-intersect.half="$el.play().catch(Boolean)"
+                                        x-intersect:leave="$el.pause()"
+                                    <?php endif; ?>
                                     @loadeddata="loaded = true"
-                                    @canplay="loaded = true<?php if ($autoplay): ?>; $el.play().catch(Boolean)<?php endif; ?>"
+                                    @canplay="loaded = true<?php if ($autoplay && $isFirstSlide): ?>; $el.play().catch(Boolean)<?php endif; ?>"
                                     @playing="loaded = true"
                                 >
                                     <source src="<?= $escaper->escapeUrl($videoUrl) ?>" type="<?= $escaper->escapeHtmlAttr($videoType) ?>">
@@ -187,7 +195,7 @@ $alignDesktop = static fn(string $pos): string => match ($pos) {
                                         <?php if ($mobileImage): ?>
                                             <source media="(max-width: 767px)" srcset="<?= $escaper->escapeUrl($mobileImage) ?>">
                                         <?php endif; ?>
-                                        <img class="absolute left-0 top-0 h-full w-full object-cover object-center" src="<?= $escaper->escapeUrl($image) ?>" alt="<?= $escaper->escapeHtmlAttr($heading) ?>">
+                                        <img class="absolute left-0 top-0 h-full w-full object-cover object-center" src="<?= $escaper->escapeUrl($image) ?>" alt="<?= $escaper->escapeHtmlAttr($heading) ?>" <?= /* @noEscape */ $mediaLoadingAttributes ?>>
                                     </picture>
                                 </div>
                             <?php else: ?>
