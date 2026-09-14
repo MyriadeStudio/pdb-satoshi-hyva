@@ -24,12 +24,17 @@ use Magento\Framework\View\Element\Template;
  * -- intersect included -- so the children are deliberately not rendered as a whole here, to
  * avoid registering the same directives twice.
  *
- * The htmldialog plugin is the exception: nothing in app.js provides it, so every Hyva modal
- * built on a native dialog element (hyva.modal + x-htmldialog) stayed closed forever. Third
- * party Hyva compatibility modules rely on it, so render that one child explicitly.
+ * Two plugins are exceptions, because nothing in app.js provides them:
+ * - htmldialog: every Hyva modal built on a native dialog element (hyva.modal + x-htmldialog)
+ *   stayed closed forever, and third party Hyva compatibility modules rely on it;
+ * - snap-slider: the product carousels of Pdb_PageBuilder and Pdb_CatalogWidget use
+ *   x-snap-slider, without it their arrows stayed invisible and disabled and the pager inert.
+ * Render those children explicitly. The defer plugin is left out on purpose: its gain was measured
+ * as marginal, and it only handles components present on first load (SPA navigation, morph).
  */
 ?>
 <?= $block->getChildHtml('alpine-plugin-htmldialog') ?>
+<?= $block->getChildHtml('alpine-plugin-snap-slider') ?>
 <!-- Inject satoshi custom js logic, AlpineJS included -->
 <script type="module"
         src="<?= $escaper->escapeUrl($block->getViewFileUrl('assets/app.js')) ?>"
