@@ -129,6 +129,9 @@ $isCartPage = $block->getData('isCartPage');
         </div>
 
         <div class="mt-2 flex flex-col gap-4 rounded-b-xl bg-bg max-md:px-3">
+            <?php if ($isCartPage): ?>
+                <?= $block->getLayout()->renderElement('satoshi.cart.totals.after') ?>
+            <?php endif; ?>
             <a href="<?= $escaper->escapeUrl($block->getUrl('checkout')) ?>"
                class="button button--filled-primary h-11 w-full"
                :class="{ 'button--disabled': $store.cart.isLoading }"

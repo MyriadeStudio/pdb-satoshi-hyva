@@ -4,5 +4,14 @@
     <body>
       <referenceBlock name="page.main.title" remove="true" />
       <referenceBlock name="breadcrumbs" remove="true" />
+
+      <!--
+      Extension point of the cart page totals, rendered by Magento_Theme::html/header/cart/minicart-totals.phtml
+      between the grand total and the checkout button (e.g. the Alma widget of Pdb_AlmaWidget).
+      Declared under checkout.cart, whose Satoshi template does not render its children.
+      -->
+      <referenceBlock name="checkout.cart">
+        <container name="satoshi.cart.totals.after" label="Cart page: below the grand total"/>
+      </referenceBlock>
     </body>
 </page>
