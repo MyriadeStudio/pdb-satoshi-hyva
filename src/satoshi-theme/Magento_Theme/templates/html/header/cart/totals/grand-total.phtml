@@ -9,7 +9,7 @@
 
       <div class="flex justify-between">
         <p x-text="`${segment.title} (${excludingTaxMessage})`"></p>
-        <p x-text="hyva.formatPrice(cartTotals.grand_total)"></p>
+        <p x-text="hyva.formatPrice(Math.max(0, cartTotals.grand_total - cartTotals.tax_amount))"></p>
       </div>
     </div>
   </template>
