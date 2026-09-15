@@ -9,6 +9,7 @@ use Magento\Framework\View\TemplateEngine\Php;
 use Satoshi\Theme\Block\Popup;
 use Satoshi\Theme\Block\Resizable;
 use Satoshi\Theme\Block\Template;
+use Satoshi\Theme\Model\LazyBlock;
 
 class SharedVariablesPlugin
 {
@@ -19,13 +20,15 @@ class SharedVariablesPlugin
    * @param mixed[] $dictionary
    * @return mixed[]
    *
-   * Assign template variables that are available in all templates.
+   * Assign template variables that are available in all templates. The blocks are only created when a
+   * template calls them (see LazyBlock).
    */
   public function beforeRender(Php $subject, BlockInterface $block, $filename, array $dictionary = [])
   {
-    $dictionary['resizable'] = $block->getLayout()->createBlock(Resizable::class);
-    $dictionary['popup'] = $block->getLayout()->createBlock(Popup::class);
-    $dictionary['template'] = $block->getLayout()->createBlock(Template::class);
+    $layout = $block->getLayout();
+    $dictionary['resizable'] = new LazyBlock($layout, Resizable::class);
+    $dictionary['popup'] = new LazyBlock($layout, Popup::class);
+    $dictionary['template'] = new LazyBlock($layout, Template::class);
 
     return [$block, $filename, $dictionary];
   }
