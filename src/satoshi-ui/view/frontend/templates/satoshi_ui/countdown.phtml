@@ -68,7 +68,7 @@ $buttonClass = match ($buttonStyle) {
                 }
             )
         "
-        x-show="isLoaded <?= $shouldHide ? '&& !isFinished' : '' ?>"
+        x-show="isLoaded <?= $hideOnComplete ? '&& !isFinished' : '' ?>"
         x-transition
         class="relative bg-bg-sunken overflow-hidden [[data-appearance='contained']_&]:rounded-md"
         <?php if ($schemeAttr): ?>data-scheme="dark"<?php endif; ?>
