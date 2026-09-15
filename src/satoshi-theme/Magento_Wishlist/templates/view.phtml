@@ -12,6 +12,11 @@ use Magento\Wishlist\Helper\Data as WishlistHelper;
 $wishlistHelper = $this->helper(WishlistHelper::class);
 $successMessage = $block->getSuccessMessage();
 $errorMessage = $block->getErrorMessage();
+/*
+ * Session messages may carry links (account confirmation) but also exception texts with catalog data:
+ * keep formatting tags, escape everything else.
+ */
+$messageTags = ['a', 'b', 'br', 'em', 'i', 'span', 'strong'];
 ?>
 
 <?php if ($wishlistHelper->isAllow()): ?>
@@ -32,7 +37,7 @@ $errorMessage = $block->getErrorMessage();
         >
             <?php if ($successMessage): ?>
                 <div class="text-green-700 mb-3">
-                    <span><?= $successMessage; ?></span>
+                    <span><?= $escaper->escapeHtml($successMessage, $messageTags) ?></span>
                 </div>
             <?php elseif ($errorMessage): ?>
                 <div class="field-error mb-3">

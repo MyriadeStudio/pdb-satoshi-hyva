@@ -9,6 +9,11 @@ use Magento\Sales\Block\Widget\Guest\Form;
 /** @var Form $block */
 
 $errorMessage = $block->getErrorMessage();
+/*
+ * Session messages may carry links (account confirmation) but also exception texts with catalog data:
+ * keep formatting tags, escape everything else.
+ */
+$messageTags = ['a', 'b', 'br', 'em', 'i', 'span', 'strong'];
 ?>
 <div class="mx-auto mb-16 w-[412px] px-4 h-full flex md:items-center md:px-0 max-w-full">
     <form
@@ -102,7 +107,7 @@ $errorMessage = $block->getErrorMessage();
                 </div>
                 <?php if ($errorMessage): ?>
                     <div class="field-error mt-1">
-                        <span class="messages"><?= $errorMessage ?></span>
+                        <span class="messages"><?= $escaper->escapeHtml($errorMessage, $messageTags) ?></span>
                     </div>
                 <?php endif; ?>
             </div>

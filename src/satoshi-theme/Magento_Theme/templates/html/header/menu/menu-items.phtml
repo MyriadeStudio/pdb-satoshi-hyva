@@ -107,7 +107,7 @@ if (!$menuItems && !$pdbMenuEnabled) {
                 }"
                 x-show="$store.main.isMobile || '<?= $id ?>' !== 'all'"
             >
-                <?= $title ?>
+                <?= $escaper->escapeHtml($title) ?>
             </h2>
 
             <div id="menu-actions-<?= $id ?>" class="md:mt-[6px] md:flex-none md:flex-row"></div>
@@ -148,7 +148,7 @@ if (!$menuItems && !$pdbMenuEnabled) {
                         :aria-expanded="history.includes('<?= $menuItem['id'] ?>')"
                     >
                         <span class="link max-w-full truncate border-transparent transition-colors md:group-hover:border-b-1 md:group-hover:border-current md:group-hover:text-primary-darker">
-                            <?= $menuItem['name'] ?>
+                            <?= $escaper->escapeHtml($menuItem['name']) ?>
                         </span>
                         <span class="text-xl transition-[color,transform] md:group-hover:-translate-x-3 md:group-hover:text-primary-darker">
                             <?= $hyvaicons->renderHtml('chevron-right'); ?>
@@ -207,15 +207,15 @@ if (!$menuItems && !$pdbMenuEnabled) {
                         <?php elseif ($index === count($menuItems) - 1): ?>
                             x-a11y-trap-target.end="$store.resizable.isVisible('menu-desktop') && !$store.main.isMobile && history.length > 0 && history[history.length - 1] === '<?= $id ?>'"
                         <?php endif; ?>
-                        href="<?= $menuItem['url'] ?>"
+                        href="<?= $escaper->escapeUrl($menuItem['url']) ?>"
                         role="link"
-                        x-element-transition-trigger:category.animate="{
-                            'title': `<?= $menuItem['name'] ?>`,
-                            'url': '<?= $menuItem['url'] ?>',
-                            'breadcrumbs': <?= $escaper->escapeHtmlAttr(json_encode($breadcrumbs)) ?>,
-                            'img': '<?= $menuItem['image'] ?? '' ?>',
-                            'description': `<?= $escaper->escapeUrl($menuItem['description'] ?? '') ?>`,
-                        }"
+                        x-element-transition-trigger:category.animate="<?= $escaper->escapeHtmlAttr((string) json_encode([
+                            'title' => (string) $menuItem['name'],
+                            'url' => (string) $menuItem['url'],
+                            'breadcrumbs' => $breadcrumbs,
+                            'img' => (string) ($menuItem['image'] ?? ''),
+                            'description' => (string) ($menuItem['description'] ?? ''),
+                        ])) ?>"
                         class="focus-visible:focus-ring group flex min-h-11 items-center justify-between py-1"
                         :class="{
                             'text-primary font-semibold': history.includes('<?= $menuItem['id'] ?>')
@@ -224,7 +224,7 @@ if (!$menuItems && !$pdbMenuEnabled) {
                         <span
                             class="link max-w-full truncate border-transparent transition-colors md:group-hover:border-b-1 md:group-hover:border-current md:group-hover:text-primary-darker"
                         >
-                            <?= $menuItem['name'] ?>
+                            <?= $escaper->escapeHtml($menuItem['name']) ?>
                         </span>
                     </a>
                 <?php endif; ?>
@@ -250,10 +250,10 @@ if (!$menuItems && !$pdbMenuEnabled) {
                 <a
                     x-element-transition-trigger
                     :class="$store.main.isMobile ? 'button button--filled-primary w-full': 'flex items-center'"
-                    href="<?= $url ?>"
+                    href="<?= $escaper->escapeUrl($url) ?>"
                 >
                     <template x-if="$store.main.isMobile">
-                        <span><?= __('View All') ?> <span class="lowercase"><?= $title ?></span></span>
+                        <span><?= __('View All') ?> <span class="lowercase"><?= $escaper->escapeHtml($title) ?></span></span>
                     </template>
                     <template x-if="!$store.main.isMobile">
                         <span class="flex items-center">

@@ -70,7 +70,7 @@ $hasSamples               = $block->getProduct()->getTypeInstance()->hasSamples(
                                 value="<?= $escaper->escapeHtmlAttr($link->getId()) ?>"
                                 <?= $escaper->escapeHtml($block->getLinkCheckedValue($link)) ?>
                                 x-model="selectedValues"
-                                @change="linkSelectionChange($event.target, '<?= $link['title'] ?>')"
+                                @change="linkSelectionChange($event.target, <?= $escaper->escapeHtmlAttr((string) json_encode((string) $link->getTitle())) ?>)"
                             >
                             <span class="checkbox__control h-5 w-5" aria-hidden="true">
                                 <?= $hyvaicons->renderHtml('checkmark') ?>

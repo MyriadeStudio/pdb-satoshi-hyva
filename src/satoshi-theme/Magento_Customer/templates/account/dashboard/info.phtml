@@ -14,15 +14,20 @@ use Hyva\Theme\ViewModel\SvgIcons;
 $hyvaicons = $viewModels->require(SvgIcons::class);
 $successMessage = $block->getSuccessMessage();
 $errorMessage = $block->getErrorMessage();
+/*
+ * Session messages may carry links (account confirmation) but also exception texts with catalog data:
+ * keep formatting tags, escape everything else.
+ */
+$messageTags = ['a', 'b', 'br', 'em', 'i', 'span', 'strong'];
 ?>
 
 <?php if ($successMessage): ?>
     <div class="field-success -mt-3 mb-3">
-        <span><?= $successMessage ?></span>
+        <span><?= $escaper->escapeHtml($successMessage, $messageTags) ?></span>
     </div>
 <?php elseif ($errorMessage): ?>
     <div class="field-error -mt-3 mb-3">
-        <span class="messages"><?= $errorMessage ?></span>
+        <span class="messages"><?= $escaper->escapeHtml($errorMessage, $messageTags) ?></span>
     </div>
 <?php endif; ?>
 

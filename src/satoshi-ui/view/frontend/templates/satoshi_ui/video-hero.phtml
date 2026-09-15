@@ -187,11 +187,11 @@ $buttonClass = $colorScheme === 'inverse' ? 'button--filled-secondary' : 'button
                     <?php endif; ?>
                     class="button <?= $escaper->escapeHtmlAttr($buttonClass) ?> <?= ($hasHeading || $hasDescription) ? 'mt-16' : '' ?>"
                     <?php if($linkType === 'category'): ?>
-                        x-element-transition-trigger:category.animate="{
-                            'title': `<?= $category['name'] ?? '' ?>`,
-                            'url': `<?= $category['url'] ?? '' ?>`,
-                            'img': `<?= $category['image'] ?? '' ?>`
-                        }"
+                        x-element-transition-trigger:category.animate="<?= $escaper->escapeHtmlAttr((string) json_encode([
+                            'title' => (string) ($category['name'] ?? ''),
+                            'url' => (string) ($category['url'] ?? ''),
+                            'img' => (string) ($category['image'] ?? ''),
+                        ])) ?>"
                     <?php else: ?>
                         x-element-transition-trigger
                     <?php endif; ?>

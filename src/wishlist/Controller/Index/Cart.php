@@ -27,6 +27,7 @@ use Magento\Wishlist\Model\ItemFactory;
 use Magento\Wishlist\Model\LocaleQuantityProcessor;
 use Magento\Wishlist\Model\ResourceModel\Item\Option\Collection;
 use Magento\Wishlist\Controller\Index\Cart as SourceCart;
+use Psr\Log\LoggerInterface;
 use Satoshi\Core\Helper\IsThemeActive;
 
 /**
@@ -60,6 +61,11 @@ class Cart extends SourceCart
     private IsThemeActive $isThemeActive;
 
     /**
+     * @var LoggerInterface
+     */
+    private LoggerInterface $logger;
+
+    /**
      * @param Action\Context $context
      * @param WishlistProviderInterface $wishlistProvider
      * @param LocaleQuantityProcessor $quantityProcessor
@@ -75,6 +81,7 @@ class Cart extends SourceCart
      * @param CookieMetadataFactory|null $cookieMetadataFactory
      * @param \Magento\Customer\Model\Session $customerSession
      * @param IsThemeActive $isThemeActive
+     * @param LoggerInterface $logger
      *
      * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
@@ -92,6 +99,7 @@ class Cart extends SourceCart
         Validator $formKeyValidator,
         \Magento\Customer\Model\Session $customerSession,
         IsThemeActive $isThemeActive,
+        LoggerInterface $logger,
         ?CookieManagerInterface $cookieManager = null,
         ?CookieMetadataFactory $cookieMetadataFactory = null
     ) {
@@ -101,6 +109,7 @@ class Cart extends SourceCart
             ObjectManager::getInstance()->get(CookieMetadataFactory::class);
         $this->_customerSession = $customerSession;
         $this->isThemeActive = $isThemeActive;
+        $this->logger = $logger;
         parent::__construct(
             $context,
             $wishlistProvider,
@@ -240,7 +249,9 @@ class Cart extends SourceCart
             $this->_customerSession->setErrorMessage($e->getMessage());
             $redirectUrl = $configureUrl;
         } catch (\Exception $e) {
-            $this->_customerSession->setErrorMessage($e, __('We can\'t add the item to the cart right now.'));
+            // The exception itself was stored in the session, its message and trace were shown to the customer
+            $this->logger->critical($e);
+            $this->_customerSession->setErrorMessage(__('We can\'t add the item to the cart right now.'));
         }
 
         $this->helper->calculate();

@@ -22,8 +22,8 @@ $cartTotals = $cart->getSerializedCartTotals();
 <button
     x-init="() => {
         $store.cart.setCartTotals(<?= $escaper->escapeHtmlAttr($cartTotals) ?>)
-        $store.cart.setErrorMessage(`<?= $escaper->escapeHtmlAttr($block->getMiniCartErrorMessage()) ?>`)
-        $store.cart.setProductCartErrorMessage(`<?= $escaper->escapeHtmlAttr($block->getProductCartErrorMessage()) ?>`)
+        $store.cart.setErrorMessage(<?= $escaper->escapeHtmlAttr((string) json_encode((string) $block->getMiniCartErrorMessage())) ?>)
+        $store.cart.setProductCartErrorMessage(<?= $escaper->escapeHtmlAttr((string) json_encode((string) $block->getProductCartErrorMessage())) ?>)
     }"
     id="cart-button"
     class="contrast-border md:button--filled-surface button ghost-primary icon-button icon-button--size-lg col-start-5"

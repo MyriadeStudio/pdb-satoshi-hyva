@@ -27,6 +27,11 @@ $isAutocompleteEnabled = $storeConfig->getStoreConfig('customer/password/autocom
 
 $successMessage = $block->getSuccessMessage();
 $errorMessage = $block->getErrorMessage();
+/*
+ * Session messages may carry links (account confirmation) but also exception texts with catalog data:
+ * keep formatting tags, escape everything else.
+ */
+$messageTags = ['a', 'b', 'br', 'em', 'i', 'span', 'strong'];
 
 $emailFailed = !empty($errorMessage['email_current_password']) || !empty($errorMessage['email']);
 $newPasswordFailed = !empty($errorMessage['current_password']) || !empty($errorMessage['password']) || !empty($errorMessage['password_confirmation']);
@@ -68,11 +73,11 @@ $newPasswordFailed = !empty($errorMessage['current_password']) || !empty($errorM
     >
         <?php if ($successMessage): ?>
             <div class="text-green-700 -mt-3 mb-3">
-                <span><?= $successMessage ?></span>
+                <span><?= $escaper->escapeHtml($successMessage, $messageTags) ?></span>
             </div>
         <?php elseif (!empty($errorMessage['general'])): ?>
             <div class="field-error -mt-3 mb-3">
-                <span class="messages"><?= $errorMessage['general'] ?></span>
+                <span class="messages"><?= $escaper->escapeHtml($errorMessage['general'], $messageTags) ?></span>
             </div>
         <?php endif; ?>
 
@@ -160,7 +165,7 @@ $newPasswordFailed = !empty($errorMessage['current_password']) || !empty($errorM
                 </div>
                 <?php if (!empty($errorMessage['email'])): ?>
                     <div class="messages mt-1">
-                        <span><?= $errorMessage['email'] ?></span>
+                        <span><?= $escaper->escapeHtml($errorMessage['email'], $messageTags) ?></span>
                     </div>
                 <?php endif; ?>
             </div>
@@ -190,7 +195,7 @@ $newPasswordFailed = !empty($errorMessage['current_password']) || !empty($errorM
                 </div>
                 <?php if (!empty($errorMessage['current_password']) || !empty($errorMessage['email_current_password'])): ?>
                     <div class="messages mt-1">
-                        <span><?= $errorMessage['current_password'] ?? $errorMessage['email_current_password'] ?></span>
+                        <span><?= $escaper->escapeHtml(($errorMessage['current_password'] ?? $errorMessage['email_current_password']), $messageTags) ?></span>
                     </div>
                 <?php endif; ?>
             </div>
@@ -228,7 +233,7 @@ $newPasswordFailed = !empty($errorMessage['current_password']) || !empty($errorM
                     </div>
                     <?php if (!empty($errorMessage['password'])): ?>
                         <div class="messages mt-1">
-                            <span><?= $errorMessage['password'] ?></span>
+                            <span><?= $escaper->escapeHtml($errorMessage['password'], $messageTags) ?></span>
                         </div>
                     <?php endif; ?>
                 </div>
@@ -250,7 +255,7 @@ $newPasswordFailed = !empty($errorMessage['current_password']) || !empty($errorM
                     </div>
                     <?php if (!empty($errorMessage['password_confirmation'])): ?>
                         <div class="messages mt-1">
-                            <span><?= $errorMessage['password_confirmation'] ?></span>
+                            <span><?= $escaper->escapeHtml($errorMessage['password_confirmation'], $messageTags) ?></span>
                         </div>
                     <?php endif; ?>
                 </div>

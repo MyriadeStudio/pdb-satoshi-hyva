@@ -12,6 +12,11 @@ use Satoshi\Theme\Block\Customer\Sharing;
 
 $successMessage = $block->getSuccessMessage();
 $errorMessage = $block->getErrorMessage();
+/*
+ * Session messages may carry links (account confirmation) but also exception texts with catalog data:
+ * keep formatting tags, escape everything else.
+ */
+$messageTags = ['a', 'b', 'br', 'em', 'i', 'span', 'strong'];
 ?>
 <section class="w-full xl:w-1/2">
     <h2 class="text-fg text-lg font-bold mb-5">
@@ -31,7 +36,7 @@ $errorMessage = $block->getErrorMessage();
     >
         <?php if ($successMessage): ?>
             <div class="text-green-700 -mt-3 mb-3">
-                <span><?= $successMessage ?></span>
+                <span><?= $escaper->escapeHtml($successMessage, $messageTags) ?></span>
             </div>
         <?php elseif ($errorMessage['general'] ?? false): ?>
             <div class="field-error -mt-3 mb-3">

@@ -22,6 +22,11 @@ $recaptcha = $block->getData('viewModelRecaptcha');
 
 $errorMessage = $block->getErrorMessage();
 $successMessage = $block->getSuccessMessage();
+/*
+ * Session messages may carry links (account confirmation) but also exception texts with catalog data:
+ * keep formatting tags, escape everything else.
+ */
+$messageTags = ['a', 'b', 'br', 'em', 'i', 'span', 'strong'];
 
 ?>
 <div class="container mx-auto flex h-full items-center px-5" x-data="Object.assign(Form('customer-login-form'), Authentication)">
@@ -47,7 +52,7 @@ $successMessage = $block->getSuccessMessage();
 
             <?php if ($successMessage): ?>
                 <div class="field-success -mt-3 mb-3">
-                    <span><?= $successMessage ?></span>
+                    <span><?= $escaper->escapeHtml($successMessage, $messageTags) ?></span>
                 </div>
             <?php endif; ?>
             <template x-if="displayErrorMessage">
@@ -77,7 +82,7 @@ $successMessage = $block->getSuccessMessage();
                         />
                         <?php if ($errorMessage): ?>
                             <div class="field-error mt-1">
-                                <span class="messages"><?= $errorMessage ?></span>
+                                <span class="messages"><?= $escaper->escapeHtml($errorMessage, $messageTags) ?></span>
                             </div>
                         <?php endif; ?>
                     </div>

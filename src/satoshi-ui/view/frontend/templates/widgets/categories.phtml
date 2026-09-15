@@ -24,6 +24,7 @@ if (count($categories)) {
         function ($acc, $category) use ($escaper, $displayAsButtons) {
             $url = $escaper->escapeUrl($category['url']);
             $name = $escaper->escapeHtmlAttr($category['name']);
+            $transitionData = $escaper->escapeHtmlAttr((string) json_encode(['title' => (string) $category['name']]));
             $image = $escaper->escapeUrl($category['image']);
             $categoryImageHtml = <<<HTML
                 <div class="bg-[--fade-in-bg] transition-transform duration-300 md:group-hover:scale-105">
@@ -42,7 +43,7 @@ if (count($categories)) {
             if (!$displayAsButtons) {
                 $card = <<<HTML
                     <a
-                        x-element-transition-trigger:category.animate="{ 'title': `$name` }"
+                        x-element-transition-trigger:category.animate="$transitionData"
                         href="$url"
                         class="card-category contrast-border card-hover group relative flex min-w-0 rounded-md"
                     >
@@ -62,7 +63,7 @@ if (count($categories)) {
             } else {
                 $card = <<<HTML
                     <a
-                        x-element-transition-trigger:category.animate="{ 'title': `$name` }"
+                        x-element-transition-trigger:category.animate="$transitionData"
                         href="$url"
                         class="button button--outline-secondary button--quiet max-w-full truncate block h-auto py-4 font-light"
                     >

@@ -14,7 +14,6 @@ use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\Controller\Result\Redirect;
 use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\Data\Form\FormKey\Validator;
-use Magento\Framework\Escaper;
 use Magento\Framework\Filter\LocalizedToNormalized;
 use Magento\Store\Model\StoreManagerInterface;
 use Satoshi\Core\Helper\IsThemeActive;
@@ -154,11 +153,11 @@ class Add extends SourceAdd
             }
         } catch (\Magento\Framework\Exception\LocalizedException $e) {
             if ($this->_checkoutSession->getUseNotice(true)) {
-                $this->_checkoutSession->setProductCartErrorMessage($this->_objectManager->get(Escaper::class)->escapeHtml($e->getMessage()));
+                $this->_checkoutSession->setProductCartErrorMessage($e->getMessage());
             } else {
                 $messages = array_unique(explode("\n", $e->getMessage()));
                 foreach ($messages as $message) {
-                    $this->_checkoutSession->setProductCartErrorMessage($this->_objectManager->get(Escaper::class)->escapeHtml($message));
+                    $this->_checkoutSession->setProductCartErrorMessage($message);
                 }
             }
 

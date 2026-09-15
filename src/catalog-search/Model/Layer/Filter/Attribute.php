@@ -87,7 +87,8 @@ class Attribute extends BaseAttribute
         }
 
         $attributeValue = $request->getParam($this->_requestVar);
-        if (empty($attributeValue) && !is_numeric($attributeValue)) {
+        // An array (?color[]=x) made explode() fail with an uncached error 500
+        if (is_array($attributeValue) || (empty($attributeValue) && !is_numeric($attributeValue))) {
             return $this;
         }
 

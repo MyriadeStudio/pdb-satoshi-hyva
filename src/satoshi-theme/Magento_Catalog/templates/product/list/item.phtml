@@ -99,7 +99,7 @@ if ($product) {
                 <?php if ($product->getImage()): ?>
                     'productImg': '<?= $escaper->escapeUrl($imageUrl) ?>',
                 <?php endif ?>
-                'title': `<?= $escaper->escapeHtmlAttr($product->getName()) ?>`,
+                'title': <?= $escaper->escapeHtmlAttr((string) json_encode((string) $product->getName())) ?>,
                 'mediaCount': <?= $product?->getMediaGalleryImages()->count() ?? 3 ?>,
                 'breadcrumbs': <?= $escaper->escapeHtmlAttr(json_encode($breadcrumbs)) ?>,
                 'finalPrice': <?= $product->getFinalPrice() ?>,

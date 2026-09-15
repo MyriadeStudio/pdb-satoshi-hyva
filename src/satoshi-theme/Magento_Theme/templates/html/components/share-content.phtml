@@ -2,8 +2,10 @@
 
 use Hyva\Theme\Model\ViewModelRegistry;
 use Hyva\Theme\ViewModel\SvgIcons;
+use Magento\Framework\Escaper;
 use Satoshi\Theme\Block\Template;
 
+/** @var Escaper $escaper */
 /** @var ViewModelRegistry $viewModels */
 /** @var Template $block */
 
@@ -32,7 +34,7 @@ $url = $block->getData('url');
       type="text"
       class="input__field input__field--outline h-auto bg-bg px-5 py-2.5"
       id="url_<?= $id ?>"
-      value="<?= $url ?>"
+      value="<?= $escaper->escapeHtmlAttr($url) ?>"
       placeholder="<?= __('Share') ?>"
       onclick="this.select();"
       readonly
@@ -52,11 +54,13 @@ $url = $block->getData('url');
     </button>
 
     <button
-      @click.prevent="navigator.clipboard.writeText('<?= $url ?>'); copied = true;"
+      @click.prevent="navigator.clipboard.writeText(<?= $escaper->escapeHtmlAttr((string) json_encode((string) $url)) ?>); copied = true;"
       class="button button--filled button--filled-primary flex-1" type="button"
     >
       <span
-        x-text="copied ? '<?= __('Link copied to clipboard') ?>' : '<?= __('Copy link') ?>'"></span>
+        x-text="copied
+            ? <?= $escaper->escapeHtmlAttr((string) json_encode((string) __('Link copied to clipboard'))) ?>
+            : <?= $escaper->escapeHtmlAttr((string) json_encode((string) __('Copy link'))) ?>"></span>
     </button>
   </div>
 </div>
