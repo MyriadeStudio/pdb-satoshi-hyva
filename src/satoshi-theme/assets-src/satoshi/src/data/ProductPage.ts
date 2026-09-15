@@ -1,5 +1,4 @@
 import { withXAttributes } from "alpinejs";
-import { POPUP_OVERLAY_CLICK_EVENT } from "@/store/Popup";
 import { CartItem } from "@/store/Cart";
 
 export type ProductPageType = {
@@ -156,12 +155,6 @@ export const ProductPage = () =>
     init() {
       this.$watch("$store.cart.cartItems", () => {
         this._updateSelectedVariantCartState();
-      });
-
-      document.addEventListener(POPUP_OVERLAY_CLICK_EVENT, () => {
-        if (this.$store.popup.currentPopup === this.productActionsPopup) {
-          this._handleStickyProductActionsClosure();
-        }
       });
     },
 
@@ -424,6 +417,12 @@ export const ProductPage = () =>
     },
 
     showProductActions() {
+      // The popup store attaches this overlay click handler only while this popup is open. Every product
+      // card of a listing runs this component: a document listener added in init() was never removed, and
+      // the listeners of the cards left behind by page transitions piled up.
+      this.$store.popup.useOnPopupOverlayClick(this.productActionsPopup, () => {
+        this._handleStickyProductActionsClosure();
+      });
       this.$store.popup.showPopup(this.productActionsPopup, true);
     },
 
