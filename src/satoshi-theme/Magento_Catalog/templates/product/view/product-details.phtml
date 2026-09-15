@@ -164,8 +164,9 @@ if ($product) {
                             height="100%"
                             width="100%"
                             class="no-fade object-center w-auto object-cover h-full mix-blend-darken"
-                            src="<?= $mainImageUrl ?>"
-                            alt="<?= $escaper->escapeHtmlAttr($mainImage ? $mainImage->getData('label') : $productName) ?>"
+                            src="<?= $escaper->escapeUrl($mainImageUrl) ?>"
+                            alt="<?= $escaper->escapeHtmlAttr(($mainImage ? $mainImage->getData('label') : '') ?: $productName) ?>"
+                            fetchpriority="high"
                         >
                     </div>
                 </div>

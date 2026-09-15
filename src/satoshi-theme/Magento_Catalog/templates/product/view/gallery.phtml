@@ -138,10 +138,11 @@ $isMobile = $block->getData('is_mobile') ?? false;
                     <div
                         class="flex items-center justify-center size-full bg-[--fade-in-bg] <?= $isContain ? 'p-[4%]' : '' ?>">
                         <img
-                            :alt="image.caption || '<?= $escaper->escapeJs($productName) ?>'"
-                            :title="image.caption || '<?= $escaper->escapeJs($productName) ?>'"
+                            :alt="image.caption || <?= $escaper->escapeHtmlAttr((string) json_encode((string) $productName)) ?>"
+                            :title="image.caption || <?= $escaper->escapeHtmlAttr((string) json_encode((string) $productName)) ?>"
                             class="object-center <?= $mixBackground ? 'mix-blend-darken' : '' ?> <?= $isContain ? 'object-contain rounded-2xl max-h-full w-auto' : 'object-cover size-full' ?>"
                             :src="image.img"
+                            loading="lazy"
                             alt=""/>
 
                         <!-- Play button -->
@@ -188,17 +189,25 @@ $isMobile = $block->getData('is_mobile') ?? false;
     </template>
 
     <!-- Placeholder for on-reload -->
-    <?php foreach ($images as $image): ?>
+    <?php
+    /*
+     * Server-rendered gallery, shown until Alpine starts: the first image is the LCP of the page, so it is
+     * fetched with a high priority; the next ones wait until they are close to the viewport.
+     */
+    ?>
+    <?php foreach (array_values($images) as $imageIndex => $image): ?>
+        <?php $imageLabel = (string) ($image['label'] ?: $productName); ?>
         <div
             class="animate-on-transition relative aspect-product flex-shrink-0 overflow-hidden border-black md:rounded-2xl"
             :class="'hidden'"
         >
             <div class="flex items-center justify-center size-full bg-[--fade-in-bg] <?= $isContain ? 'p-[4%]' : '' ?>">
                 <img
-                    alt="<?= $escaper->escapeHtmlAttr($image['label'] || $productName) ?>"
-                    title="<?= $escaper->escapeHtmlAttr($image['label'] || $productName) ?>"
+                    alt="<?= $escaper->escapeHtmlAttr($imageLabel) ?>"
+                    title="<?= $escaper->escapeHtmlAttr($imageLabel) ?>"
                     class="object-center <?= $mixBackground ? 'mix-blend-darken' : '' ?> <?= $isContain ? 'object-contain rounded-2xl max-h-full w-auto' : 'object-cover size-full' ?>"
                     src="<?= $escaper->escapeUrl($image['medium_image_url']) ?>"
+                    <?= $imageIndex === 0 ? 'fetchpriority="high"' : 'loading="lazy"' ?>
                 />
             </div>
         </div>
