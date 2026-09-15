@@ -1,6 +1,9 @@
 <?xml version="1.0"?>
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <!-- Top navigation added by the Hyva compatibility module: it rendered the selected filters block a second
+         time below the sidebar filters (already removed on category pages). -->
+    <referenceBlock name="amshopby.catalog.topnav" remove="true" />
     <referenceBlock name="amshopby.js.main">
         <block name="satoshi.amshopby.js.fromto-widget"
                template="Amasty_Shopby::js/components/amShopBy-fromto-widget.phtml"/>
