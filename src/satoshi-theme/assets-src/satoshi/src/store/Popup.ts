@@ -99,6 +99,14 @@ export const PopupStore = <PopupStoreType>{
   __attachedOverlayCallback: null,
 
   init() {
+    // Measured once here, before the first rendering of the popup container: it used to stay at 0 until a
+    // popup opened, so the fixed .popup__main was first laid out full height, then moved under the header
+    // when the sticky product actions appeared (CLS 0.12 on every mobile product page).
+    const endOfHeader = document.getElementById("end-of-header");
+    if (endOfHeader) {
+      this.__endOfHeaderHeight = endOfHeader.getBoundingClientRect().top;
+    }
+
     Alpine.effect(() => {
       const currentPopupConfig = __popups.find(
         (popup) => popup.id === this.__currentPopupRef
