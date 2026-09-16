@@ -7,6 +7,15 @@ use Satoshi\Theme\Block\Template;
 
 /** @var Block $block */
 /** @var Template $template */
+
+/*
+ * Squelette affiché pendant la navigation SPA vers la page de résultats.
+ * L'ossature reprend celle de la vraie page (Magento_Catalog::category/
+ * grid-container.phtml + catalogsearch_result_index.xml) : bandeau de titre,
+ * puis `grid-columns-plp` = colonne de filtres + grille. Sans la colonne, la
+ * grille du squelette occupe toute la largeur et se décale à l'arrivée du
+ * contenu réel.
+ */
 ?>
 
 <template x-fallback-template-type="search">
@@ -26,12 +35,19 @@ use Satoshi\Theme\Block\Template;
         x-text="hyva.strf('<?= __("Search results for: %0") ?>', `'${$store['transition'].pageData?.search ?? ''}'`)"
       ></h2>
     </div>
-
-    <p class="sr-only" role="status"><?= __('Loading search results') ?></p>
-
-    <div class="min-h-screen w-full">
-      <?= $template->setData(['count' => 10])
-          ->render('Magento_Theme::html/layout/transition/skeleton/product-grid.phtml') ?>
-    </div>
   </article>
+
+  <p class="sr-only" role="status"><?= __('Loading search results') ?></p>
+
+  <section class="plp-grid-wrapper content-wrapper mx-auto">
+    <div class="grid-columns-plp">
+      <?= $template->setData(['rows' => 7])
+          ->render('Magento_Theme::html/layout/transition/skeleton/plp-sidebar.phtml') ?>
+
+      <div class="min-h-screen min-w-0 flex-grow">
+        <?= $template->setData(['count' => 10])
+            ->render('Magento_Theme::html/layout/transition/skeleton/product-grid.phtml') ?>
+      </div>
+    </div>
+  </section>
 </template>

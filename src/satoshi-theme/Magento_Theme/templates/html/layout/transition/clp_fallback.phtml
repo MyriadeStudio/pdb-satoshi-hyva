@@ -9,6 +9,13 @@ use Satoshi\Theme\Block\Template;
 /** @var Escaper $escaper */
 /** @var Block $block */
 /** @var Template $template */
+
+/*
+ * Squelette affiché pendant la navigation SPA vers une page catégorie.
+ * Même ossature que la vraie page (voir search_fallback.phtml) : bandeau
+ * image/titre/description, puis `grid-columns-plp` = colonne de filtres +
+ * grille produits.
+ */
 ?>
 
 <template x-fallback-template-type="category">
@@ -43,11 +50,19 @@ use Satoshi\Theme\Block\Template;
       >
       </div>
     </div>
-    <p class="sr-only" role="status"><?= __('Loading products') ?></p>
-
-    <div class="min-h-screen w-full">
-      <?= $template->setData(['count' => 10])
-          ->render('Magento_Theme::html/layout/transition/skeleton/product-grid.phtml') ?>
-    </div>
   </article>
+
+  <p class="sr-only" role="status"><?= __('Loading products') ?></p>
+
+  <section class="plp-grid-wrapper content-wrapper mx-auto">
+    <div class="grid-columns-plp">
+      <?= $template->setData(['rows' => 7])
+          ->render('Magento_Theme::html/layout/transition/skeleton/plp-sidebar.phtml') ?>
+
+      <div class="min-h-screen min-w-0 flex-grow">
+        <?= $template->setData(['count' => 10])
+            ->render('Magento_Theme::html/layout/transition/skeleton/product-grid.phtml') ?>
+      </div>
+    </div>
+  </section>
 </template>

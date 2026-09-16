@@ -7,12 +7,14 @@ use Magento\Framework\Escaper;
 use Hyva\Theme\Model\LocaleFormatter;
 use Hyva\Theme\Model\ViewModelRegistry;
 use Hyva\Theme\ViewModel\SvgIcons;
+use Satoshi\Theme\Block\Template;
 
 /** @var Escaper $escaper */
 /** @var Pager $block */
 /** @var LocaleFormatter $localeFormatter */
 /** @var ViewModelRegistry $viewModels */
 /** @var SvgIcons $hyvaicons */
+/** @var Template $template */
 
 $hyvaicons = $viewModels->require(SvgIcons::class);
 $lastPage = $block->getLastPageNum();
@@ -20,17 +22,46 @@ $currentPage = $block->getCurrentPage();
 $lastItemNumber = $block->getLastNum();
 $totalItemsNumber = $block->getTotalNum();
 $isProductList = $block->getIsProductList();
+
+/*
+ * Nombre de cartes fantômes à afficher pendant le chargement de la page
+ * suivante : autant que de produits réellement attendus, pour que la grille ne
+ * bouge pas quand ils arrivent (voir le plugin Alpine `x-pagination-trigger`).
+ */
+$nextPageSize = max(0, min((int) $block->getLimit(), $totalItemsNumber - $lastItemNumber));
 ?>
 
 <div id="pager" class="flex flex-col items-center">
     <?php if ($lastPage > 1 && $currentPage < $lastPage): ?>
-        <a
-            href="#"
-            x-pagination-trigger="{ 'lastPage': <?= $lastPage ?> }"
-            class="button button--outline-primary mt-5"
-        >
-            <?= __('Load more') ?>
-        </a>
+        <div x-data="{ loading: false }" class="contents">
+            <a
+                href="#"
+                x-pagination-trigger="{ 'lastPage': <?= $lastPage ?> }"
+                class="button button--outline-primary mt-5"
+                @pagination-start="loading = true"
+                @pagination-end="loading = false"
+                :aria-busy="loading"
+                :class="{ 'pointer-events-none opacity-60': loading }"
+            >
+                <span x-show="loading" x-cloak class="mr-2 inline-flex" aria-hidden="true">
+                    <svg class="h-5 w-5 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" opacity="0.25"/>
+                        <path d="M22 12a10 10 0 0 0-10-10" stroke="currentColor" stroke-width="3"
+                              stroke-linecap="round"/>
+                    </svg>
+                </span>
+                <span x-text="loading ? '<?= $escaper->escapeJs(__('Loading…')) ?>' : '<?= $escaper->escapeJs(__('Load more')) ?>'">
+                    <?= $escaper->escapeHtml(__('Load more')) ?>
+                </span>
+            </a>
+        </div>
+
+        <?php if ($nextPageSize > 0): ?>
+            <template id="pagination-skeleton">
+                <?= $template->setData(['count' => $nextPageSize, 'bare' => true])
+                    ->render('Magento_Theme::html/layout/transition/skeleton/product-grid.phtml') ?>
+            </template>
+        <?php endif ?>
     <?php endif ?>
     <?php if ($lastPage > 1): ?>
         <span class="font-medium leading-5 mt-4">

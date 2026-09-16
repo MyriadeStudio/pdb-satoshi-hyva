@@ -1,0 +1,32 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\View\Element\Template as Block;
+
+/** @var Block $block */
+
+/*
+ * Colonne de filtres « fantôme » des pages liste (catégorie et recherche).
+ * Reprend la géométrie réelle du filtre Amasty rendu dans `sidebar.main` :
+ * colonne de 275 px masquée sous `md`, un intitulé, puis des lignes séparées
+ * par un filet. Sans elle, le squelette s'affiche pleine largeur et la grille
+ * se décale d'un cran quand la vraie page arrive.
+ */
+$rows = (int) ($block->getData('rows') ?: 7);
+?>
+
+<div class="main-sidebar" aria-hidden="true">
+    <div class="hidden w-[275px] max-w-[275px] overflow-hidden md:block">
+        <div class="h-5 w-3/5 rounded skeleton"></div>
+        <div class="mt-4 h-3 w-4/5 rounded skeleton"></div>
+        <div class="mt-2 h-3 w-2/5 rounded skeleton"></div>
+
+        <?php for ($i = 0; $i < $rows; $i++): ?>
+            <div class="flex items-center justify-between border-t border-bg-sunken py-5">
+                <div class="h-4 w-1/2 rounded skeleton"></div>
+                <div class="h-6 w-6 rounded-full skeleton"></div>
+            </div>
+        <?php endfor; ?>
+    </div>
+</div>
