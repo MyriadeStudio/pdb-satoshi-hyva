@@ -35,6 +35,36 @@
         <referenceContainer name="div.sidebar.main" htmlClass="main-sidebar"/>
 
         <referenceContainer name="header.container" htmlClass="page-header contents"/>
+
+        <!--
+            L'entête (logo, menu, recherche, popups compte et panier) est le
+            gabarit le plus coûteux du thème : mesuré à 0,16 s sur une fiche
+            produit et 0,28 s sur une page sans contenu, à chaque rendu non
+            servi par le cache de pages. Sa sortie ne dépend d'aucune donnée
+            visiteur — sous Hyvä panier, compte et wishlist sont rendus côté
+            client — donc elle se met en cache par store view.
+
+            `CacheableTemplate` est indispensable ici : la clé de cache par
+            défaut ne contient que le nom du bloc, ce qui ferait partager une
+            même entête à tous les store views. Voir la classe pour le détail
+            de la clé.
+
+            Les tags invalident l'entête quand un bloc CMS (menu) ou une
+            catégorie change ; la durée de vie borne à une heure ce qu'un
+            changement non tagué (logo, réglage de thème) pourrait laisser
+            passer.
+        -->
+        <referenceBlock name="header-content" class="Satoshi\Theme\Block\Html\CacheableTemplate">
+            <arguments>
+                <argument name="cache_lifetime" xsi:type="number">3600</argument>
+                <argument name="cache_tags" xsi:type="array">
+                    <item name="cms_block" xsi:type="string">cms_b</item>
+                    <item name="category" xsi:type="string">cat_c</item>
+                    <item name="store" xsi:type="string">store</item>
+                </argument>
+            </arguments>
+        </referenceBlock>
+
         <referenceContainer name="page.wrapper" htmlClass="flex min-h-screen max-w-screen flex-col bg-bg">
             <block name="popup-wrapper" template="Magento_Theme::html/popup/popup-wrapper.phtml"/>
 
