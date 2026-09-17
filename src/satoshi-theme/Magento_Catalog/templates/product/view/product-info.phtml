@@ -31,6 +31,9 @@ $productId = $product->getId();
 $hyvaicons = $viewModels->require(SvgIcons::class);
 $cartErrMsg = $escaper->escapeHtml($block->getCartErrorMessage());
 $additionalInfo = trim((string) $block->getChildHtml('product.info.additional'));
+/* `product.info.price.aside` : emplacement libre, cale a droite sur la ligne du prix
+   (logo de marque par exemple). Vide par defaut : le rendu ne change pas. */
+$priceAside = trim((string) $block->getChildHtml('product.info.price.aside'));
 ?>
 <h1 class="heading mb-3 ps-4 text-md leading-tight text-fg md:px-0 md:text-4xl max-md:pe-[--price-width]">
     <?= $block->getChildBlock('product.title')->getPageHeading() ?>
@@ -49,6 +52,9 @@ $additionalInfo = trim((string) $block->getChildHtml('product.info.additional'))
             <span class="sr-only"><?= $escaper->escapeHtml(__('The price depends on the chosen options')) ?></span>
         <?php endif; ?>
         <?= $template->setData(['product' => $product, 'class' => 'ms-3 static max-md:hidden !bg-bg-sunken'])->render('Magento_Catalog::product/list/discount-badge.phtml') ?>
+        <?php if ($priceAside !== ''): ?>
+            <div class="ms-auto max-md:hidden"><?= /** @noEscape */ $priceAside ?></div>
+        <?php endif; ?>
     </div>
 </div>
 

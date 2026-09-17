@@ -33,8 +33,14 @@ $product = $block->getProduct();
     $expandedByDefault = $block->hasData('expanded_by_default')
         ? (bool) $block->getData('expanded_by_default')
         : false;
+
+    /* `excluded_attributes` : argument de layout (tableau de codes d'attribut) sur le bloc
+       product.attributes. Ces attributs sortent du tableau — typiquement un texte long,
+       rendu ailleurs par product/view/attribute-section.phtml. Defaut : aucun. */
+    $excludedAttributes = array_values(array_filter((array) $block->getData('excluded_attributes')));
+    $attributes = $block->getAdditionalData($excludedAttributes);
 ?>
-<?php if ($attributes = $block->getAdditionalData()): ?>
+<?php if ($attributes): ?>
     <div
         class="animate-on-transition mx-4 mb-8 flex flex-col overflow-hidden rounded-md border-1 border-bg-sunken bg-surface px-4 md:mx-0 md:px-5"
         x-data="Accordion(<?= $expandedByDefault ? 'true' : 'false' ?>, 300)"

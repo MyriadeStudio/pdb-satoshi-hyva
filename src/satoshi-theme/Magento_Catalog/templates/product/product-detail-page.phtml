@@ -35,6 +35,7 @@ if ($product->getTypeId() === 'grouped') {
     <div id="product-page">
       <!-- product-page-content -->
       <?= $block->getChildHtml('product.details') ?>
+      <?= $block->getChildHtml('product.details.after') ?>
       <!-- end-product-page-content -->
     </div>
   </div>

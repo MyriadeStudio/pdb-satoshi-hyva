@@ -1,0 +1,50 @@
+<?php
+
+declare(strict_types=1);
+
+use Hyva\Theme\Model\ViewModelRegistry;
+use Hyva\Theme\ViewModel\ProductPage;
+use Magento\Catalog\Model\Product;
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+
+/** @var ViewModelRegistry $viewModels */
+/** @var Escaper $escaper */
+/** @var Template $block */
+
+/* Rend UN attribut produit en section pleine largeur, sous la fiche (galerie + colonne).
+   Pour les textes longs, illisibles dans une cellule du tableau « Plus d'information ».
+   Arguments de layout :
+     - `attribute_code` (requis) : code de l'attribut a rendre ;
+     - `title` (optionnel) : titre de la section, sinon le libelle store de l'attribut.
+   Rien n'est rendu si l'attribut est vide. Penser a l'exclure du tableau via
+   `excluded_attributes` sur product.attributes, sans quoi il apparait deux fois. */
+
+/** @var ProductPage $productViewModel */
+$productViewModel = $viewModels->require(ProductPage::class);
+/** @var Product $product */
+$product = $productViewModel->getProduct();
+
+$attributeCode = (string) $block->getData('attribute_code');
+$value = $attributeCode !== '' ? $product->getData($attributeCode) : null;
+
+if (!is_string($value) || trim($value) === '') {
+    return;
+}
+
+$title = (string) $block->getData('title');
+if ($title === '') {
+    $attribute = $product->getResource()->getAttribute($attributeCode);
+    $title = $attribute ? (string) $attribute->getStoreLabel() : '';
+}
+?>
+<div class="md:content-wrapper animate-on-transition mx-auto mt-8 w-full max-md:px-4 md:mt-12">
+    <?php if ($title !== ''): ?>
+        <h2 class="mb-4 text-base font-semibold leading-tight text-fg md:text-xl">
+            <?= $escaper->escapeHtml($title) ?>
+        </h2>
+    <?php endif; ?>
+    <div class="rte max-w-prose overflow-hidden">
+        <?= /** @noEscape */ $productViewModel->productAttributeHtml($product, $value, $attributeCode) ?>
+    </div>
+</div>

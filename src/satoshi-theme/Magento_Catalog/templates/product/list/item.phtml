@@ -231,15 +231,6 @@ if ($product) {
                     >
                         <?= $product?->getName() ?>
                     </h2>
-                    <p
-                        class="truncate max-md:w-[calc(100%-40px)] "
-                        <?php if (!$product): ?>
-                            x-text="product.sku"
-                        <?php endif ?>
-                    >
-                        <?= $product?->getSku() ?>
-                    </p>
-
                     <!-- Quick buy, for simple, virtual, configurable.. TODO: Make it for other types too -->
                     <?php if ($product && $product->isSaleable() && in_array($product->getTypeId(), ['simple', 'virtual', 'configurable'])): ?>
                         <form
