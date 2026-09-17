@@ -69,8 +69,14 @@ export const TransitionPreview = () =>
         }
       });
 
-      // Remove preview flag when page reloads
-      window.addEventListener("beforeunload", function () {
+      // Remove preview flag when page reloads.
+      // pagehide plutôt que beforeunload : ce dernier exclut la page du cache arrière/avant
+      // de Firefox. Une page qui part dans ce cache (persisted) revient avec l'aperçu encore
+      // affiché : le drapeau d'historique doit alors rester en place.
+      window.addEventListener("pagehide", function (event: PageTransitionEvent) {
+        if (event.persisted) {
+          return;
+        }
         const { isPreview } = window.history.state || {};
         if (isPreview) {
           history.replaceState({ isPreview: false }, "", window.location.href);

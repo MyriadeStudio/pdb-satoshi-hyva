@@ -3,9 +3,11 @@
     async
 >
     /**
-     * Scroll Restoration support for IOS
+     * Scroll Restoration support for IOS.
+     * pagehide plutôt que beforeunload : ce dernier exclut la page du cache arrière/avant
+     * de Firefox. pagehide se déclenche aussi quand la page entre dans ce cache.
      */
-    window.addEventListener('beforeunload', (event) => {
+    window.addEventListener('pagehide', (event) => {
         sessionStorage.setItem('scrollPosition', `${window.scrollY}`);
     });
 

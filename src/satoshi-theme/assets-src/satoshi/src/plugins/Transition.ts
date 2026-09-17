@@ -752,6 +752,28 @@ function TransitionPlugin(Alpine: AlpineType) {
         },
     );
 
+    /*
+     * Restauration depuis le cache arrière/avant du navigateur (bfcache, réglage Hyvä
+     * « Enable Bfcache ») : la page revient telle qu'on l'a quittée, popup ou panneau ouvert,
+     * animation de transition en cours, barre de progression active, et avec les données
+     * client (panier, compte) du moment du départ. On rejoue la remise à zéro d'une
+     * navigation, puis on recharge les sections client comme le fait le tiroir panier Hyvä.
+     * En mode SPA, cela ne concerne que les retours depuis une page chargée en entier
+     * (panier, compte) ou depuis un autre site.
+     */
+    window.addEventListener("pageshow", (event) => {
+        if (!event.persisted) {
+            return;
+        }
+
+        Alpine.store("transition").isAnimating = false;
+        Alpine.store("transition").isPreviewAnimating = false;
+        Alpine.store("popup").hideAllPopups();
+        Alpine.store("resizable").hideAll();
+        nProgress.done();
+        window.dispatchEvent(new CustomEvent("reload-customer-section-data"));
+    });
+
     if (window.navigationType === "MPA") {
         window.addEventListener("pageshow", (event) => {
             if (event.persisted) {
