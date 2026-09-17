@@ -428,6 +428,16 @@ if (!$inStock) {
         </button>
 
         <!-- Out of stock button -->
+        <?php
+            /* `show_out_of_stock_button` : argument de layout sur le bloc product.actions,
+               meme principe que `show_qty`. Defaut true. A false, le bouton desactive
+               n'est pas rendu du tout. Il ne sert que hors stock (en stock ses classes le
+               masquent a toutes les largeurs), donc rien d'autre n'en depend. */
+            $showOutOfStockButton = $block->hasData('show_out_of_stock_button')
+                ? (bool) $block->getData('show_out_of_stock_button')
+                : true;
+        ?>
+        <?php if ($showOutOfStockButton): ?>
         <button
             <?php if ($isProductInCart || !$inStock): ?>
                 style="display: none"
@@ -445,6 +455,7 @@ if (!$inStock) {
         >
             <?= __('Out of stock') ?>
         </button>
+        <?php endif; ?>
 
         <!-- Show product button -->
         <a
