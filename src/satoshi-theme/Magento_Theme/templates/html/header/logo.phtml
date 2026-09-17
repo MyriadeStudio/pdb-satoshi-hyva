@@ -31,8 +31,14 @@ $logoSrc = $logoPathResolver && method_exists($logoPathResolver, 'getLogoSrc')
 $text_length = strlen($storeName);
 $estimated_width = $text_length * 12;
 
-/* Largeur effective du logo desktop : `w-full` borne par ce max-width. Emis seulement
-   si une largeur est configuree (sinon la declaration serait invalide et ignoree). */
+/* Largeur effective du logo desktop. Emise seulement si une largeur est configuree
+   (sinon la declaration serait invalide et ignoree).
+
+   Elle est posee en `width` fixe, bornee par `max-width: 100%`, et non en `w-full` borne
+   par un `max-width` en pixels. Le lien parent se dimensionne sur son contenu : un
+   `width: 100%` y est un pourcentage cyclique, et la largeur retombe sur l'intrinseque de
+   l'image. Un SVG sans attributs width/height n'en a pas : Firefox resout alors 0 et le
+   logo disparait (constate sur bijouterie-morin), la ou Chromium retombe sur 300px. */
 $logoMaxWidth = $logoWidth ? min((int) $logoWidth, 500) : 0;
 
 /* Hauteur que prend le logo une fois sa largeur bornee. Calculee ICI pour etre juste des
@@ -71,7 +77,7 @@ $logoNaturalHeight = ($logoMaxWidth && $logoWidth && $logoHeight)
         width="<?= $escaper->escapeHtmlAttr($logoWidth ?? 200) ?>"
         height="<?= $escaper->escapeHtmlAttr($logoHeight ?? 200) ?>"
         class="w-full transition-all max-md:hidden"
-        <?php if ($logoMaxWidth): ?>style="max-width: <?= (int) $logoMaxWidth ?>px"<?php endif; ?>
+        <?php if ($logoMaxWidth): ?>style="width: <?= (int) $logoMaxWidth ?>px; max-width: 100%"<?php endif; ?>
         x-data="{
             maxWidth: <?= (int) $logoMaxWidth ?>,
             initialHeight: <?= (int) $logoNaturalHeight ?>,
