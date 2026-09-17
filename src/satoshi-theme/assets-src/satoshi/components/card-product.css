@@ -48,3 +48,95 @@
 .card-hover .rounded-xl {
   border-radius: var(--card-radius, 12px);
 }
+
+/* ===== Survol de la carte produit ===== */
+/* Le pave `bg-sunken` de `.card-hover::before` deborde de 12px autour de la carte : sur un
+   catalogue de bijoux il ecrase la photo. La carte produit ne le dessine plus ; les autres
+   cartes (categories, collage) le gardent. A la place, rien ne bouge autour de la carte :
+     1. la photo zoome une seule fois, tres lentement ;
+     2. elle fond vers la seconde photo du produit quand il y en a une ;
+     3. un bandeau « Decouvrir » monte du bas de la photo ;
+     4. favoris / comparer apparaissent en haut a droite, icones nues.
+   Pointeurs fins uniquement (`hover: hover`) : aucun etat collant au doigt.
+   Hors @layer : prime sur les utilitaires. Reglable par variable, sans retoucher les regles :
+   --card-hover-zoom, --card-hover-zoom-duration, --card-cta-bg, --card-cta-color. */
+.card-product .card-hover::before {
+  content: none;
+}
+
+.card-product__zoom {
+  transition: transform var(--card-hover-zoom-duration, 1.6s) cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Fond opaque : l'image est en mix-blend-darken, sans lui elle se melangerait a la premiere. */
+.card-product__alt {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--fade-in-bg);
+  opacity: 0;
+  transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-product__cta {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0.9rem 1rem;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--card-cta-color, var(--color-fg));
+  background: var(--card-cta-bg, rgb(255 255 255 / 0.85));
+  backdrop-filter: blur(6px);
+  transform: translateY(101%);
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+
+.card-product__cta::before,
+.card-product__cta::after {
+  content: "";
+  width: 1.5rem;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.35;
+}
+
+/* Icones nues : le fond plein de `.btn` ferait un pave sur la photo. */
+.card-product__addto .btn {
+  background: transparent;
+  box-shadow: none;
+  color: var(--color-fg);
+}
+
+@media (hover: hover) and (min-width: 768px) {
+  .card-product .card-hover:is(:hover, :focus-visible) .card-product__zoom {
+    transform: scale(var(--card-hover-zoom, 1.045));
+  }
+
+  .card-product .card-hover:is(:hover, :focus-visible) .card-product__alt.is-loaded {
+    opacity: 1;
+  }
+
+  .card-product .card-hover:is(:hover, :focus-visible) .card-product__cta {
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-product__zoom,
+  .card-product__alt,
+  .card-product__cta {
+    transition: none;
+  }
+}

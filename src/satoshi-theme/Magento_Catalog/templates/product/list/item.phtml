@@ -43,6 +43,25 @@ $productName = $product ? (string) $product->getName() : '';
 $imageUrl = $this->helper(Image::class)->init($product, 'product_page_image_medium')
     ->getUrl();
 $placeholderImageUrl = $this->helper(Image::class)->getDefaultPlaceholderUrl('image');
+/* Seconde photo, revelee au survol (fondu). Premiere image de galerie autre que l'image
+   principale ; aucune : pas de fondu. Elle n'est telechargee qu'au premier survol de la
+   carte (data-src pose en src par Alpine), donc aucun cout au chargement de la liste. */
+$hoverImageUrl = null;
+if ($product && $product->getImage()) {
+    foreach ($product->getMediaGalleryImages() as $galleryImage) {
+        if ($galleryImage->getMediaType() === 'image' && $galleryImage->getFile() !== $product->getImage()) {
+            $hoverImageUrl = $this->helper(Image::class)
+                ->init($product, 'product_page_image_medium')
+                ->setImageFile($galleryImage->getFile())
+                ->getUrl();
+            break;
+        }
+    }
+    /* Fichier absent du disque : le helper rend le placeholder. Jamais de fondu vers lui. */
+    if ($hoverImageUrl === $placeholderImageUrl) {
+        $hoverImageUrl = null;
+    }
+}
 // Loading hints. The list flags its first products through image_custom_attributes, which is part of the
 // item cache key; a caller may set a value for the whole renderer; every other card loads lazily.
 $imageCustomAttributes = ($product ? $product->getData('image_custom_attributes') : null) ?? [];
@@ -126,6 +145,9 @@ if ($product) {
         <article
             class="relative contrast-border z-10 flex h-full w-full flex-col items-stretch justify-start overflow-hidden rounded-xl text-start group"
             x-data="ProductPage()"
+            <?php if ($hoverImageUrl): ?>
+                @mouseenter.once="$refs.hoverImg.src = $refs.hoverImg.dataset.src"
+            <?php endif; ?>
             <?php if ($product): ?>
                 x-init="
                     () => {
@@ -138,8 +160,9 @@ if ($product) {
             <?php endif ?>
         >
             <div class="
+                    card-product__addto
                     absolute right-2 left-auto z-30
-                    top-2 bottom-auto lg:bottom-2 lg:top-auto
+                    top-2 bottom-auto
                     flex gap-2
 
                     opacity-100
@@ -148,10 +171,10 @@ if ($product) {
 
 
                     lg:opacity-0
-                    lg:translate-y-5
+                    lg:-translate-y-1
                     lg:pointer-events-none
                     lg:transition-all
-                    lg:duration-300
+                    lg:duration-500
                     lg:ease-out
                     lg:group-hover:opacity-100
                     lg:group-hover:translate-y-0
@@ -192,10 +215,10 @@ if ($product) {
 
                 <?php if ($product): ?>
                     <div
-                        class="bg-[--fade-in-bg] aspect-product size-full flex min-h-0 items-center justify-center transition-transform duration-300 md:group-hover:scale-105 <?= $isContain ? 'p-[2%]' : '' ?>"
+                        class="card-product__zoom relative bg-[--fade-in-bg] aspect-product size-full flex min-h-0 items-center justify-center <?= $isContain ? 'p-[2%]' : '' ?>"
                     >
                         <img
-                            class="mix-blend-darken object-center max-h-full md:group-hover:scale-105 <?= $isContain ? 'object-contain rounded-md p-[2%]' : 'object-cover h-full w-full' ?>"
+                            class="mix-blend-darken object-center max-h-full <?= $isContain ? 'object-contain rounded-md p-[2%]' : 'object-cover h-full w-full' ?>"
                             src="<?= $escaper->escapeUrl($imageUrl) ?>"
                             alt="<?= $escaper->escapeHtmlAttr($product->getName()) ?>"
                             loading="<?= $escaper->escapeHtmlAttr($loading) ?>"
@@ -203,10 +226,21 @@ if ($product) {
                                 fetchpriority="<?= $escaper->escapeHtmlAttr($fetchPriority) ?>"
                             <?php endif; ?>
                         />
+                        <?php if ($hoverImageUrl): ?>
+                            <div class="card-product__alt <?= $isContain ? 'p-[2%]' : '' ?>" aria-hidden="true">
+                                <img
+                                    x-ref="hoverImg"
+                                    data-src="<?= $escaper->escapeUrl($hoverImageUrl) ?>"
+                                    @load="$el.parentElement.classList.add('is-loaded')"
+                                    class="mix-blend-darken object-center max-h-full <?= $isContain ? 'object-contain rounded-md p-[2%]' : 'object-cover h-full w-full' ?>"
+                                    alt=""
+                                />
+                            </div>
+                        <?php endif; ?>
                     </div>
                 <?php else: ?>
                     <div
-                        class="flex aspect-product h-full w-full items-center justify-center <?= $isContain ? 'p-[4%]' : '' ?> bg-[--fade-in-bg] transition-transform duration-300 md:group-hover:scale-105">
+                        class="flex aspect-product h-full w-full items-center justify-center <?= $isContain ? 'p-[4%]' : '' ?> card-product__zoom bg-[--fade-in-bg]">
                         <img
                             :src="product.media_gallery?.[0]?.url || '<?= $escaper->escapeUrl($placeholderImageUrl) ?>'"
                             :alt="product.image?.label"
@@ -218,7 +252,8 @@ if ($product) {
                         />
                     </div>
                 <?php endif ?>
-                <?= $template->setData(['product' => $product, 'class' => 'py-1 bottom left', 'is_search' => $isSearch])->render('Magento_Catalog::product/list/discount-badge.phtml') ?>
+                <?= $template->setData(['product' => $product, 'class' => 'py-1 top left', 'is_search' => $isSearch])->render('Magento_Catalog::product/list/discount-badge.phtml') ?>
+                <span class="card-product__cta max-md:hidden" aria-hidden="true"><?= $escaper->escapeHtml(__('Discover')) ?></span>
             </div>
 
             <div class="relative flex flex-1 flex-col">
