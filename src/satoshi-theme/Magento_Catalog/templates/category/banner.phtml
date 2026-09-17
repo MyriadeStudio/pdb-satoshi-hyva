@@ -29,16 +29,23 @@ $width = $block->getVar('category_page_category_image/width');
 $height = $block->getVar('category_page_category_image/height');
 ?>
 
+<?php
+    /* Banniere de categorie ET de page marque Amasty (ambrand_index_index passe par ce meme
+       template : Amasty pose l'image et la description de la marque sur la categorie courante).
+       Avec visuel : desktop 50 % titre + description | 50 % visuel, au format 3:2 jamais
+       etire ; mobile, visuel au-dessus du texte. Sans visuel : le texte prend 100 %. */
+    $imgUrl = $image->getUrl($category);
+?>
 <article
     aria-label="<?= __('Category details') ?>"
-    class="content-wrapper mx-auto flex flex-col items-start gap-3 py-5 pb-6 pt-3"
+    class="content-wrapper mx-auto flex flex-col gap-4 pb-6 pt-3 <?= $imgUrl ? 'md:grid md:grid-cols-2 md:items-center md:gap-10' : 'items-start' ?>"
 >
-    <?php if ($imgUrl = $image->getUrl($category)): ?>
+    <?php if ($imgUrl): ?>
         <div class="disable-fade contents">
             <img
                 src="<?= $escaper->escapeUrl($imgUrl) ?>"
                 alt="<?= $escaper->escapeHtmlAttr($category->getName()) ?>"
-                class="w-full h-[40vh] object-cover rounded-md mb-2"
+                class="aspect-[3/2] h-auto w-full rounded-md object-cover"
                 <?php if ($width): ?>
                     width="<?= $escaper->escapeHtmlAttr($width) ?>"
                 <?php endif; ?>
@@ -48,7 +55,7 @@ $height = $block->getVar('category_page_category_image/height');
             />
         </div>
     <?php endif; ?>
-    <div class="flex flex-col gap-3">
+    <div class="flex flex-col gap-3 <?= $imgUrl ? 'md:order-first' : '' ?>">
         <!-- Title -->
         <h1 class="text-xl md:text-[32px] text-fg">
             <?= $escaper->escapeHtml((string)$title) ?>
