@@ -52,7 +52,7 @@ $newPasswordFailed = !empty($errorMessage['current_password']) || !empty($errorM
                 <?= (int) $emailFailed ?>,
                 <?= (int) ($newPasswordFailed || $block->getChangePassword()) ?>,
             ),
-            Form('form-validate')
+            Form('form-validate', <?= $escaper->escapeHtmlAttr(json_encode((string) __('An error occurred, please try again or reload the page.'))) ?>)
         )"
         @submit.prevent="function($event) {
             this.validate().then(() => {

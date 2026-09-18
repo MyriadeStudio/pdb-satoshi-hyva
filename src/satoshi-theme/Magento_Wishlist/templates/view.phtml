@@ -21,7 +21,7 @@ $messageTags = ['a', 'b', 'br', 'em', 'i', 'span', 'strong'];
 
 <?php if ($wishlistHelper->isAllow()): ?>
     <?= ($block->getChildHtml('wishlist.rss.link')) ?>
-    <div x-data="Form('wishlist-view-form')">
+    <div x-data="Form('wishlist-view-form', <?= $escaper->escapeHtmlAttr(json_encode((string) __('An error occurred, please try again or reload the page.'))) ?>)">
         <form id="wishlist-view-form"
               x-data="Wishlist(
                 <?= $escaper->escapeHtmlAttr($block->getAddAllToCartParams()) ?>

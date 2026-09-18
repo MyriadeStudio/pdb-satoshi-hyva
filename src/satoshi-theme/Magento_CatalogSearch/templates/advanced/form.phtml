@@ -24,7 +24,7 @@ $messageTags = ['a', 'b', 'br', 'em', 'i', 'span', 'strong'];
 
     <form method="get"
           action="<?= $escaper->escapeUrl($block->getSearchPostUrl()) ?>"
-          x-data="Form('advanced-search-form')"
+          x-data="Form('advanced-search-form', <?= $escaper->escapeHtmlAttr(json_encode((string) __('An error occurred, please try again or reload the page.'))) ?>)"
           id="advanced-search-form"
           @submit.prevent="submitForm"
     >

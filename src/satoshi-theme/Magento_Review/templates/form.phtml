@@ -73,7 +73,7 @@ mutation createProductReviewMutation(
                     }
                 }"
                 action=""
-                x-data="Object.assign(Form('<?= $escaper->escapeHtmlAttr($formId) ?>'), ReviewForm({
+                x-data="Object.assign(Form('<?= $escaper->escapeHtmlAttr($formId) ?>', <?= $escaper->escapeHtmlAttr(json_encode((string) __('An error occurred, please try again or reload the page.'))) ?>), ReviewForm({
                     ratings: <?= $escaper->escapeHtmlAttr(json_encode($block->getRatings()->getData())) ?>,
                     messages: {
                         required: '<?= $escaper->escapeJs(__('Please verify you\'ve entered all required information')) ?>',

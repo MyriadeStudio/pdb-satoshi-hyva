@@ -18,7 +18,7 @@ export type FormType = {
   postForm(postParams: PostParams): Promise<void>;
 };
 
-export const Form = (formId: string) => {
+export const Form = (formId: string, defaultErrorMessage = "") => {
   return <FormType>{
     isLoading: false,
     errors: 0,
@@ -49,13 +49,31 @@ export const Form = (formId: string) => {
         },
         ...(isGetMethod ? {} : {body: formData})
       })
-        .then((response) => {
-          return response.text().then(async (content) => {
-            await replaceMainContentWithTransition(response.url, content);
-          });
+        .then(async (response) => {
+          /*
+           * Une reponse non-2xx resout normalement : sans ce garde-fou le .catch ne
+           * part pas, replaceMainContentWithTransition ne trouve pas le marqueur
+           * <!-- main-content -->, hyva.replaceDomElement sort en silence, et
+           * l'utilisateur n'a ni message ni action serveur. C'est ce qui arrive quand
+           * l'edge intercepte le XHR avant Magento (Cloudflare : 403 cf-mitigated).
+           */
+          if (!response.ok) {
+            throw new Error(
+              `${response.status} ${response.statusText} on ${response.url}`
+            );
+          }
+
+          await replaceMainContentWithTransition(
+            response.url,
+            await response.text()
+          );
         })
         .catch((error) => {
           console.error("Form submission failed:", error);
+          this.setErrorMessages([
+            defaultErrorMessage ||
+              "An error occurred, please try again or reload the page.",
+          ]);
         })
         .finally(() => {
           this.isLoading = false;
@@ -93,13 +111,31 @@ export const Form = (formId: string) => {
         method: "POST",
         body: new FormData(form),
       })
-        .then((response) => {
-          return response.text().then(async (content) => {
-            await replaceMainContentWithTransition(response.url, content);
-          });
+        .then(async (response) => {
+          /*
+           * Une reponse non-2xx resout normalement : sans ce garde-fou le .catch ne
+           * part pas, replaceMainContentWithTransition ne trouve pas le marqueur
+           * <!-- main-content -->, hyva.replaceDomElement sort en silence, et
+           * l'utilisateur n'a ni message ni action serveur. C'est ce qui arrive quand
+           * l'edge intercepte le XHR avant Magento (Cloudflare : 403 cf-mitigated).
+           */
+          if (!response.ok) {
+            throw new Error(
+              `${response.status} ${response.statusText} on ${response.url}`
+            );
+          }
+
+          await replaceMainContentWithTransition(
+            response.url,
+            await response.text()
+          );
         })
         .catch((error) => {
           console.error("Form submission failed", error);
+          this.setErrorMessages([
+            defaultErrorMessage ||
+              "An error occurred, please try again or reload the page.",
+          ]);
         })
         .finally(() => {
           this.isLoading = false;

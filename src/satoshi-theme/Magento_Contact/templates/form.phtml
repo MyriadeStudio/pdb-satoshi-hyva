@@ -59,7 +59,7 @@ $emailErrorMessage = $block->getContactEmailErrorMessage();
                     action="<?= $escaper->escapeUrl($block->getFormAction()) ?>"
                     id="<?= $escaper->escapeHtmlAttr($formId) ?>"
                     method="post"
-                    x-data="Form('<?= $escaper->escapeHtmlAttr($formId) ?>')"
+                    x-data="Form('<?= $escaper->escapeHtmlAttr($formId) ?>', <?= $escaper->escapeHtmlAttr(json_encode((string) __('An error occurred, please try again or reload the page.'))) ?>)"
                     @submit.prevent="function($event) {
                         // do not rename $form, the variable is the expected name in the recaptcha output
                         const $form = $event.target;

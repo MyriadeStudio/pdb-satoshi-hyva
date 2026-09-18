@@ -60,7 +60,7 @@ $messageTags = ['a', 'b', 'br', 'em', 'i', 'span', 'strong'];
                 hyva.formValidation($el),
                 Authentication(),
                 AddressEdit(),
-                Form('<?= $escaper->escapeHtmlAttr($formId) ?>'),
+                Form('<?= $escaper->escapeHtmlAttr($formId) ?>', <?= $escaper->escapeHtmlAttr(json_encode((string) __('An error occurred, please try again or reload the page.'))) ?>),
             )"
             x-init="initRegister({
                 telephoneErrorMessage: '<?= $escaper->escapeJs(__('The telephone number is too short.')) ?>',

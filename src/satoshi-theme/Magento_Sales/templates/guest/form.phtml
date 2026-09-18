@@ -18,7 +18,7 @@ $messageTags = ['a', 'b', 'br', 'em', 'i', 'span', 'strong'];
 <div class="mx-auto mb-16 w-[412px] px-4 h-full flex md:items-center md:px-0 max-w-full">
     <form
         id="order-info"
-        x-data="Object.assign(Form('order-info'), {
+        x-data="Object.assign(Form('order-info', <?= $escaper->escapeHtmlAttr(json_encode((string) __('An error occurred, please try again or reload the page.'))) ?>), {
             authenticateBy: 'email'
         })"
         class="w-full"

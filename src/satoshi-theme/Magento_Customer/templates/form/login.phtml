@@ -29,7 +29,7 @@ $successMessage = $block->getSuccessMessage();
 $messageTags = ['a', 'b', 'br', 'em', 'i', 'span', 'strong'];
 
 ?>
-<div class="container mx-auto flex h-full items-center px-5" x-data="Object.assign(Form('customer-login-form'), Authentication)">
+<div class="container mx-auto flex h-full items-center px-5" x-data="Object.assign(Form('customer-login-form', <?= $escaper->escapeHtmlAttr(json_encode((string) __('An error occurred, please try again or reload the page.'))) ?>), Authentication)">
     <div class="mx-auto w-[412px] max-w-full mb-16">
         <header class="flex items-center justify-between sm:text-center mb-7">
             <h2 class="w-full text-2xl"><?= __('Login') ?></h2>

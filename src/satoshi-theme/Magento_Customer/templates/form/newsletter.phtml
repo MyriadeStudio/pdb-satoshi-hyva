@@ -18,7 +18,7 @@ $hyvaicons = $viewModels->require(SvgIcons::class);
         action="<?= $escaper->escapeUrl($block->getAction()) ?>"
         method="post"
         id="form-validate"
-        x-data="Form('form-validate')"
+        x-data="Form('form-validate', <?= $escaper->escapeHtmlAttr(json_encode((string) __('An error occurred, please try again or reload the page.'))) ?>)"
         @submit.prevent="submitForm"
     >
         <h2 class="text-fg text-lg font-bold mb-5">
