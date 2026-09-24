@@ -42,6 +42,7 @@ export type PopupStoreType = {
   _isPopupSimple: boolean;
   _popupContentRatio: number;
   _isMaxHeightReached: boolean;
+  _isPageIdle: boolean;
 
   __isKeyboardVisibleRef: boolean;
   __prevWindowHeightRef: number;
@@ -92,6 +93,7 @@ export const PopupStore = <PopupStoreType>{
   _popupContentRatio: 0,
   _isMaxHeightReached: false,
   _isPopupContentHidden: false,
+  _isPageIdle: false,
 
   __isKeyboardVisibleRef: false,
   __prevWindowHeightRef: 0,
@@ -105,6 +107,26 @@ export const PopupStore = <PopupStoreType>{
     const endOfHeader = document.getElementById("end-of-header");
     if (endOfHeader) {
       this.__endOfHeaderHeight = endOfHeader.getBoundingClientRect().top;
+    }
+
+    // Popups declared with `isBuiltWhenIdle` (the menu) are built on mobile once the page is idle after
+    // load, then kept hidden until opened: their links belong to the page, as on desktop, without adding
+    // to the work of the load itself. Safari has no requestIdleCallback, hence the short timer.
+    const markPageIdle = () => {
+      this._isPageIdle = true;
+    };
+    const waitForIdle = () => {
+      if (typeof window.requestIdleCallback === "function") {
+        window.requestIdleCallback(markPageIdle, { timeout: 2000 });
+      } else {
+        window.setTimeout(markPageIdle, 200);
+      }
+    };
+
+    if (document.readyState === "complete") {
+      waitForIdle();
+    } else {
+      window.addEventListener("load", waitForIdle, { once: true });
     }
 
     Alpine.effect(() => {

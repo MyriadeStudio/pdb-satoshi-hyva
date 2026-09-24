@@ -12,6 +12,10 @@ $isAlwaysVisible = $block->getData('isAlwaysVisible')  ?? false;
 $isPreventOverlayClose = $block->getData('isPreventOverlayClose')  ?? false;
 $desktopTarget = $block->getData('desktopTarget') ?? 'popup-content-portal';
 $cssClass = $block->getData('cssClass');
+// En mobile, un popup n'est construit qu'à son ouverture. Avec isBuiltWhenIdle, il l'est dès que la page
+// est au repos après son chargement, puis reste caché jusqu'à l'ouverture : ses liens font partie de la
+// page, comme en bureau (le robot de Google n'ouvre aucun tiroir), sans alourdir le chargement lui-même.
+$isBuiltWhenIdle = (bool) ($block->getData('isBuiltWhenIdle') ?? false);
 ?>
 
 <div
@@ -27,10 +31,17 @@ $cssClass = $block->getData('cssClass');
   "
 >
   <template x-portal="$store.main.isMobile ? document.getElementById('popup-content-portal') : document.getElementById('<?= $desktopTarget ?>')">
+    <?php if ($isBuiltWhenIdle): ?>
+    <template x-if="!$store.main.isMobile || $store.popup._nextPopup === '<?= $id ?>' || $store.popup._isPageIdle">
+    <?php else: ?>
     <template x-if="$store.main.isMobile ? $store.popup._nextPopup === '<?= $id ?>' : true">
+    <?php endif; ?>
       <div
         class="contents <?= $cssClass ?>"
         id="<?= $id ?>"
+        <?php if ($isBuiltWhenIdle): ?>
+        x-show="!$store.main.isMobile || $store.popup._nextPopup === '<?= $id ?>'"
+        <?php endif; ?>
       >
         <?= $block->getChildHtml() ?>
       </div>

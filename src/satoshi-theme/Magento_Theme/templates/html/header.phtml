@@ -170,6 +170,8 @@ $popup
         'isFocused' => true,
         'isFullScreen' => true,
         'desktopTarget' => 'menu-desktop',
+        // Liens du menu présents dans la page mobile sans attendre l'ouverture du tiroir (cf. popup.phtml).
+        'isBuiltWhenIdle' => true,
     ])
     ->setChildTemplate('Magento_Theme::html/header/menu/menu.phtml')
     ->render()

@@ -21,7 +21,7 @@ $categoryUrlSuffix = $breadcrumbsViewModel->getCategoryUrlSuffix();
 >
     <div class="relative flex grow flex-col gap-4 p-3 pb-2 md:p-5">
         <div class="pb-2">
-            <h2 class="text-lg"><?= __('Categories') ?></h2>
+            <div class="heading text-lg"><?= __('Categories') ?></div>
         </div>
         <div class="flex flex-col gap-2">
             <p x-show="!isLoading && !categories.length && searchTerm">

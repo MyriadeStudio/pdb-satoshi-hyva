@@ -24,18 +24,73 @@ let trapEls: Element[] = [];
 
 const RESIZABLE_ANIMATION_DURATION = 300;
 
+// `.heading` too: a structural title may be a div carrying the heading class rather than an h-tag.
+const LABEL_SELECTOR = "h1, h2, h3, h4, h5, .heading, p";
+
+/**
+ * Tells whether an element is displayed: neither it nor any ancestor up to `root` is `display: none`.
+ * Testing the element alone let hidden content through, and a popup may stay in the DOM while closed
+ * (the mobile menu shares the popup container with the cart and the account): its links would join
+ * the Tab loop and its title would name the open popup.
+ */
+const isDisplayedWithin = (root: Element) => {
+  const cache = new Map<Element, boolean>();
+
+  const isDisplayed = (element: Element): boolean => {
+    if (element === root) {
+      return true;
+    }
+
+    const cached = cache.get(element);
+
+    if (cached !== undefined) {
+      return cached;
+    }
+
+    const parent = element.parentElement;
+    const displayed =
+      window.getComputedStyle(element).display !== "none" &&
+      (parent === null || isDisplayed(parent));
+
+    cache.set(element, displayed);
+
+    return displayed;
+  };
+
+  return isDisplayed;
+};
+
 export default function (Alpine: AlpineType) {
   Alpine.directive(
     "a11y-trap",
     (el, { expression, modifiers }, { evaluateLater, effect, cleanup }) => {
       const getIsTrapped = evaluateLater(expression);
+
+      // The element naming the popup gets the id "popup-label" while trapped; its own id is put back
+      // on release, so that a popup kept in the DOM does not leave a stale "popup-label" behind.
+      let labelRef: Element | null = null;
+      let labelOriginalId: string | null = null;
+
+      const releaseLabel = () => {
+        if (!labelRef) {
+          return;
+        }
+
+        if (labelOriginalId) {
+          labelRef.id = labelOriginalId;
+        } else {
+          labelRef.removeAttribute("id");
+        }
+
+        labelRef = null;
+        labelOriginalId = null;
+      };
+
       const onKeyDown = async (e: KeyboardEvent) => {
+        const isDisplayed = isDisplayedWithin(el);
         const focusEls = Array.from(el.querySelectorAll(SELECTOR_LIST)).filter(
-          // Skip hidden elements
-          (element) => {
-            const computedStyle = window.getComputedStyle(element);
-            return computedStyle.display !== "none";
-          },
+          // Skip hidden elements, including those inside a hidden container
+          (element) => isDisplayed(element),
         );
         const allFocusEls = trapEls.concat(focusEls);
         const first = (trapStart || allFocusEls[0]) as HTMLElement;
@@ -67,19 +122,27 @@ export default function (Alpine: AlpineType) {
         el.setAttribute("role", "dialog");
         el.setAttribute("aria-modal", "true");
 
-        const labelRef = el.querySelector("h1, h2, h3, h4, h5, p");
+        const isDisplayed = isDisplayedWithin(el);
+
+        // The label may itself be visually hidden (it only names the popup), but not sit inside a hidden
+        // container, which holds another popup's content.
+        releaseLabel();
+        labelRef =
+          Array.from(el.querySelectorAll(LABEL_SELECTOR)).find(
+            (element) =>
+              element.parentElement === null ||
+              isDisplayed(element.parentElement),
+          ) ?? null;
 
         if (labelRef) {
+          labelOriginalId = labelRef.getAttribute("id");
           labelRef.id = "popup-label";
           el.setAttribute("aria-labelledby", "popup-label");
         }
 
         const firstVisibleEl = Array.from(
           el.querySelectorAll(SELECTOR_LIST),
-        ).find((element) => {
-          const computedStyle = window.getComputedStyle(element);
-          return computedStyle.display !== "none";
-        });
+        ).find((element) => isDisplayed(element));
 
         if (isMobile()) {
           return;
@@ -98,6 +161,7 @@ export default function (Alpine: AlpineType) {
         el.removeAttribute("role");
         el.removeAttribute("aria-modal");
         el.removeAttribute("aria-labelledby");
+        releaseLabel();
       };
 
       effect(() => {

@@ -59,8 +59,8 @@ $level = $block->getData('level') ?? 1;
                 <?= $hyvaicons->renderHtml('chevron-left'); ?>
             </button>
 
-            <h2
-                class="menu__heading py-3 motion-reduce:max-md:animate-none"
+            <div
+                class="menu__heading heading py-3 motion-reduce:max-md:animate-none"
                 style="--translate-width: 52px;"
                 :class="{
                     'menu__heading--root': '<?= $id ?>' === 'all',
@@ -71,7 +71,7 @@ $level = $block->getData('level') ?? 1;
                 x-show="$store.main.isMobile || '<?= $id ?>' !== 'all'"
             >
                 <?= $escaper->escapeHtml($title) ?>
-            </h2>
+            </div>
 
             <div id="menu-actions-<?= $id ?>" class="md:mt-[6px] md:flex-none md:flex-row"></div>
         </div>

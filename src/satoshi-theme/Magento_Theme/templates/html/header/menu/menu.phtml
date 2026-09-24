@@ -41,6 +41,17 @@ use Satoshi\Theme\Block\Template;
                 }, 300);
             }
         }"
+        x-init="
+            <?php /* En mobile, le menu reste construit (et caché) une fois refermé : on le remet dans l'état
+                     d'un menu neuf, comme lorsqu'il était détruit à la fermeture du tiroir. */ ?>
+            $watch('$store.popup._nextPopup', (popup, previous) => {
+                if (previous === 'menu' && popup !== 'menu') {
+                    history = ['all'];
+                    delayedLevel = 1;
+                    resetSearchTerm();
+                }
+            })
+        "
         x-show="!$store.main.isMobile || !getIsSearchActive()"
     >
         <?=
