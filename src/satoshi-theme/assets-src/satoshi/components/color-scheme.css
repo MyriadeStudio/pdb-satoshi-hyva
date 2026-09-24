@@ -40,6 +40,7 @@
 .slider--on-dark .price,
 .slider--on-dark .text-fg,
 .slider--on-dark .card-category article h2,
+.slider--on-dark .card-category article h3,
 .slider--on-dark.text-fg {
     color: var(--color-fg-inverse) !important;
 }

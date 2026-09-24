@@ -22,4 +22,12 @@
     font-size: var(--heading-size-sm, 18px);
     line-height: 1.35;
   }
+
+  /* Titre de mise en page rétrogradé de hN en div : il garde la typographie de titre (.heading,
+     ciblée aussi par les réglages de chaque site) mais la taille et l'interligne qu'avait sa
+     balise, hérités du parent. Une utility text-* posée sur l'élément continue de primer. */
+  .heading--inherit {
+    font-size: inherit;
+    line-height: inherit;
+  }
 }

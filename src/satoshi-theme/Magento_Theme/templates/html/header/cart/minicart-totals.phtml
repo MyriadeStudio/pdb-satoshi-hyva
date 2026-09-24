@@ -14,6 +14,8 @@ $hyvaicons = $viewModels->require(SvgIcons::class);
 
 /** @var Template $block */
 $isCartPage = $block->getData('isCartPage');
+// Tiroir de l'en-tête : sous-titres de mise en page (div.heading) ; page panier : h2 de la page.
+$subtitleTag = $isCartPage ? 'h2' : 'div';
 
 ?>
 <div class="contents"
@@ -46,7 +48,7 @@ $isCartPage = $block->getData('isCartPage');
             <?php endif; ?>
 
             <div class="flex items-center justify-between pt-2">
-                <h2 class="text-fg"><?= __('Order summary') ?></h2>
+                <<?= $subtitleTag ?> class="heading heading--inherit text-fg"><?= __('Order summary') ?></<?= $subtitleTag ?>>
                 <button type="button"
                         class="button button--outline-secondary icon-button icon-button--size-xs <?= $isCartPage ? 'md:hidden' : '' ?>"
                         :aria-label="isTotalsExpanded ? '<?= __('Collapse') ?>' : '<?= __('Expand') ?>'"
@@ -104,7 +106,7 @@ $isCartPage = $block->getData('isCartPage');
     >
         <div class="flex items-center justify-between overflow-x-hidden bg-bg pb-2 <?= !$isCartPage ? 'px-2 pt-4' : '' ?> text-fg max-md:px-3"
         >
-            <h2><?= __('Grand total') ?></h2>
+            <<?= $subtitleTag ?> class="heading heading--inherit"><?= __('Grand total') ?></<?= $subtitleTag ?>>
             <div class="flex translate-x-0 items-center gap-5 transition-transform delay-200 duration-300 motion-reduce:transition-none"
                  :class="{
                     'translate-x-11': isTotalsExpanded,

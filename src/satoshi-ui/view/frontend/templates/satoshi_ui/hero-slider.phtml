@@ -214,9 +214,10 @@ $alignDesktop = static fn(string $pos): string => match ($pos) {
                                     <?php else: ?>md:items-center md:text-center<?php endif; ?>"
                             >
                                 <?php if ($hasHeading): ?>
-                                    <h2 class="heading text-4xl leading-tight md:text-6xl md:leading-tight <?= $escaper->escapeHtmlAttr($headingClass) ?>">
+                                    <?php /* div et non h2 : le titre du hero est événementiel, pas un titre de contenu. */ ?>
+                                    <div class="heading text-4xl leading-tight md:text-6xl md:leading-tight <?= $escaper->escapeHtmlAttr($headingClass) ?>">
                                         <?= $escaper->escapeHtml($heading) ?>
-                                    </h2>
+                                    </div>
                                 <?php endif; ?>
                                 <?php if ($hasDescription): ?>
                                     <p class="text-lg font-medium <?= $escaper->escapeHtmlAttr($descriptionClass) ?>">

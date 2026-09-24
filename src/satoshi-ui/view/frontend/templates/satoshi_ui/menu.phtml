@@ -44,9 +44,9 @@ $schemeAttr = $colorScheme === 'inverse';
         aria-labelledby="<?= $escaper->escapeHtmlAttr($id) ?>_label"
         type="button"
     >
-        <h2 class="grow" id="<?= $escaper->escapeHtmlAttr($id) ?>_label">
+        <div class="grow heading heading--inherit" id="<?= $escaper->escapeHtmlAttr($id) ?>_label">
             <?= $escaper->escapeHtml($block->getData('heading')) ?>
-        </h2>
+        </div>
         <div class="button button--outline-secondary icon-button icon-button--size-xs group-hoverable md:hidden">
             <span x-ref="AccordionIcon">
                 <?= $hyvaicons->renderHtml('chevron', 'rotate-90') ?>
