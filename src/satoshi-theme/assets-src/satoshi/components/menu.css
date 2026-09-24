@@ -91,6 +91,16 @@
         @apply flex-1 translate-x-0 text-md;
       }
   
+      /* Titre de niveau rendu en div.heading (titre de structure, plus un h2) : .heading, déclaré
+         après ce composant, imposerait sa taille et son interligne. On garde ceux du menu. */
+      &.heading {
+        @apply text-lg leading-[inherit];
+  
+        @screen md {
+          @apply text-md;
+        }
+      }
+  
       &--root {
         @apply translate-x-0;
   
