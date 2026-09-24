@@ -21,7 +21,7 @@ $sorter = $block->getData('sorter');
 <div class="contents md:block md:px-2 md:pb-7 md:pt-2">
     <!-- Desktop header -->
     <div class="mb-5 hidden items-center justify-between md:flex">
-        <h2 class="text-fg"><?= $escaper->escapeHtml(__('Selected filters')) ?></h2>
+        <div class="heading heading--inherit text-fg"><?= $escaper->escapeHtml(__('Selected filters')) ?></div>
 
         <?php if ($block->getLayer()->getState()->getFilters()): ?>
             <a href="#" @click.prevent="clearAllFilters()" class="link link--primary">

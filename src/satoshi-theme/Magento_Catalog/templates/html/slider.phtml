@@ -41,6 +41,9 @@ $colorSchemeClass = $colorScheme === 'inverse' ? 'slider--on-dark' : '';
 $convertedSlidesAmountInView = array_reduce(array_keys($slidesAmountInViewArray),
     fn($carry, $key) => $carry." --slide-count-$key: {$slidesAmountInViewArray[$key]};", '');
 $viewAllUrl = $block->getData('view_all_url') ?? '';
+// Balise du titre : h2 par défaut. Un appelant peut passer div quand le titre est de la mise en page
+// (« Plus de produits de la collection » sur la fiche produit) ; « Tous nos univers » reste un h2.
+$headingTag = in_array($block->getData('heading_tag'), ['h2', 'h3', 'div'], true) ? $block->getData('heading_tag') : 'h2';
 ?>
 
 <div
@@ -60,7 +63,7 @@ $viewAllUrl = $block->getData('view_all_url') ?? '';
     <?php if (!$isHeaderDisabled && ($title || !$isActionsDisabled)): ?>
         <div class="slider__header">
             <?php if ($title): ?>
-                <h2 class="slider__title heading heading--sm"><?= $title ?></h2>
+                <<?= $headingTag ?> class="slider__title heading heading--sm"><?= $title ?></<?= $headingTag ?>>
             <?php endif; ?>
             <div class="slider__actions max-md:[.slider--pagebuilder_&]:hidden">
                 <div x-show="!isPrevBtnDisabled || !isNextBtnDisabled"

@@ -21,9 +21,9 @@ $categories = $block->getData('categories');
         <!-- Heading -->
         <div class="sticky start-0 top-0 z-10 flex flex-col gap-3 bg-bg px-3 md:pt-2">
             <div class="relative mb-2 flex min-h-7 items-center overflow-hidden">
-                <h2 class="text-md text-fg transition-transform duration-300 motion-reduce:transition-none translate-x-0">
+                <div class="heading heading--inherit text-md text-fg transition-transform duration-300 motion-reduce:transition-none translate-x-0">
                     <?= $escaper->escapeHtml(__('Category')) ?>
-                </h2>
+                </div>
                 <button
                     type="button"
                     class="button button--outline-secondary icon-button icon-button--size-xs absolute right-0 top-0"

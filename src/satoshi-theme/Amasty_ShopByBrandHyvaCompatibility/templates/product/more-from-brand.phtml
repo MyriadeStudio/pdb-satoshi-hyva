@@ -38,7 +38,8 @@ if (!$productIds) {
     ->setData([
         'type' => 'generic',
         'title' => (string) $moreFrom->getTitle(),
-        'heading_tag' => 'h2',
+        // div : sur la fiche produit, ce titre est de la mise en page, pas un titre de contenu.
+        'heading_tag' => 'div',
         'page_size' => count($productIds),
         'additional_filters' => [
             ['field' => 'entity_id', 'value' => $productIds, 'conditionType' => 'in'],
