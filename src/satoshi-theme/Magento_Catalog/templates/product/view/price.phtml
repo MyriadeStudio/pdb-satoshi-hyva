@@ -75,8 +75,9 @@ if ($msrpPrice = iterator_to_array($product->getPriceInfo()->getPrices())[MsrpPr
     <div x-show="!activeProductsPriceData && !isPriceHidden()" class="flex flex-col gap-2">
         <div class="flex items-end gap-2 md:text-lg">
             <!-- Final price -->
-            <div itemprop="offers" itemscope="" itemtype="http://schema.org/Offer"
-                 class="[.popup\_\_main_&]:flex [.popup\_\_main_&]:gap-1.5">
+            <?php /* Pas de microdonnées Offer ici : sans Product parent elles étaient invalides, et le
+                     balisage produit est émis en JSON-LD par Pdb_Seo. */ ?>
+            <div class="[.popup\_\_main_&]:flex [.popup\_\_main_&]:gap-1.5">
                 <?php if ($product->canConfigure() && is_int($product->getPrice())): ?>
                     <span class="price-label block">
                         <?= $escaper->escapeHtml(__('From')) . ':' ?>
@@ -87,8 +88,6 @@ if ($msrpPrice = iterator_to_array($product->getPriceInfo()->getPrices())[MsrpPr
                         <?= /** @noEscape */ $productViewModel->format($finalPrice) ?>
                     </span>
                 </span>
-                <meta itemprop="price" content="<?= $escaper->escapeHtmlAttr($finalPrice) ?>">
-                <meta itemprop="priceCurrency" content="<?= $escaper->escapeHtmlAttr($productViewModel->getCurrencyData()['code']) ?>">
             </div>
 
             <?php if ($finalPrice < $regularPrice): ?>
