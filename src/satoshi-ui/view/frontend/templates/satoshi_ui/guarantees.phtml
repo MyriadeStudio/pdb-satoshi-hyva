@@ -154,9 +154,11 @@ if ($layout === 'inline') {
                 </div>
                 <?php endif; ?>
                 <div class="<?= $escaper->escapeHtmlAttr($textWrapClasses) ?>">
-                    <h3 class="<?= $escaper->escapeHtmlAttr($titleClasses) ?>">
+                    <?php /* div et non h3 : « Livraison offerte », « Paiement sécurisé »... sont des
+                             arguments répétés sur chaque accueil, pas des titres de contenu. */ ?>
+                    <div class="<?= $escaper->escapeHtmlAttr($titleClasses) ?>">
                         <?= $escaper->escapeHtml($guarantee['column_title']) ?>
-                    </h3>
+                    </div>
                     <p class="m-0 <?= $escaper->escapeHtmlAttr($descColor) ?>">
                         <?= $escaper->escapeHtml($guarantee['column_description']) ?>
                     </p>
