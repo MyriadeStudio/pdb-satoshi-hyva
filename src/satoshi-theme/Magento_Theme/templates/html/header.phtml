@@ -154,7 +154,14 @@ $showCart = !$block->getData('hide_cart');
 <?php /* `header-floating-logo` : crochet de ciblage stable pour cette couche.
    Elle est un frère POSTÉRIEUR du header et vit dans sa propre strate (z-30) ;
    les thèmes enfants ont besoin de la viser sans dépendre de ses utilitaires,
-   qui changent au gré du markup. Voir pdb-header-vars.css de Pdb2026/satoshi. */ ?>
+   qui changent au gré du markup. Voir pdb-header-vars.css de Pdb2026/satoshi.
+
+   Aucune portée Alpine ici (pas de x-data, ni sur la couche ni sur un ancêtre) :
+   les liaisons ci-dessous (:style, :class, :tabindex, x-a11y-trap-element,
+   x-element-transition-trigger) sont inertes. D'où le tabindex="3" statique : il
+   place le logo entre le bouton Menu (2) et les boutons de droite, comme à l'écran,
+   au lieu de le laisser après le panier. Recherche ouverte, il sort de la tabulation
+   par le visibility: hidden de components/header.css. */ ?>
 <div class="header-floating-logo pointer-events-none sticky top-[88px] z-30 h-[1px] max-md:hidden"
      :style="`opacity: ${$store.main.opacityOnZoom}`"
 >
@@ -164,6 +171,7 @@ $showCart = !$block->getData('hide_cart');
            x-element-transition-trigger
            class="heading pointer-events-auto rounded-sm px-3 py-2 text-xl"
            :class="{'md:drop-shadow-xl': $store.main.isHeaderShadowVisible}"
+           tabindex="3"
            :tabindex="$store.resizable.isVisible('search-desktop') ? -1 : 3"
            x-a11y-trap-element="$store.transition.isPreviewActive && !$store.resizable.isVisible()"
            aria-label="<?= __('Go to Home page') ?>"
