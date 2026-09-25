@@ -19,6 +19,12 @@ use Satoshi\Theme\Block\Resizable;
 /** @var SvgIcons $hyvaicons */
 $hyvaicons = $viewModels->require(SvgIcons::class);
 
+/* `hide_account` / `hide_cart` : arguments de layout sur le bloc header-content.
+   Les boutons et leurs popups sont créés ici par createBlock, hors layout : un
+   module ne peut donc pas les retirer par remove="true" (ex. mode catalogue). */
+$showAccount = !$block->getData('hide_account');
+$showCart = !$block->getData('hide_cart');
+
 ?>
 
 <div
@@ -111,6 +117,7 @@ $hyvaicons = $viewModels->require(SvgIcons::class);
                 //     ->setChildTemplate('Magento_Theme::html/header/wishlist/wishlist-button.phtml')
                 //     ->render()
                 ?>
+                <?php if ($showAccount): ?>
                 <?=
                 $resizable
                     ->setData([
@@ -123,6 +130,8 @@ $hyvaicons = $viewModels->require(SvgIcons::class);
                     ->setChildTemplate('Magento_Theme::html/header/account/account-button.phtml')
                     ->render()
                 ?>
+                <?php endif; ?>
+                <?php if ($showCart): ?>
                 <?=
                 $resizable
                     ->setData([
@@ -135,6 +144,7 @@ $hyvaicons = $viewModels->require(SvgIcons::class);
                     ->setChildBlock($this->getLayout()->createBlock(Minicart::class))
                     ->render()
                 ?>
+                <?php endif; ?>
             </div>
         </div>
     </div>
@@ -190,6 +200,7 @@ $popup
 //     ->toHtml()
 ?>
 
+<?php if ($showAccount): ?>
 <?=
 $popup
     ->setData([
@@ -210,7 +221,9 @@ $popup
     )
     ->toHtml()
 ?>
+<?php endif; ?>
 
+<?php if ($showCart): ?>
 <?=
 $popup
     ->setData([
@@ -222,3 +235,4 @@ $popup
     ->setChildTemplate('Magento_Theme::html/header/cart/minicart-overlay.phtml')
     ->toHtml()
 ?>
+<?php endif; ?>
