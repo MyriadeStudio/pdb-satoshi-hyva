@@ -40,7 +40,7 @@ $colorSchemeClass = $colorScheme === 'inverse' ? 'slider--on-dark' : '';
 
 $convertedSlidesAmountInView = array_reduce(array_keys($slidesAmountInViewArray),
     fn($carry, $key) => $carry." --slide-count-$key: {$slidesAmountInViewArray[$key]};", '');
-$viewAllUrl = $block->getData('view_all_url') ?? '';
+$viewAllUrl = (string) ($block->getData('view_all_url') ?? '');
 // Balise du titre : h2 par défaut. Un appelant peut passer div quand le titre est de la mise en page
 // (« Plus de produits de la collection » sur la fiche produit) ; « Tous nos univers » reste un h2.
 $headingTag = in_array($block->getData('heading_tag'), ['h2', 'h3', 'div'], true) ? $block->getData('heading_tag') : 'h2';
@@ -81,10 +81,13 @@ $headingTag = in_array($block->getData('heading_tag'), ['h2', 'h3', 'div'], true
                     <?php endif; ?>
                 </div>
             </div>
+            <?php /* Sans URL, pas de lien « Voir tout » : il sortait avec href="" (lien mort vers la page
+                     courante) sur les sliders Page Builder en mobile. */ ?>
+            <?php if ($viewAllUrl !== ''): ?>
             <a href="<?= $escaper->escapeUrl($viewAllUrl) ?>"
                class="hidden max-md:[.slider--pagebuilder_&]:block button button--ghost-primary px-0 h-auto text-[14px]"
                x-element-transition-trigger>
-                View all
+                <?= $escaper->escapeHtml(__('View all')) ?>
                 <span class="button__icon ml-2">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="24" height="24">
                         <path
@@ -96,6 +99,7 @@ $headingTag = in_array($block->getData('heading_tag'), ['h2', 'h3', 'div'], true
                     </svg>
                 </span>
             </a>
+            <?php endif; ?>
         </div>
     <?php endif; ?>
 

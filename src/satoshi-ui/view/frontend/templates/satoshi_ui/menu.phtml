@@ -29,8 +29,10 @@ $colorScheme = $block->getData('text_color_scheme') === 'inverse' ? 'inverse' : 
 $textColor = 'text-fg';
 $schemeAttr = $colorScheme === 'inverse';
 ?>
+<?php /* md:py-0 : en bureau l'accordéon est déplié et figé, son padding vertical ne servait qu'à
+         décaler le titre (« Informations » du footer) sous ceux des colonnes voisines. */ ?>
 <div
-    class="flex-1 py-2 md:flex md:flex-col md:gap-4 md:py-4 <?= $escaper->escapeHtmlAttr($textColor) ?>"
+    class="flex-1 py-2 md:flex md:flex-col md:gap-4 md:py-0 <?= $escaper->escapeHtmlAttr($textColor) ?>"
     x-data="Accordion(!$store.main.isMobile, 300, true)"
     <?php if ($schemeAttr): ?>data-scheme="dark"<?php endif; ?>
 >

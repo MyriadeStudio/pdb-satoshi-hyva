@@ -68,6 +68,13 @@
     }
   }
 
+  /* Réassurance : dans une row (flex en colonne), le wrapper centré `max-w-7xl mx-auto` posé par
+     l'intégration PDB voit ses marges auto absorber l'espace libre et se réduit à la largeur de
+     son contenu (656 px mesurés à 1280). Pleine largeur, toujours bornée par max-w-7xl. */
+  [data-content-type="satoshi_guarantees"] {
+    width: 100%;
+  }
+
   /* Satoshi UI — autorise le rétrécissement des composants flex items des rows
      (min-width:auto par défaut → refus de descendre sous la largeur du contenu)
      pour que le cap max-width ci-dessus et les sliders internes fonctionnent. */

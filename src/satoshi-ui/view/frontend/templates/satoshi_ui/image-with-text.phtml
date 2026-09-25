@@ -45,7 +45,9 @@ $buttonClass = match ($buttonStyle) {
 };
 
 ?>
-<div class="flex flex-col items-center md:grid md:grid-cols-2 xl:gap-20 2xl:gap-28 max-md:gap-7"<?php if ($schemeAttr): ?> data-scheme="dark"<?php endif; ?>>
+<?php /* md:gap-10 : sans lui, aucun espace entre l'image et le texte de 768 à 1279 px (le gap ne
+         commençait qu'à xl), le texte touchait l'image. */ ?>
+<div class="flex flex-col items-center md:grid md:grid-cols-2 md:gap-10 xl:gap-20 2xl:gap-28 max-md:gap-7"<?php if ($schemeAttr): ?> data-scheme="dark"<?php endif; ?>>
     <?php if ($block->getData('image')): ?>
         <div class="relative overflow-hidden rounded-md w-full">
             <picture>
@@ -63,12 +65,13 @@ $buttonClass = match ($buttonStyle) {
             <?= /* @noEscape */ str_replace('&quote;', '"', html_entity_decode($block->getData('content'))) ?>
         </div>
 
+        <?php /* Pas de bouton sans lien : il sortait en bouton mort (sans href, souvent sans libellé).
+                 Le conteneur reste, vide : sa place dans la colonne (gap) fait partie de la mise en page. */ ?>
         <div class="w-full">
+            <?php if ($linkHref): ?>
             <a
-                <?php if ($linkHref): ?>
-                    href="<?= $escaper->escapeUrl($linkHref); ?>"
-                    target="<?= $escaper->escapeHtmlAttr($linkHelper->getLinkTarget($link_url)); ?>"
-                <?php endif; ?>
+                href="<?= $escaper->escapeUrl($linkHref); ?>"
+                target="<?= $escaper->escapeHtmlAttr($linkHelper->getLinkTarget($link_url)); ?>"
                 class="<?= $escaper->escapeHtmlAttr($buttonClass) ?>"
                 x-element-transition-trigger
             >
@@ -77,6 +80,7 @@ $buttonClass = match ($buttonStyle) {
                     <?= $hyvaicons->renderHtml('button-link'); ?>
                 </span>
             </a>
+            <?php endif; ?>
         </div>
     </div>
 </div>

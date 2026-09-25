@@ -17,6 +17,13 @@
     }
   }
   
+  /* Recherche ouverte : son panneau vient au centre de l'en-tête, là où est le logo flottant, qui
+     passait par-dessus. Le logo est masqué le temps de la recherche. En CSS et non en liaison
+     Alpine : la couche du logo, sœur du header, n'est dans aucune portée x-data. */
+  .header:has(.resizable--search.resizable--visible) ~ .header-floating-logo {
+    visibility: hidden;
+  }
+
   .header {
     --button-gap: theme(space.5);
     --button-width: 56px;
