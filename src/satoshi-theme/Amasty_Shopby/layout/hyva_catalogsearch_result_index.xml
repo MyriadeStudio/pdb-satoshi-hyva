@@ -4,6 +4,29 @@
     <!-- Top navigation added by the Hyva compatibility module: it rendered the selected filters block a second
          time below the sidebar filters (already removed on category pages). -->
     <referenceBlock name="amshopby.catalog.topnav" remove="true" />
+    <!-- Search results sorted by relevance. The top navigation removed above was the block that
+         prepared the toolbar for search (relevance instead of position, descending by default), and
+         the Hyva default theme redeclares catalogsearch.leftnav with the Magento class: without the
+         Amasty class the list stayed sorted by the catalog default order and ignored
+         product_list_order=relevance. -->
+    <referenceBlock name="catalogsearch.leftnav" class="Amasty\Shopby\Block\Navigation\Search"/>
+    <!-- filter_sort is the toolbar behind the "Sort by" menu: Amasty only prepares
+         product_list_toolbar, so the same orders and defaults are declared here. -->
+    <referenceBlock name="filter_sort">
+        <action method="removeOrderFromAvailableOrders">
+            <argument name="order" xsi:type="string">position</argument>
+        </action>
+        <action method="addOrderToAvailableOrders">
+            <argument name="order" xsi:type="string">relevance</argument>
+            <argument name="value" xsi:type="string" translate="true">Relevance</argument>
+        </action>
+        <action method="setDefaultOrder">
+            <argument name="field" xsi:type="string">relevance</argument>
+        </action>
+        <action method="setDefaultDirection">
+            <argument name="dir" xsi:type="string">desc</argument>
+        </action>
+    </referenceBlock>
     <referenceBlock name="amshopby.js.main">
         <block name="satoshi.amshopby.js.fromto-widget"
                template="Amasty_Shopby::js/components/amShopBy-fromto-widget.phtml"/>
