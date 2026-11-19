@@ -12,6 +12,14 @@
    boutons wishlist/compare, qui veut rester sombre sur fond clair, casserait) :
    on cible les classes utilitaires.
 
+   Seule exception volontaire : --color-primary-text (couleur de la primaire pour
+   écrire du texte) est redéfinie dans la bande sombre. Ce token est calculé pour le
+   fond de page (assombri quand la primaire est claire) : lu tel quel dans une bande au
+   fond inversé, il y serait peu lisible. Il ne pose pas le problème de --color-fg
+   (des boutons veulent rester sombres sur fond clair) : les composants qui portent leur
+   propre fond clair dans une bande sombre n'emploient pas ce token (ils gardent
+   primary-darker).
+
    !important nécessaire : le thème compile Tailwind avec `important: true`, donc
    `.text-fg` = `color: var(--color-fg) !important`. Une règle non-important ne
    peut pas la battre ; avec !important des deux côtés c'est la spécificité qui
@@ -26,6 +34,13 @@
     color: var(--color-fg-inverse) !important;
     /* voile du survol des cartes produit (.card-hover::before) lisible sur sombre */
     --card-hover-bg: rgb(255 255 255 / 0.1);
+    /* --color-primary-text est calculé pour le fond de page (assombri sur fond clair,
+       éclairci sur fond sombre) : il est donc inadapté dans une bande au fond inversé.
+       On revient à la couleur primaire elle-même, lisible quand elle est claire sur un
+       fond sombre ; une primaire sombre y reste peu lisible, comme lorsqu'elle est employée
+       directement. Une valeur saisie en back-office pour ce token n'est pas appliquée dans
+       ces bandes. */
+    --color-primary-text: var(--color-primary);
 }
 
 /* .text-fg en descendant OU porté par l'élément racine lui-même (sélecteur

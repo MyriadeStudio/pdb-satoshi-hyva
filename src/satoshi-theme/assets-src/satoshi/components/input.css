@@ -41,7 +41,7 @@
       --input-border: var(--color-fg-secondary);
       --input-placeholder: var(--color-fg-secondary);
       --input-bg-hover: var(--color-bg);
-      --input-fg-hover: var(--color-primary);
+      --input-fg-hover: var(--color-primary-text);
       --input-border-hover: var(--color-primary);
       --input-bg-focus: var(--color-bg);
       --input-border-focus: var(--color-primary);
@@ -98,7 +98,7 @@
   
   .field {
     &-success {
-      @apply text-primary-lighter;
+      @apply text-primary-text;
     }
   
     &-error {

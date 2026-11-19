@@ -43,13 +43,13 @@
   
     &--outline {
       &-primary {
-        /* Contrat de tokens : mêmes `--btn-*` que outline-secondary. Les valeurs par
-           défaut reprennent exactement l'ancien jeu d'utilitaires (bordure et texte
-           primary-darker, fond transparent ; survol primary-lighter) — le rendu ne
-           change pas. Ce qui change : la couleur du bouton filaire devient réglable
-           par redéfinition de tokens, au lieu d'être figée dans les utilitaires. */
-        --btn-fg: var(--color-primary-darker);
-        --btn-border: var(--color-primary-darker);
+        /* Contrat de tokens : mêmes `--btn-*` que outline-secondary. Le texte et la
+           bordure prennent la couleur primaire de texte (`--color-primary-text`,
+           dérivée de la primaire et garantie lisible sur le fond de page), le fond est
+           transparent, et le survol passe sur primary-lighter. La couleur du bouton
+           filaire se règle en redéfinissant ces tokens. */
+        --btn-fg: var(--color-primary-text);
+        --btn-border: var(--color-primary-text);
         --btn-bg: transparent;
         --btn-fg-hover: var(--color-primary-on);
         --btn-border-hover: var(--color-primary-lighter);
@@ -79,8 +79,8 @@
         --btn-fg: inherit;
         --btn-border: var(--color-fg-secondary);
         --btn-bg: transparent;
-        --btn-fg-hover: var(--color-primary);
-        --btn-border-hover: var(--color-primary);
+        --btn-fg-hover: var(--color-primary-text);
+        --btn-border-hover: var(--color-primary-text);
         --btn-bg-hover: var(--color-bg);
 
         @apply border-1 border-solid;
@@ -110,7 +110,7 @@
         }
 
         &.selected {
-          @apply border-current text-primary-darker;
+          @apply border-current text-primary-text;
 
           &:not(.button--disabled) {
             @apply md:hover:bg-primary-lighter md:active:bg-primary-lighter;
@@ -120,16 +120,19 @@
     }
 
     &--quiet {
-      /* Preset « doux » de outline-secondary (boutons catégories) : ton de marque
-         clair + bordure sunken en mode clair, posés via les tokens du contrat —
-         donc surchargeables par le color scheme (0,2,0) sans !important. */
-      --btn-fg: var(--color-primary-lighter);
+      /* Preset « doux » de outline-secondary (boutons catégories) : le texte est en
+         couleur primaire de texte (--color-primary-text) au repos ET au survol, le survol
+         ne change que la bordure (qui passe aussi en couleur primaire de texte) et le
+         fond ; la bordure au repos est sunken en mode clair. Ces valeurs sont posées via
+         les tokens du contrat, donc surchargeables par le color scheme (0,2,0) sans
+         !important. */
+      --btn-fg: var(--color-primary-text);
       --btn-border: var(--color-bg-sunken);
     }
 
     &--ghost {
       &-primary {
-        @apply bg-transparent text-primary;
+        @apply bg-transparent text-primary-text;
   
         &:not(.button--disabled) {
           @apply md:hover:bg-bg-sunken;

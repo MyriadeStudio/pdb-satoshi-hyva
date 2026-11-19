@@ -122,7 +122,7 @@
       @apply focus-visible:focus-ring flex min-h-11	w-full items-center justify-between py-1;
   
       &--active {
-        @apply font-bold text-primary;
+        @apply font-bold text-primary-text;
       }
     }
   }

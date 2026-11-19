@@ -28,7 +28,7 @@
       &:checked ~ {
         .radio__label,
         .checkbox__label {
-          @apply font-semibold text-primary;
+          @apply font-semibold text-primary-text;
         }
   
         .checkbox__swatch {
@@ -56,7 +56,7 @@
       @apply cursor-pointer transition-colors duration-200;
   
       .checkbox:hover & {
-        @apply md:text-primary;
+        @apply md:text-primary-text;
       }
     }
   

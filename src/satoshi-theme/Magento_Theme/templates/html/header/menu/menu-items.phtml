@@ -68,7 +68,7 @@ if (!$menuItems && !$pdbMenuEnabled) {
                     <button
                         @click="$store.resizable.hideAll();"
                         type="button"
-                        class="button icon-button icon-button--size-lg h-auto w-auto gap-3 pl-2 pr-[10px] py-3 text-primary hover:bg-bg-sunken"
+                        class="button icon-button icon-button--size-lg h-auto w-auto gap-3 pl-2 pr-[10px] py-3 text-primary-text hover:bg-bg-sunken"
                         aria-label="<?= __('Close menu') ?>"
                         aria-controls="menu-desktop"
                         :aria-expanded="$store.resizable.isVisible('menu-desktop')"
@@ -218,7 +218,7 @@ if (!$menuItems && !$pdbMenuEnabled) {
                         ])) ?>"
                         class="focus-visible:focus-ring group flex min-h-11 items-center justify-between py-1"
                         :class="{
-                            'text-primary font-semibold': history.includes('<?= $menuItem['id'] ?>')
+                            'text-primary-text font-semibold': history.includes('<?= $menuItem['id'] ?>')
                         }"
                     >
                         <span

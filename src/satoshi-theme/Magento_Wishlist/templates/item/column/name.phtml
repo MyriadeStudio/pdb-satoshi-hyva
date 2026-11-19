@@ -19,7 +19,7 @@ $product = $item->getProduct();
 ?>
 <div class="flex justify-between leading-5">
     <span><?= $escaper->escapeHtml($block->getCategoryName($product)) ?></span>
-    <span class="flex text-primary">
+    <span class="flex text-primary-text">
         <?= $hyvaicons->renderHtml('star', 'text-xl') ?>
         <span class="ml-1 mr-2 font-bold"><?= $escaper->escapeHtml($block->getProductReviewAverageRating($product)) ?></span>
         <span class="after:content-[''] after:block after:relative after:top-[-3px] after:border-t after:border-primary">

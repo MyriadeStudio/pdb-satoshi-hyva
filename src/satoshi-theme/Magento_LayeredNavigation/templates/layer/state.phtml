@@ -48,7 +48,7 @@ $sorter = $block->getData('sorter');
             <?php if(count($selectedSort)): ?>
                 <a
                     @click="removeSort()"
-                    class="button button--outline-secondary button--size-sm shrink-0 max-md:h-[44px] max-md:text-base max-md:text-primary-darker"
+                    class="button button--outline-secondary button--size-sm shrink-0 max-md:h-[44px] max-md:text-base max-md:text-primary-text"
                     title="<?= $escaper->escapeHtmlAttr(__('Remove sort %1 by: %2', $selectedSort['name'], $selectedSort['dir'])) ?>"
                 >
                     <span class="mr-2"><?= $escaper->escapeHtml(__($selectedSort['name'])) ?>:</span>
@@ -63,7 +63,7 @@ $sorter = $block->getData('sorter');
                 ?>
                 <a
                     href="<?= $escaper->escapeUrl($filter->getRemoveUrl()) ?>"
-                    class="button button--outline-secondary button--size-sm shrink-0 max-md:h-[44px] max-md:text-base max-md:text-primary-darker"
+                    class="button button--outline-secondary button--size-sm shrink-0 max-md:h-[44px] max-md:text-base max-md:text-primary-text"
                     title="<?= $escaper->escapeHtmlAttr(__('Remove active %1 filter: %2', $filterName, $filterLabel)) ?>"
                     x-element-transition-trigger
                 >

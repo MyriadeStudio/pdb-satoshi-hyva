@@ -14,7 +14,7 @@
       @apply ml-5;
   
       .radio:hover & {
-        @apply md:text-primary;
+        @apply md:text-primary-text;
       }
     }
   
@@ -37,7 +37,7 @@
       }
   
       &[checked] ~ .radio__label {
-        @apply font-semibold text-primary;
+        @apply font-semibold text-primary-text;
       }
     }
   }

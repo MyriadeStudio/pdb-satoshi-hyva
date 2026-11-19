@@ -46,7 +46,7 @@ if ($extraActionTitleBlocks = $block->getLayout()->getChildBlocks('order-list-ex
                 :tabindex="tabIndex"
             ><?= $escaper->escapeHtml(__('Recent Orders')) ?></h2>
             <a
-                class="text-primary hover:text-primary-lighter transition-colors"
+                class="text-primary-text hover:text-primary-lighter transition-colors"
                 href="<?= $escaper->escapeUrl($block->getUrl('sales/order/history')) ?>"
                 aria-label="<?= $escaper->escapeHtmlAttr(__('View all orders')) ?>"
                 x-element-transition-trigger

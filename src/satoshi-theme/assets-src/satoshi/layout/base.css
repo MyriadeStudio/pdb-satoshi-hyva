@@ -22,6 +22,14 @@
     --radius-lg: .5rem;
     --radius-xl: .75rem;
 
+    /* Couleur de la primaire pour écrire du texte : valeur par défaut, la variante
+       foncée de la primaire (primary-darker). Elle est écrasée par le
+       <style> du module Pdb_ThemeHyva, émis après le bundle, qui porte la valeur calculée
+       ou saisie en back-office. Cette valeur sert quand une page restée en cache (Varnish)
+       a été produite avant la mise en ligne du module : son :root ne contient pas encore le
+       token, et sans valeur par défaut les déclarations qui le lisent seraient invalides. */
+    --color-primary-text: var(--color-primary-darker);
+
     /* https://tailwindcss.com/docs/using-with-preprocessors#using-sass-less-or-stylus */
     /* can not use strip-unit with theme function */
 

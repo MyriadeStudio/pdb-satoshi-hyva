@@ -67,6 +67,12 @@ module.exports = hyvaModules.mergeTailwindConfig({
           DEFAULT: "var(--color-primary)",
           lighter: "var(--color-primary-lighter)",
           darker: "var(--color-primary-darker)",
+          // Couleur de la primaire pour écrire du texte sur le fond de page. Calculée par
+          // Pdb_ThemeHyva pour un contraste de 4,5, sauf si une valeur est saisie en
+          // back-office (émise telle quelle) ou si la primaire n'est pas un hexadécimal
+          // (repli sur la couleur de texte). Valeur par défaut primary-darker posée dans
+          // layout/base.css pour les pages dont le :root ne porte pas encore le token.
+          text: "var(--color-primary-text)",
           on: "var(--color-primary-on)",
           hover: "var(--color-primary-hover)",
           "hover-on": "var(--color-primary-hover-on)",
