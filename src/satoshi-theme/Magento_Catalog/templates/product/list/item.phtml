@@ -289,10 +289,10 @@ if ($product) {
                             <?php endforeach; ?>
 
                             <button
-                                class="text-2xl text-primary"
+                                class="text-2xl text-primary-text"
                                 :class="{
                                     'text-primary-lighter': isLoadingCart,
-                                    'text-primary': !isLoadingCart
+                                    'text-primary-text': !isLoadingCart
                                 }"
                                 <?php if (in_array($product->getTypeId(), ['simple', 'virtual'])): ?>
                                     form="quick_buy_form_<?= $product->getId() ?>"
