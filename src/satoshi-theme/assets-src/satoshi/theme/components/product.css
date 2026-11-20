@@ -50,6 +50,11 @@
     @apply min-h-24;
   }
 
+  /* Le menu natif des options est dessiné par le navigateur : sans color-scheme déclaré, il peut adopter le mode sombre du système alors que le champ garde ses couleurs de thème clair (--color-fg sur --color-surface), d'où des options illisibles ; on impose donc le schéma clair. Seul Satoshi est corrigé : sur la lignée premium (Pdb2026/default), le .form-select n'impose aucune couleur de texte, le menu natif y garde donc celles du navigateur. */
+  .form-select {
+    color-scheme: light;
+  }
+
   .note {
     @apply mt-2 text-fg-secondary;
   }

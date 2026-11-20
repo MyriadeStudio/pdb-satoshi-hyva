@@ -8,6 +8,7 @@ use Magento\Catalog\Block\Product\View\Attributes;
 use Magento\Catalog\Helper\Output as CatalogOutputHelper;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\Escaper;
+use Pdb\ThemeHyva\ViewModel\Product\ConfigurableChildAttributes;
 
 /** @var Escaper $escaper */
 /** @var CatalogOutputHelper $output */
@@ -39,6 +40,23 @@ $product = $block->getProduct();
        rendu ailleurs par product/view/attribute-section.phtml. Defaut : aucun. */
     $excludedAttributes = array_values(array_filter((array) $block->getData('excluded_attributes')));
     $attributes = $block->getAdditionalData($excludedAttributes);
+
+    /* Caractéristiques par déclinaison. Sur un produit configurable, les lignes du tableau de
+       chaque enfant (ViewModel ConfigurableChildAttributes, mêmes exclusions que le parent) sont
+       embarquées en JSON. Quand la sélection des options désigne un enfant unique (événement
+       configurable-selection-changed), elles remplacent celles du parent ; celles du parent
+       reviennent dès que la sélection redevient partielle. Les lignes du parent restent rendues
+       côté serveur (référencement, navigateur sans JavaScript). Produit simple ou configurable
+       sans donnée enfant : le HTML produit ne contient ni Alpine ni JSON. Les lignes des enfants ne
+       sont calculées que si le parent a au moins une ligne : sans ligne du parent, le bloc n'est
+       pas rendu du tout.
+       Le JavaScript de x-data ne contient aucun commentaire à double barre oblique : le minifier
+       de Magento les supprime jusqu'à la fin de la ligne. */
+    $childAttributes = $viewModels->require(ConfigurableChildAttributes::class);
+    $childRows = $attributes ? $childAttributes->getChildrenRows($product, $excludedAttributes) : [];
+    $childRowsAttr = $childRows
+        ? $escaper->escapeHtmlAttr($childAttributes->getChildrenRowsJson($product, $excludedAttributes), false)
+        : '';
 ?>
 <?php if ($attributes): ?>
     <div
@@ -72,7 +90,20 @@ $product = $block->getProduct();
         >
             <div class="border-t border-bg-sunken py-2">
                 <div class="table-wrapper overflow-x-auto" id="product-attributes">
-                    <table class="additional-attributes w-full">
+                    <table class="additional-attributes w-full"<?php if ($childRows): ?>
+                           x-data="{
+                               productId: <?= (int) $product->getId() ?>,
+                               childRows: <?= /* @noEscape */ $childRowsAttr ?>,
+                               rows: null,
+                               onSelection(detail) {
+                                   if (!detail || detail.productId != this.productId) return;
+                                   const ids = detail.candidates ? Object.values(detail.candidates) : null;
+                                   const id = ids ? (ids.length === 1 ? ids[0] : null) : (detail.productIndex || null);
+                                   this.rows = (id && this.childRows[id]) || null;
+                               }
+                           }"
+                           @configurable-selection-changed.window="onSelection($event.detail)"<?php endif; ?>>
+                        <?php if ($childRows): ?><tbody x-show="rows === null"><?php endif; ?>
                         <?php foreach ($attributes as $attribute): ?>
                             <tr class="border-b border-bg-sunken last:border-b-0">
                                 <th
@@ -89,6 +120,25 @@ $product = $block->getProduct();
                                 </td>
                             </tr>
                         <?php endforeach; ?>
+                        <?php if ($childRows): ?>
+                            </tbody>
+                            <tbody x-cloak x-show="rows !== null">
+                                <template x-for="row in (rows || [])" :key="row.code">
+                                    <tr class="border-b border-bg-sunken last:border-b-0">
+                                        <th
+                                            class="col label w-1/2 py-3 text-left font-normal text-fg-secondary product-attribute-label"
+                                            scope="row"
+                                            x-text="row.label"
+                                        ></th>
+                                        <td
+                                            class="col data w-1/2 py-3 pl-3 text-left font-medium text-fg product-attribute-value"
+                                            :data-th="row.label"
+                                            x-html="row.value"
+                                        ></td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        <?php endif; ?>
                     </table>
                 </div>
             </div>

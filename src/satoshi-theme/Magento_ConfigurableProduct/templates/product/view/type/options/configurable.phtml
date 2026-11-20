@@ -1,0 +1,88 @@
+<?php
+/**
+ * Hyvä Themes - https://hyva.io
+ * Copyright © Hyvä Themes. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+declare(strict_types=1);
+
+/*
+ * Copie du gabarit Hyvä (hyva-themes/magento2-default-theme 1.5.2). Seule différence : le libellé de
+ * l'axe est celui du produit ($attribute->getLabel(), table catalog_product_super_attribute_label)
+ * et non le libellé générique de l'attribut (« Variation ») ; quand le libellé du produit est vide,
+ * on garde le libellé de l'attribut (même repli que le plugin Pdb_Catalog du jsonConfig).
+ * À resynchroniser à chaque montée de version de Hyvä.
+ */
+
+use Hyva\Theme\ViewModel\HyvaCsp;
+use Magento\ConfigurableProduct\Block\Product\View\Type\Configurable;
+use Magento\Framework\Escaper;
+
+/** @var Configurable $block */
+/** @var Escaper $escaper */
+/** @var HyvaCsp $hyvaCsp */
+
+$product = $block->getProduct();
+$productId = $product->getId();
+$attributes = $block->decorateArray($block->getAllowAttributes());
+$jsonConfig = $block->getJsonConfig();
+?>
+<?php if ($product->isSaleable() && count($attributes)): ?>
+    <script>
+        function initConfigurableDropdownOptions() {
+            const { productId } = this.$root.dataset;
+            const configEl = this.$root.querySelector('script[type="application/json"]');
+
+            return initConfigurableOptions(productId, JSON.parse(configEl.textContent));
+        }
+
+        window.addEventListener('alpine:init', () => {
+            Alpine.data('initConfigurableDropdownOptions', initConfigurableDropdownOptions)
+        }, { once: true });
+    </script>
+    <?php $hyvaCsp->registerInlineScript() ?>
+
+    <div
+        x-data="initConfigurableDropdownOptions"
+        data-product-id="<?= (int) $productId ?>"
+        class="mb-6"
+    >
+        <script type="application/json"><?= /* @noEscape */ str_replace('</script>', '<\/script>', $jsonConfig) ?></script>
+
+        <?php foreach ($attributes as $attribute): ?>
+            <?php
+            $attributeId = $attribute->getAttributeId();
+            $productOptions = $attribute->getOptions();
+            $axisLabel = trim((string) $attribute->getLabel()) ?: $attribute->getProductAttribute()->getStoreLabel();
+            ?>
+            <div role="group" class="mb-4">
+                <label
+                    class="mb-1 text-base font-medium"
+                    for="attribute<?= $escaper->escapeHtmlAttr($attributeId) ?>"
+                >
+                    <?= $escaper->escapeHtml($axisLabel) ?>
+                </label>
+                <select
+                    id="attribute<?= $escaper->escapeHtmlAttr($attributeId) ?>"
+                    name="super_attribute[<?= $escaper->escapeHtmlAttr($attributeId) ?>]"
+                    class="form-select w-full"
+                    required
+                    data-attribute-id="<?= $escaper->escapeHtmlAttr($attributeId) ?>"
+                    @change="reflectOption"
+                >
+                    <option value=""><?= $escaper->escapeHtml(__('Choose an Option...')) ?></option>
+                    <?php foreach ($productOptions ?? [] as $option): ?>
+                        <option
+                            value="<?= $escaper->escapeHtmlAttr($option['value_index']) ?>"
+                            data-attribute-id="<?= $escaper->escapeHtmlAttr($attributeId) ?>"
+                            data-option-label="<?= $escaper->escapeHtmlAttr($option['store_label']) ?>"
+                            :disabled="optionIsDisabled"
+                            x-text="getOptionLabel"
+                        ><?= $escaper->escapeHtml($option['store_label']) ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+        <?php endforeach; ?>
+    </div>
+<?php endif; ?>

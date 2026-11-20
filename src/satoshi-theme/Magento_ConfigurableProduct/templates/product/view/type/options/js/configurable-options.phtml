@@ -1,0 +1,375 @@
+<?php
+/**
+ * Hyvä Themes - https://hyva.io
+ * Copyright © Hyvä Themes. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+use Hyva\Theme\Model\ViewModelRegistry;
+use Hyva\Theme\ViewModel\CurrentProduct;
+use Hyva\Theme\ViewModel\HyvaCsp;
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+
+/** @var Template $block */
+/** @var Escaper $escaper */
+/** @var HyvaCsp $hyvaCsp */
+/** @var ViewModelRegistry $viewModels */
+/** @var CurrentProduct $currentProduct */
+$currentProduct = $viewModels->require(CurrentProduct::class);
+
+?>
+<script>
+    function initConfigurableOptions(productId, optionConfig) {
+
+        function findPathParam(key) {
+            <?php /* get all path pairs after BASE_URL/front_name/action_path/action */ ?>
+            const baseUrl = (BASE_URL.substring(0, 2) === '//' ? 'http:' : '') + BASE_URL;
+            const baseUrlParts = (new URL(baseUrl)).pathname.replace(/\/$/, '').split('/');
+            const pathParts = window.location.pathname.split('/').slice(baseUrlParts.length + 3);
+            for (let i = 0; i < pathParts.length; i += 2) {
+                if (pathParts[i] === key && pathParts.length > i) {
+                    return pathParts[i + 1];
+                }
+            }
+        }
+
+        return {
+            optionConfig,
+            productId,
+            itemId: (new URLSearchParams(window.location.search)).get('id') || findPathParam('id'),
+            allowedAttributeOptions: [],
+            selectedValues: [],
+            selectedOptions: {},
+            init() {
+                this.baseInit();
+            },
+            baseInit() {
+                this.buildLookupMap();
+                this.findAllowedAttributeOptions();
+                this.$nextTick(() => {
+                    if (typeof this.optionConfig.defaultValues === 'object') {
+                        for (const [attributeId, value] of Object.entries(this.optionConfig.defaultValues)) {
+                            this.changeOption(attributeId, value + '');
+                        }
+                    }
+                    <?php if ($currentProduct->exists()): ?>
+                    if (this.productId === '<?= (int) $currentProduct->get()->getEntityId() ?>') {
+                        this.preselectQuerystringItems();
+                        this.preselectLocationHashItems();
+                    }
+                    <?php endif; ?>
+                    this.applyCheckedState();
+                });
+            },
+            applyCheckedState() {
+                this.$root.querySelectorAll('input[data-attribute-id], select[data-attribute-id]').forEach(el => {
+                    const val = this.selectedValues[el.dataset.attributeId];
+                    if (!val) return;
+                    if (el.tagName === 'SELECT') {
+                        el.value = val;
+                        this.selectedOptions[el.dataset.attributeId] = el.options[el.selectedIndex]?.text || '';
+                    } else if (el.value === val && this.optionIsActive(el.dataset.attributeId, el.value)) {
+                        el.checked = true;
+                        this.selectedOptions[el.dataset.attributeId] = el.dataset.optionLabel || '';
+                    }
+                });
+            },
+            productIndex: 0,
+            productIndexForPrice: 0,
+            productIndexesMap: null,
+            productIndexesKeys: null,
+            attributeCount: 0,
+            optionIsActive(attributeId, optionId) {
+                <?php /* return true if a product with this option is in stock */ ?>
+                return !!this.getAllowedAttributeOptions(attributeId).find(
+                    option => option.id === optionId
+                )
+            },
+            optionIsDisabled() {
+                const attributeId = this.$el.dataset.attributeId;
+                if (!attributeId) {
+                    throw new Error('data-attribute-id missing, in item template');
+                }
+                return !this.optionIsActive(attributeId, this.$el.value);
+            },
+            findSimpleIndex() {
+                <?php /* a better method name would be `updateSelectedSimpleIndex` but keeping for bc */ ?>
+                this.productIndex = this.calculateSimpleIndexForPartialSelection(this.selectedValues);
+                this.productIndexForPrice = this.findCheapestProductForPartialSelection(this.selectedValues);
+            },
+            calculateSimpleIndexForPartialSelection(selectedValues) {
+                if (selectedValues.length === 0) return 0;
+                return this.findProductIdsForPartialSelection(selectedValues)[0];
+            },
+            buildLookupMap() {
+                <?php /* Pre-index products by sorted option key for O(1) full-selection lookups */ ?>
+                this.productIndexesMap = new Map();
+                this.attributeCount = Object.keys(this.optionConfig.attributes).length;
+                for (const id in this.optionConfig.index) {
+                    const options = this.optionConfig.index[id];
+                    if (! this.productIndexesKeys) {
+                        this.productIndexesKeys = Object.keys(options).sort();
+                    }
+                    const key = JSON.stringify(options, this.productIndexesKeys);
+                    this.productIndexesMap.set(key, id);
+                }
+            },
+            findAllowedAttributeOptions() {
+                <?php /* a better method name would be `updateAllowedAttributeOptions` but keeping for bc */ ?>
+                this.allowedAttributeOptions = this.calculateAllowedAttributeOptions(this.selectedValues);
+            },
+            calculateAllowedAttributeOptions(selectedValues) {
+                const allAttributes = this.optionConfig.attributes;
+                const allAttributesSorted = Object.values(allAttributes).sort((a,b) => {
+                    return a.position - b.position
+                });
+
+                const newAllowedAttributeOptions = [];
+
+                allAttributesSorted.forEach(attribute => {
+                    const selectionWithoutAttr = Object.assign({}, this.removeAttrFromSelection(selectedValues, attribute.id));
+                    const availableIndexes = this.calculateAvailableProductIndexes(selectionWithoutAttr);
+                    newAllowedAttributeOptions[attribute.id] = allAttributes[attribute.id].options.filter(option => {
+                        return !!option.products.find(product => {
+                            return availableIndexes.includes(product);
+                        })
+                    });
+                });
+                return newAllowedAttributeOptions;
+            },
+            calculateAvailableProductIndexes(selectedOptions) {
+                if (Object.keys(selectedOptions).length === 0) {
+                    <?php /* for Magento >= 2.4.4 when out-of-stock products are shown */ ?>
+                    if (Object.values(this.optionConfig.salable || {}).length) {
+                        <?php
+                        // The object this.optionConfig.salable is a map {attrId: {optionId: [productIndexes]}}
+                        // This turns the objects into arrays and flattens them, and removes duplicates
+                        // avoiding Array.flat and Set because they don't quite make our coverage requirement on caniuse.com.
+                        // This ends up returning an array of salable product indexes.
+                        ?>
+                        return [].concat.apply([], [].concat.apply([], Object.values(this.optionConfig.salable).map(Object.values))).filter((x, i, a) => a.indexOf(x) === i)
+                    }
+                    <?php /* no selected options mean all products are available for selection */ ?>
+                    return Object.keys(this.optionConfig.index);
+                }
+
+                <?php
+                // when cataloginventory/options/show_out_of_stock is set, this.optionConfig.index contains
+                // out of stock products. Since 2.4.4 this.optionConfig.salable was introduced, which reflects
+                // the actual salable state of a product, but only if the option is set, otherwise it is an empty object.
+                // So if this.optionConfig.salable is available, it should be used.
+                // Otherwise, the code checks which products match the given current selection as it was for older
+                // Magento versions, but then options of out of stock products are shown if the config option is set.
+                ?>
+                const selectedIds = Object.keys(selectedOptions);
+                if (Object.values(this.optionConfig.salable || {}).length) {
+                    <?php /* for Magento >= 2.4.4 when out-of-stock products are shown: */ ?>
+                    const selectedOptionIndexes = selectedIds.map(attrId => {
+                        const optionValue = selectedOptions[attrId];
+                        return this.optionConfig.salable[attrId] && this.optionConfig.salable[attrId][optionValue] || []
+                    })
+                    <?php /* intersection of optionIndexes */ ?>
+                    return selectedOptionIndexes.reduce((acc, optionIndexes) => {
+                        return acc.filter(index => optionIndexes.includes(index));
+                    });
+                } else {
+                    <?php /* for Magento < 2.4.4 or when out-of-stock-products are hidden: */ ?>
+                    const productIndexes = this.optionConfig.index;
+                    return Object.keys(productIndexes).filter(index => {
+                        <?php /* selectedIds.every() doesn't have enough browser support at the time of writing according to https://caniuse.com/mdn-javascript_builtins_array_every */ ?>
+                        for (const attrId of selectedIds) {
+                            if (productIndexes[index][attrId] !== `${selectedOptions[attrId]}`) return false
+                        }
+                        return true
+                    });
+                }
+            },
+            findAttributeByOptionId(optionId) {
+                for (const attributeId in this.optionConfig.attributes) {
+                    const attributeOptions = this.optionConfig.attributes[attributeId].options || [];
+                    if (attributeOptions.find(option => option.id === optionId)) {
+                        return attributeId;
+                    }
+                }
+            },
+            getAllowedAttributeOptions(attributeId) {
+                return this.allowedAttributeOptions[attributeId] || []
+            },
+            getAllAttributeOptions(attributeId) {
+                return (
+                    this.optionConfig.attributes[attributeId] &&
+                    this.optionConfig.attributes[attributeId].options
+                ) || []
+            },
+            getProductIdsForOption(option) {
+                const attributeId = this.findAttributeByOptionId(option.id);
+                const allOptions = this.optionConfig.attributes[attributeId];
+                const opt = (allOptions && allOptions.options || []).find(o => o.id === option.id);
+                return opt && opt.products
+                    ? opt.products
+                    : [];
+            },
+            findProductIdsForPartialSelection(optionSelection) {
+                const candidateProducts = Object.values(optionSelection).reduce((candidates, optionId) => {
+                    const newCandidates = this.getProductIdsForOption({id: optionId});
+                    return candidates === null
+                        ? newCandidates
+                        : candidates.filter(productId => newCandidates.includes(productId));
+                }, null);
+                return candidateProducts || [];
+            },
+            findCheapestProductForPartialSelection(optionSelection) {
+                const candidateProducts = this.findProductIdsForPartialSelection(optionSelection);
+                return candidateProducts.reduce((cheapest, simpleIdx) => {
+                    // in the first iteration we start with simpleIdx as the currently cheapest product
+                    if (! this.optionConfig.optionPrices[cheapest]) return simpleIdx;
+                    const knownCheapestPrice = this.optionConfig.optionPrices[cheapest].finalPrice.amount;
+                    return knownCheapestPrice > this.optionConfig.optionPrices[simpleIdx].finalPrice.amount
+                        ? simpleIdx
+                        : cheapest;
+                }, 0)
+            },
+            removeAttrFromSelection(selectedValues, attributeId) {
+                <?php /* create new array so the length property is reset if no option is selected (avoiding delete) */ ?>
+                attributeId = parseInt(attributeId);
+                return selectedValues.reduce((newSelection, val, attr) => {
+                    if (attr !== attributeId) {
+                        newSelection[attr] = val;
+                    }
+                    return newSelection;
+                }, []);
+            },
+            reflectOption(event) {
+                const attributeId = event.target.dataset.attributeId;
+                const label = event.target.dataset.optionLabel
+                    || event.target.options?.[event.target.selectedIndex]?.text
+                    || '';
+                this.selectedOptions[attributeId] = label;
+                this.changeOption(attributeId, event.target.value);
+            },
+            baseChangeOption(attributeId, value) {
+                if (value === '') {
+                    this.selectedValues = this.removeAttrFromSelection(this.selectedValues, attributeId)
+                } else if (value && this.getAllowedAttributeOptions(attributeId).find(option => option.id === value)) {
+                    <?php /* Only set as selected value if it is valid */ ?>
+                    this.selectedValues[attributeId] = value;
+                }
+                this.findSimpleIndex();
+                this.findAllowedAttributeOptions();
+                this.updatePrices();
+                this.updateGallery();
+            },
+            changeOption(attributeId, value) {
+                this.baseChangeOption(attributeId, value);
+
+                const candidates = this.findProductIdsForPartialSelection(this.selectedValues);
+
+                <?php /* The skuCandidates property is not set if the Magento_Inventory (MSI) modules are disabled. */ ?>
+                window.dispatchEvent(
+                    new CustomEvent(
+                        'configurable-selection-changed',
+                        {
+                            detail: {
+                                productId: this.productId,
+                                optionId: attributeId,
+                                value: value,
+                                productIndex: this.productIndex,
+                                selectedValues: this.selectedValues,
+                                candidates: candidates,
+                                skuCandidates: Object.values(candidates).map(id => this.optionConfig.sku?.[id] ?? null).filter(Boolean),
+                            }
+                        }
+                    )
+                );
+            },
+            calculateIsMinimalPrice() {
+                return ! this.isFullSelection(this.selectedValues);
+            },
+            isFullSelection(selectedValues) {
+                return Object.keys(selectedValues).length === this.attributeCount;
+            },
+            updatePrices() {
+                const value = this.optionConfig.optionPrices[this.productIndexForPrice] || this.optionConfig.prices;
+                window.dispatchEvent(
+                    new CustomEvent(
+                        "update-prices-" + this.productId,
+                        {
+                            detail: Object.assign(
+                                value,
+                                { isMinimalPrice: this.calculateIsMinimalPrice() }
+                            )
+                        }
+                    )
+                );
+            },
+            updateGallery () {
+                <?php /* Copie du script Hyvä 1.5.2 ; seule différence : la galerie Satoshi attend { images, productId }
+                         dans les événements update-gallery et reset-gallery (productId nombre, comparé à celui de la page),
+                         alors que Hyvä envoie le tableau d'images seul. Sans cela l'image de la déclinaison ne change pas.
+                         À resynchroniser à chaque montée de version de Hyvä. */ ?>
+                if (this.productIndex) {
+                    const images = this.optionConfig.images[this.productIndex];
+                    images && window.dispatchEvent(new CustomEvent(
+                        "update-gallery",
+                        { detail: { images: this.sortImagesByPosition(images), productId: Number(this.productId) } }
+                    ));
+                } else {
+                    window.dispatchEvent(new CustomEvent("reset-gallery", { detail: { productId: Number(this.productId) } }));
+                }
+            },
+            sortImagesByPosition(images) {
+                return images.sort((x, y) => {
+                    return x.position === y.position ? 0 : (parseInt(x.position) > parseInt(y.position) ? 1 : -1)
+                });
+            },
+            preselectQuerystringItems() {
+                // pre-select option like ?size=167
+                const urlQueryParams = new URLSearchParams(window.location.search.replace('?',''));
+                this.preselectItemsBasedOnLocation(attribute => urlQueryParams.get(attribute.code));
+            },
+            preselectLocationHashItems() {
+                // pre-select option like #144=167
+                const urlHashParams = new URLSearchParams(window.location.hash.replace('#',''));
+                this.preselectItemsBasedOnLocation(attribute => urlHashParams.get(attribute.id));
+            },
+            preselectItemsBasedOnLocation(getLocationValue) {
+                Object.values(this.optionConfig.attributes).map(attribute => {
+                    const v = getLocationValue(attribute);
+                    v && this.changeOption(attribute.id, v)
+                });
+            },
+            findProductForOptionPrice(attributeId, value) {
+                const options = this.optionConfig.attributes[attributeId]?.options || [];
+                const option = options.find(o => o.id === value);
+                if (!option?.products?.length) return null;
+                return option.products.reduce((cheapest, productId) => {
+                    if (!cheapest) return productId;
+                    const cheapestPrice = this.optionConfig.optionPrices[cheapest]?.finalPrice?.amount ?? Infinity;
+                    const thisPrice = this.optionConfig.optionPrices[productId]?.finalPrice?.amount ?? Infinity;
+                    return thisPrice < cheapestPrice ? productId : cheapest;
+                }, null);
+            },
+            getOptionLabel() {
+                const value = this.$el.value;
+                const attributeId = this.$el.dataset.attributeId;
+                const label = this.$el.dataset.optionLabel || '';
+                if (!value || !attributeId) return label;
+
+                const productId = this.findProductForOptionPrice(attributeId, value);
+                if (!productId) return label;
+
+                const optionPrice = this.optionConfig.optionPrices[productId]?.finalPrice?.amount;
+                const basePrice = this.optionConfig.prices?.finalPrice?.amount;
+                if (optionPrice == null || basePrice == null) return label;
+
+                const adjustment = optionPrice - basePrice;
+                if (Math.abs(adjustment) < 0.001) return label;
+
+                const formatted = hyva.formatPrice(Math.abs(adjustment));
+                return `${label} (${adjustment > 0 ? '+' : '-'}${formatted})`;
+            },
+        }
+    }
+</script>
+<?php $hyvaCsp->registerInlineScript() ?>

@@ -6,6 +6,13 @@
 
 declare(strict_types=1);
 
+/*
+ * Le libellé de l'axe est celui du produit ($attribute->getLabel(), table catalog_product_super_attribute_label)
+ * et non le libellé générique de l'attribut (« Variation », « Couleur ») ; quand le libellé du produit est
+ * vide, on garde le libellé de l'attribut (même repli que le plugin Pdb_Catalog du jsonConfig). La mise en
+ * minuscules passe par mb_strtolower pour les libellés accentués (« Épaisseur »).
+ */
+
 use Hyva\Theme\Model\ViewModelRegistry;
 use Hyva\Theme\ViewModel\SvgIcons;
 use Hyva\Theme\ViewModel\SwatchRenderer;
@@ -48,10 +55,11 @@ $isPopup = $block->getData('is_popup');
                 <?php $index++ ?>
                 <?php $attributeId = $attribute->getAttributeId(); ?>
                 <?php $productAttribute = $attribute->getProductAttribute(); ?>
+                <?php $axisLabel = trim((string) $attribute->getLabel()) ?: $productAttribute->getStoreLabel(); ?>
                 <div
                     role="radiogroup"
                     aria-required="true"
-                    aria-label="<?= $escaper->escapeHtmlAttr(__('Select your %1', strtolower($productAttribute->getStoreLabel()))) ?>"
+                    aria-label="<?= $escaper->escapeHtmlAttr(__('Select your %1', mb_strtolower($axisLabel))) ?>"
                     class="flex h-full w-full flex-col items-center justify-between gap-3 <?= $escaper->escapeHtmlAttr($productAttribute->getAttributeCode()) ?>"
                 >
                     <?php if ($swatchRendererViewModel->isSwatchAttribute($productAttribute)): ?>
@@ -59,7 +67,7 @@ $isPopup = $block->getData('is_popup');
                             <div class="relative flex h-full w-full flex-row items-center justify-between">
                                 <span class="font-semibold text-fg"
                                       id="attribute-label-<?= $escaper->escapeHtmlAttr($productId . '-' . $attributeId) ?>">
-                                  <?= $escaper->escapeHtml(__('Select your %1', strtolower($productAttribute->getStoreLabel()))) ?>
+                                  <?= $escaper->escapeHtml(__('Select your %1', mb_strtolower($axisLabel))) ?>
                                 </span>
 
                                 <?php if ($index === 1): ?>
@@ -92,7 +100,7 @@ $isPopup = $block->getData('is_popup');
                         <div class="relative flex h-full w-full flex-row items-center justify-between">
                             <label for="attribute_<?= $attribute->getAttributeId() ?>"
                                    class="font-semibold text-fg">
-                                <?= $escaper->escapeHtml(__('Select your %1', strtolower($attribute->getProductAttribute()->getStoreLabel()))) ?>
+                                <?= $escaper->escapeHtml(__('Select your %1', mb_strtolower($axisLabel))) ?>
                             </label>
 
                             <?php if ($index === 1): ?>
