@@ -35,6 +35,8 @@ $additionalInfo = trim((string) $block->getChildHtml('product.info.additional'))
    (logo de marque par exemple). Vide par defaut : le rendu ne change pas. */
 $priceAside = trim((string) $block->getChildHtml('product.info.price.aside'));
 ?>
+<?php /* Étiquette produit (réglage BO « Attribut de l'étiquette produit »), au-dessus du titre. */ ?>
+<?= $template->setData(['product' => $product, 'class' => 'self-start mx-4 md:mx-0'])->render('Magento_Catalog::product/label.phtml') ?>
 <h1 class="heading mb-3 ps-4 text-md leading-tight text-fg md:px-0 md:text-4xl max-md:pe-[--price-width]">
     <?= $block->getChildBlock('product.title')->getPageHeading() ?>
 </h1>

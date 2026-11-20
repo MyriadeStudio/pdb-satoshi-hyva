@@ -253,6 +253,9 @@ if ($product) {
                     </div>
                 <?php endif ?>
                 <?= $template->setData(['product' => $product, 'class' => 'py-1 top left', 'is_search' => $isSearch])->render('Magento_Catalog::product/list/discount-badge.phtml') ?>
+                <?php /* Étiquette produit (réglage BO « Attribut de l'étiquette produit »), en bas à gauche de la
+                   photo : le badge de remise occupe le haut. Au survol, le bandeau « Découvrir » la recouvre. */ ?>
+                <?= $template->setData(['product' => $product, 'class' => 'card-product__badge-container z-10 bottom left ps-3'])->render('Magento_Catalog::product/label.phtml') ?>
                 <span class="card-product__cta max-md:hidden" aria-hidden="true"><?= $escaper->escapeHtml(__('Discover')) ?></span>
             </div>
 

@@ -1,0 +1,36 @@
+<?php
+/**
+ * Étiquette produit du thème Satoshi : pastille affichant la valeur d'un attribut produit de type liste
+ * déroulante (par exemple « Exclu web »). L'attribut est choisi en back-office, par site : Stores /
+ * Configuration / PDB / Theme Hyva 2026 / Fiche produit, champ « Attribut de l'étiquette produit »
+ * (`pdb_theme_hyva/product_page/product_label_attribute`). Réglage vide : rien n'est affiché.
+ *
+ * Le texte est résolu par le ViewModel Pdb\ThemeHyva\ViewModel\Product\Label du module Pdb_ThemeHyva,
+ * dont le thème dépend déjà (composants Page Builder de Satoshi_SatoshiUi).
+ *
+ * Rendu par `$template->setData([...])->render('Magento_Catalog::product/label.phtml')` depuis :
+ * - la carte produit (product/list/item.phtml), posée sur la photo comme le badge de remise ;
+ * - la fiche produit (product/view/product-info.phtml), au-dessus du titre.
+ *
+ * Données attendues :
+ * - `product` : le produit (Magento\Catalog\Model\Product). Absent (cartes de recherche rendues côté
+ *   navigateur par Alpine, sans produit côté serveur) : rien n'est affiché.
+ * - `class` : classes CSS ajoutées à la pastille, pour la positionner selon l'emplacement.
+ *
+ * En liste, la valeur n'est chargée avec le produit que si l'attribut est « Utilisé dans les listes de
+ * produits ».
+ *
+ * @var Satoshi\Theme\Block\Template $block
+ * @var Magento\Framework\Escaper $escaper
+ * @var Hyva\Theme\Model\ViewModelRegistry $viewModels
+ */
+
+use Pdb\ThemeHyva\ViewModel\Product\Label;
+
+$product = $block->getData('product');
+$label = $product ? $viewModels->require(Label::class)->getLabel($product) : null;
+if ($label === null) {
+    return;
+}
+?>
+<span class="inline-block rounded-full bg-primary text-primary-on px-2 py-1 text-xs font-semibold uppercase tracking-wide <?= $escaper->escapeHtml((string) $block->getData('class')) ?>"><?= $escaper->escapeHtml($label) ?></span>
