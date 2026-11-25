@@ -15,6 +15,9 @@ use Satoshi\Theme\Block\Template;
  * Même ossature que la vraie page (voir search_fallback.phtml) : bandeau
  * image/titre/description, puis `grid-columns-plp` = colonne de filtres +
  * grille produits.
+ *
+ * La description porte la classe pdb-desc__corps : elle a la même typographie que la vraie page
+ * (voir Magento_Catalog/category/banner.phtml), sans repli, pour éviter un saut à l'arrivée.
  */
 ?>
 
@@ -44,7 +47,7 @@ use Satoshi\Theme\Block\Template;
     <div class="flex flex-col gap-3">
         <h1 class="text-xl md:text-[32px] text-fg" x-text="$store['transition'].pageData?.title"></h1>
       <div
-        class="rte"
+        class="rte pdb-desc__corps"
         x-html="$store['transition'].pageData?.description"
         x-show="$store['transition'].pageData?.description && $store['transition'].pageData?.description !== ''"
       >

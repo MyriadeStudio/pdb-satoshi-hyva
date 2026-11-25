@@ -46,6 +46,7 @@ $height = $block->getVar('category_page_category_image/height');
                 src="<?= $escaper->escapeUrl($imgUrl) ?>"
                 alt="<?= $escaper->escapeHtmlAttr($category->getName()) ?>"
                 class="aspect-[3/2] h-auto w-full rounded-md object-cover"
+                data-pdb-visuel
                 <?php if ($width): ?>
                     width="<?= $escaper->escapeHtmlAttr($width) ?>"
                 <?php endif; ?>
@@ -63,8 +64,86 @@ $height = $block->getVar('category_page_category_image/height');
 
         <!-- Description -->
         <?php if ($description = $category->getDescription()): ?>
-            <div class="rte">
-                <?= $descriptionHtml ?>
+            <?php
+            /* Description repliable derrière un bouton « Lire la suite » (styles : components/pdb-desc-repli.css
+               du thème enfant). Tout le texte reste dans le HTML : le repli n'est qu'une hauteur maximale posée
+               par le CSS, et sans JavaScript aucune classe d'état n'est posée, donc rien n'est replié.
+
+               Le composant Alpine fait deux choses au démarrage :
+               - il sort du texte replié les éléments qui doivent rester visibles sous le bouton : les tags
+                 « Nos sélections » que l'agence ajoute à la fin de la description, et la phrase de filtre
+                 Amasty (span.amshopby-descr) quand elle suit des paragraphes. Sur une page marque, ce même
+                 span EST la description (les paragraphes sont dedans, ou il ne contient que du texte) : il
+                 reste dans le texte replié ;
+               - il mesure le texte pour décider s'il faut un repli. La hauteur repliée est de 4 lignes sur
+                 mobile et de 3 sur bureau ; le texte n'est replié que s'il dépasse cette hauteur de plus d'une
+                 ligne. Avec un visuel à côté du texte (bannière 50 | 50, bureau seulement), la colonne de texte
+                 peut descendre jusqu'à la hauteur du visuel : la hauteur repliée est alors calée sur le visuel,
+                 en lignes entières, en réservant 32 px (2 rem, voir min-height du bouton) pour le bouton.
+               Il mesure aussi la hauteur du texte entier (--pdb-desc-plein) : le CSS anime la hauteur entre les
+               deux valeurs au clic sur le bouton.
+
+               L'attribut key force Alpine morph à recréer le composant quand la navigation SPA arrive sur une
+               autre description, au lieu de réconcilier un DOM déjà déplacé par le composant. */
+            $descriptionId = 'pdb-desc-' . crc32((string) $descriptionHtml);
+            ?>
+            <div
+                class="pdb-desc"
+                key="<?= $escaper->escapeHtmlAttr($descriptionId) ?>"
+                :class="{ 'pdb-desc--repliable': repliable, 'pdb-desc--ouvert': ouvert }"
+                @resize.window.debounce.150ms="mesurer()"
+                x-data="{
+                    ouvert: false,
+                    repliable: false,
+                    max: 0,
+                    plein: 0,
+                    init() {
+                        const corps = this.$refs.corps;
+                        const tags = corps.querySelectorAll(`nav[aria-label=&quot;Nos sélections&quot;], [data-pdb-tags], .pdb-tags`);
+                        const filtres = corps.querySelector(`p:not(.amshopby-descr p)`) ? corps.querySelectorAll(`.amshopby-descr`) : [];
+                        this.$refs.horsRepli.append(...tags, ...filtres);
+                        this.mesurer();
+                        document.fonts?.ready.then(() => this.mesurer());
+                    },
+                    mesurer() {
+                        const corps = this.$refs.corps;
+                        const ligne = parseFloat(getComputedStyle(corps.querySelector(`p`) || corps).lineHeight) || 22;
+                        const bureau = window.matchMedia(`(min-width: 768px)`).matches;
+                        const visuel = bureau && this.$el.closest(`article`).querySelector(`[data-pdb-visuel]`);
+                        let max = (bureau ? 3 : 4) * ligne;
+                        if (visuel) {
+                            const dispo = visuel.offsetHeight - (this.$el.parentElement.offsetHeight - corps.offsetHeight - (this.$refs.bouton.hidden ? 0 : 32));
+                            max = corps.scrollHeight <= dispo ? corps.scrollHeight : Math.max(max, Math.floor((dispo - 32) / ligne) * ligne);
+                        }
+                        this.max = max;
+                        this.plein = corps.scrollHeight;
+                        this.repliable = corps.scrollHeight > max + ligne;
+                    }
+                }"
+            >
+                <div
+                    id="<?= $escaper->escapeHtmlAttr($descriptionId) ?>"
+                    class="rte pdb-desc__corps"
+                    x-ref="corps"
+                    :style="{ '--pdb-desc-max': max + 'px', '--pdb-desc-plein': plein + 'px' }"
+                >
+                    <?= $descriptionHtml ?>
+                </div>
+                <button
+                    type="button"
+                    class="pdb-desc__bouton"
+                    hidden
+                    :hidden="!repliable"
+                    x-ref="bouton"
+                    aria-controls="<?= $escaper->escapeHtmlAttr($descriptionId) ?>"
+                    aria-expanded="false"
+                    :aria-expanded="ouvert.toString()"
+                    @click="ouvert = !ouvert"
+                >
+                    <span x-show="!ouvert"><?= $escaper->escapeHtml(__('Read more')) ?></span>
+                    <span x-show="ouvert"><?= $escaper->escapeHtml(__('Show less')) ?></span>
+                </button>
+                <div class="rte pdb-desc__hors-repli" x-ref="horsRepli"></div>
             </div>
         <?php endif; ?>
 
