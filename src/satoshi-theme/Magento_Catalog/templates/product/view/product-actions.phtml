@@ -60,6 +60,11 @@ if (in_array($productType, ['simple', 'virtual', 'downloadable'])) {
 }
 
 $hasVariants = $productType === 'configurable';
+// Un produit simple avec une option personnalisée obligatoire (ex. la taille d'une bague) suit le même
+// parcours mobile qu'un configurable : ses options sont choisies dans le panneau « Sélectionner les options ».
+// Sans cela, le bouton visible sur mobile soumet le formulaire de bureau, dont le champ obligatoire est masqué :
+// le navigateur refuse l'envoi sans afficher de message, et rien ne part.
+$needsOptionsPopup = $hasVariants || $product->getTypeInstance()->hasRequiredOptions($product);
 $isGroup = $productType === 'grouped';
 $inStock = $product->isSaleable();
 
@@ -206,14 +211,14 @@ if (!$inStock) {
             <?php endif; ?>
             x-show="<?= (int)$inStock ?> && !isVariantInCart"
             class="
-                <?= (in_array($productType, ['configurable', 'downloadable', 'grouped', 'bundle']) && !$isPopup) ? 'max-md:hidden' : '' ?>
+                <?= (($needsOptionsPopup || in_array($productType, ['downloadable', 'grouped', 'bundle'])) && !$isPopup) ? 'max-md:hidden' : '' ?>
                 <?= $isSmall ? 'button--size-sm' : '' ?>
                 animate-on-transition button button--filled-primary flex-grow
                 <?= $isPopup ? 'max-sm:px-3' : '' ?>
             "
             :class="{
                 'md:hidden': isVariantInCart || <?= (int)!$inStock ?>,
-                'max-md:hidden': <?= (int)!$inStock ?> || (<?= (int)(!$isPopup && in_array($productType, ['configurable', 'downloadable', 'grouped', 'bundle'])) ?>) || (<?= (int)$isPopup ?> && isVariantInCart),
+                'max-md:hidden': <?= (int)!$inStock ?> || (<?= (int)(!$isPopup && ($needsOptionsPopup || in_array($productType, ['downloadable', 'grouped', 'bundle']))) ?>) || (<?= (int)$isPopup ?> && isVariantInCart),
                 'button--disabled': isProductBeingAdded || isProductBeingRemoved
             }"
             type="submit"
@@ -280,7 +285,7 @@ if (!$inStock) {
                 style="display: none"
             <?php endif; ?>
             x-show="!isVariantInCart"
-            class="animate-on-transition button button--filled-primary w-full md:hidden <?= $isSmall ? 'button--size-sm' : '' ?> <?= ($isPopup || !$hasVariants) ? 'max-md:hidden' : '' ?>"
+            class="animate-on-transition button button--filled-primary w-full md:hidden <?= $isSmall ? 'button--size-sm' : '' ?> <?= ($isPopup || !$needsOptionsPopup) ? 'max-md:hidden' : '' ?>"
             @click.prevent="showProductActions()"
             :class="{
                 'button--disabled': isProductBeingAdded || isProductBeingRemoved
@@ -292,7 +297,9 @@ if (!$inStock) {
                 x-show="!isProductBeingAdded && !isProductBeingRemoved"
                 class="inline-flex items-center"
             >
-                <?= __('Select options') ?>
+                <?php /* Pour un produit simple à option obligatoire, le bouton qui ouvre le panneau garde le libellé
+                         « Ajouter au panier » : le choix de l'option est une étape de l'ajout, pas une sélection de variante. */ ?>
+                <?= $hasVariants ? __('Select options') : __('Add to cart') ?>
                 <span
                     class="button__icon button__icon--right <?= $isSmall ? 'text-lg' : '' ?>"
                 >

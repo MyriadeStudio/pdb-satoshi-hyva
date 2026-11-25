@@ -70,6 +70,12 @@ $fetchPriority = $imageCustomAttributes['fetchpriority'] ?? null;
 $breadcrumbs = $block->getData('breadcrumbs') ?? [];
 
 $itemDetailsRenderer = $product ? $block->getDetailsRenderer($product->getTypeId()) : null;
+// Un produit simple avec une option personnalisée obligatoire (ex. la taille d'une bague) ne peut pas être ajouté
+// depuis la carte : l'achat rapide n'envoie pas l'option et Magento refuse l'ajout. L'icône panier renvoie alors
+// vers la fiche produit, où l'option se choisit.
+$hasRequiredOptions = $product
+    && in_array($product->getTypeId(), ['simple', 'virtual'])
+    && $product->getTypeInstance()->hasRequiredOptions($product);
 
 // Calculating is large
 $nthLarge = $block->getData('n_of_large_card') ?? 0;
@@ -294,7 +300,10 @@ if ($product) {
                                     'text-primary-lighter': isLoadingCart,
                                     'text-primary-text': !isLoadingCart
                                 }"
-                                <?php if (in_array($product->getTypeId(), ['simple', 'virtual'])): ?>
+                                <?php if ($hasRequiredOptions): ?>
+                                    @click.prevent.stop="window.location.assign('<?= $escaper->escapeJs($product->getProductUrl()) ?>')"
+                                    type="button"
+                                <?php elseif (in_array($product->getTypeId(), ['simple', 'virtual'])): ?>
                                     form="quick_buy_form_<?= $product->getId() ?>"
                                     data-addto="cart"
                                     type="submit"
